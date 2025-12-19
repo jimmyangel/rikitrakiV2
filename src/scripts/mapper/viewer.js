@@ -1,7 +1,7 @@
 import { constants } from '../config.js'
 import { imageryProviders } from './basemaps.js'
-import {wireLayerControl, wireLayerControlToggle, updateAttribution} from './layerControl.js'
-import { wireMapModeControl } from './mapModeControl.js'
+import { wireLayerControl, wireLayerControlToggle, updateAttribution } from './layerControl.js'
+import { wireLookDownControl } from './mapLookDownControl.js'
 import { Cartesian3, Ion, Math as CesiumMath, Terrain, Viewer, UrlTemplateImageryProvider } from 'cesium'
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
@@ -26,7 +26,6 @@ export const viewer = () => {
         navigationHelpButton: false,
         navigationInstructionsInitiallyVisible: false,
         scene3DOnly: true,
-        /* creditContainer: 'creditContainer', */
         terrain: Terrain.fromWorldTerrain(),
         terrainExaggeration: 2
     })
@@ -38,5 +37,5 @@ export const viewer = () => {
 
     wireLayerControl(viewer)
     wireLayerControlToggle()
-    wireMapModeControl(viewer, Cesium)
+    wireLookDownControl(viewer)
 }

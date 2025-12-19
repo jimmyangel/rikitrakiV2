@@ -2,7 +2,6 @@
 import '../styles/map.css' 
 import LayerControl from './LayerControl.astro'
 import { Icon } from 'astro-icon/components'
-import MapModeControl from './MapModeControl.astro'
 ---
 
 <div id='cesiumContainer'>
@@ -13,9 +12,9 @@ import MapModeControl from './MapModeControl.astro'
             <a class="map-control-zoom-out" href="#" title="Zoom out">-</a>
         </div>
 
-        <MapModeControl />
-
-
+        <div class="map-bar map-control">
+            <a id="lookDown" href="#" title="Look down"><Icon name="fa7-solid:circle-arrow-down" class="map-look-down-icon" /></a>
+        </div>
         <LayerControl />
     </div>
     <div class="map-bottom map-right">

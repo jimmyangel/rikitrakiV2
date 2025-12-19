@@ -489,20 +489,9 @@
 
 /* Added classes */
 
-.map-mode-control .map-mode-toggle {
-  padding-top: 4px;
-}
-
-.map-mode-toggle {
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.map-mode-icon {
-  width: 18px;
-  height: 18px;
+.map-look-down-icon {
+  padding-top: 3px;
+  width: 24px;
+  height: 24px; 
 }
 
