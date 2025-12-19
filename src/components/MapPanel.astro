@@ -1,0 +1,59 @@
+---
+import '../styles/map.css' 
+import LayerControl from './LayerControl.astro'
+import { Icon } from 'astro-icon/components'
+import MapModeControl from './MapModeControl.astro'
+---
+
+<div id='cesiumContainer'>
+
+    <div class="map-top map-right">
+        <div class="map-bar map-control">
+            <a class="map-control-zoom-in" href="#" title="Zoom in">+</a>
+            <a class="map-control-zoom-out" href="#" title="Zoom out">-</a>
+        </div>
+
+        <MapModeControl />
+
+
+        <LayerControl />
+    </div>
+    <div class="map-bottom map-right">
+        <div class="map-control-attribution map-control">
+            <div class="map-bar map-control" style="background-color: #fff; padding: 0px 4px;">
+                <span class="is-size-7" id="attributionText">Attribution</span>
+            </div>
+             
+        </div>
+    </div>
+   
+</div>
+<!-- <div id="attribution" class="attribution-box">This is my attribution</div> -->
+
+
+<style is:global>
+    #cesiumContainer  {
+        position: relative;
+        height: calc(100vh - 52px);
+        font-family: sans-serif;
+    }
+
+    .attribution-box {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.35);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #fff;
+        z-index: 9999;
+        pointer-events: auto;
+    }
+
+</style>
+
+<script>
+    import {viewer} from '../scripts/mapper/viewer.js'
+    viewer()
+</script>

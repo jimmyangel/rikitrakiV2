@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import SidePanel from '../components/SidePanel.astro'
+import MapPanel from '../components/MapPanel.astro'
+
+---
+
+<BaseLayout>
+	<section>
+		<div class="columns is-gapless">
+			<aside class="column is-narrow">
+				<SidePanel /> 
+			</aside>
+			<div class="column">
+				<MapPanel />
+			</div>
+		</div>
+	</section>
+</BaseLayout>

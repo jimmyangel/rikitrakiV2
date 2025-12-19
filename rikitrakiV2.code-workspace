@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../photoblogV2"
+		},
+		{
+			"path": "../astrotutorial"
+		},
+		{
+			"path": "../howl"
+		},
+		{
+			"path": "../rikitraki"
+		}
+	],
+	"settings": {}
+}

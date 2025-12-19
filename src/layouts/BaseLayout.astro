@@ -1,0 +1,52 @@
+---
+import '../styles/index.scss'
+import Logo from '../components/Logo.astro'
+import { Icon } from 'astro-icon/components'
+---
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>RikiTraki</title>
+	</head>
+	<body class="has-navbar-fixed-top">
+        <nav class="navbar is-fixed-top is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" style="padding: 0px;">
+                <Logo />
+            </a>
+            <a role="button" class="navbar-burger has-text-white" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+
+            </div>
+
+            <div class="navbar-end">
+                <a class="navbar-item" style="max-height: 62px;">
+                    <Icon name="fa7-solid:user" class="is-size-4"/>
+                </a>
+                <a class="navbar-item" style="max-height: 62px;">
+                    <Icon name="fa7-solid:circle-info" class="is-size-4"/>
+                </a>
+            </div>
+        </div>
+        </nav>
+        <slot />
+	</body>
+</html>
+
+<style>
+    .navbar-item svg, .navbar-brand svg {
+        max-height: 4rem; 
+    }
+</style>
+

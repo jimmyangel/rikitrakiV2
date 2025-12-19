@@ -1,0 +1,19 @@
+{
+  "name": "rikitrakiv2",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@iconify-json/fa7-solid": "^1.2.3",
+    "astro": "^5.16.5",
+    "astro-icon": "^1.1.5",
+    "bulma": "^1.0.4",
+    "cesium": "^1.136.0",
+    "sass": "^1.96.0"
+  }
+}
