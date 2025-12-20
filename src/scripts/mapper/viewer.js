@@ -30,7 +30,10 @@ export const viewer = () => {
         terrainExaggeration: 2
     })
 
-    viewer.imageryLayers.addImageryProvider(imageryProviders[0].provider())
+    imageryProviders[0].providers.forEach(providerFn => {
+      viewer.imageryLayers.addImageryProvider(providerFn())
+    })
+    
     updateAttribution(0)
 
     viewer.cesiumWidget._creditContainer.style.display = 'none'

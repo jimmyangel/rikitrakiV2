@@ -3,22 +3,21 @@ import { imageryProviders } from './basemaps.js'
 import { switchBasemap } from './basemapSwitcher.js'
 
 export function wireLayerControl(viewer) {
-    const control = document.getElementById('layerControl')
-    const radios = document.querySelectorAll('.basemap-layer')
+  const control = document.getElementById('layerControl')
+  const radios = document.querySelectorAll('.basemap-layer')
 
-    radios.forEach(radio => {
-        radio.addEventListener('change', e => {
-        const index = Number(e.target.value)
+  radios.forEach(radio => {
+    radio.addEventListener('change', e => {
+      const index = Number(e.target.value)
 
-        // Switch the Cesium basemap
-        switchBasemap(viewer, index)
-        updateAttribution(index)
+      switchBasemap(viewer, index)
+      updateAttribution(index)
 
-        // Close the control after selection
-        control.classList.remove('map-control-layers-expanded')
-        })
+      control.classList.remove('map-control-layers-expanded')
     })
+  })
 }
+
 
 export function wireLayerControlToggle() {
     const control = document.getElementById('layerControl')
@@ -39,15 +38,25 @@ export function wireLayerControlToggle() {
 }
 
 export function updateAttribution(index) {
+  const basemap = imageryProviders[index]
+
+  const credits = basemap.providers.map(providerFn => {
+    const provider = providerFn()
+    return provider.credit && provider.credit.html
+      ? provider.credit.html
+      : provider.credit || ''
+  })
+
   const el = document.getElementById('attributionText')
   if (!el) return
 
-  const providerInstance = imageryProviders[index].provider()
-  const credit = providerInstance.credit
+  const cesiumCredit = '<a href="https://cesium.com" target="_blank">Cesium</a> | '
 
-  const text = credit?.html || credit?.text || ''
-
-  const cesiumLink = `<a href="https://cesium.com" target="_blank" rel="noopener noreferrer">Cesium</a>`
-
-  el.innerHTML = `${cesiumLink} | ${text}`
+  el.innerHTML = cesiumCredit + credits.join(' | ')
 }
+
+
+
+
+
+

@@ -3,8 +3,8 @@ import '../styles/map.css'
 import LayerControl from './LayerControl.astro'
 import { Icon } from 'astro-icon/components'
 ---
-
-<div id='cesiumContainer'>
+<div id="mapRoot">
+    <div id='cesiumContainer'></div>
 
     <div class="map-top map-right">
         <div class="map-bar map-control">
@@ -22,19 +22,21 @@ import { Icon } from 'astro-icon/components'
             <div class="map-bar map-control" style="background-color: #fff; padding: 0px 4px;">
                 <span class="is-size-7" id="attributionText">Attribution</span>
             </div>
-             
+            
         </div>
     </div>
-   
 </div>
-<!-- <div id="attribution" class="attribution-box">This is my attribution</div> -->
-
 
 <style is:global>
-    #cesiumContainer  {
+    #mapRoot {
         position: relative;
         height: calc(100vh - 52px);
         font-family: sans-serif;
+    }
+
+    #cesiumContainer {
+        position: absolute;
+        inset: 0;
     }
 
     .attribution-box {

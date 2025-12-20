@@ -1,13 +1,18 @@
 import { imageryProviders } from './basemaps.js'
 
 export function switchBasemap(viewer, index) {
-    const imageryLayers = viewer.imageryLayers
+  const layers = viewer.imageryLayers
 
-    // Remove current base layer (layer 0)
-    if (imageryLayers.length > 0) {
-        imageryLayers.remove(imageryLayers.get(0), true)
-    }
+  // Remove all existing imagery layers
+  while (layers.length > 0) {
+    layers.remove(layers.get(0), true)
+  }
 
-    // Add the selected provider
-    imageryLayers.addImageryProvider(imageryProviders[index].provider(), 0)
+  // Add all providers for the selected basemap
+  const basemap = imageryProviders[index]
+  basemap.providers.forEach(providerFn => {
+    layers.addImageryProvider(providerFn())
+  })
 }
+
+
