@@ -6,14 +6,106 @@ import MapPanel from '../components/MapPanel.astro'
 ---
 
 <BaseLayout>
-	<section>
-		<div class="columns is-gapless">
-			<aside class="column is-narrow">
-				<SidePanel /> 
-			</aside>
-			<div class="column">
-				<MapPanel />
+	<section class="main-layout" style="height: calc(100dvh - 52px);">
+	<div class="columns is-gapless" style="height: 100%; align-items: stretch;">
+		<aside class="column is-narrow">
+			<SidePanel />
+		</aside>
+
+		<div class="column">
+			<div class="map-grid">
+				<div class="map-grid-map">
+					<MapPanel />
+				</div>
+				<div class="map-grid-info">
+					HEY
+				</div>
 			</div>
 		</div>
+	</div>
 	</section>
+
 </BaseLayout>
+
+<style>
+	/* Desktop/tablet horizontal layout */
+	.columns {
+		/* Force Bulma's columns container to fill the available height
+		so the map column can stretch properly */
+		height: 100%;
+	}
+
+	.columns > .column {
+		/* Ensure each column (side + map) fills the full height of .columns.
+		Without this, the map column collapses to content height. */
+		height: 100%;
+	}
+
+
+	/* Vertical tablet / phone layout */
+	@media (max-width: 768px) {
+		.columns {
+			/* Bulma stacks columns vertically on mobile.
+			We explicitly switch to flex-column so the second column
+			can grow to fill remaining space. */
+			flex-direction: column;
+
+			/* Make the stacked columns container fill the viewport height.
+			Prevents white space below the map. */
+			height: 100%;
+		}
+
+		.columns > .column {
+			/* Allow the map column (the second one) to expand and fill
+			whatever space is left after the side panel. */
+			flex: 1 1 auto;
+
+			/* Required so the map-grid inside can stretch vertically. */
+			display: flex;
+			flex-direction: column;
+		}
+	}
+
+	@media (max-width: 768px) {
+		aside.column.is-narrow {
+			/* Prevent the side panel (now on top) from taking the entire screen.
+			It becomes scrollable instead of pushing the map off-screen. */
+			max-height: 20vh;
+
+			/* Enable scrolling inside the side panel when content is tall. */
+			overflow-y: auto;
+		}
+	}
+
+
+	/* Map + info panel layout */
+	.map-grid {
+		/* Use CSS Grid to split the map area (top) and info panel (bottom). */
+		display: grid;
+
+		/* Fill the full height of the parent column. */
+		height: 100%;
+
+		/* Map gets 4 parts, info panel gets 1 part.
+		Adjust these numbers to change the vertical ratio. */
+		grid-template-rows: 4fr 1fr;
+	}
+
+	.map-grid-map {
+		/* Critical for CSS Grid + Cesium:
+		Allows the map area to shrink without forcing overflow.
+		Without this, the map collapses on mobile. */
+		min-height: 0;
+	}
+
+	/* Info area styling */
+	.map-grid-info {
+		/* Padding for readability and spacing. */
+		padding: 1rem;
+
+		/* Light background to visually separate it from the map. */
+		background: #f5f5f5;
+	}
+
+
+</style>

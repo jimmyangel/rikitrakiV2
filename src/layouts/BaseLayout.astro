@@ -40,11 +40,19 @@ import { Icon } from 'astro-icon/components'
             </div>
         </div>
         </nav>
-        <slot />
+        <div class="app-root">
+            <slot />
+        </div>
 	</body>
 </html>
 
 <style>
+
+    .app-root {
+        height: calc(100dvh - 52px); /* subtract navbar height */
+        display: flex;
+        flex-direction: column;
+    }
     .navbar-item svg, .navbar-brand svg {
         max-height: 4rem; 
     }
