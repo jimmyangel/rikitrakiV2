@@ -1,6 +1,6 @@
 import { constants } from '../config.js'
 import { imageryProviders } from './basemaps.js'
-import { wireLayerControl, wireLayerControlToggle, updateAttribution } from './layerControl.js'
+import { wireLayerControl, wireLayerControlToggle } from './layerControl.js'
 import { wireLookDownControl } from './mapLookDownControl.js'
 import { Cartesian3, Ion, Math as CesiumMath, Terrain, Viewer, UrlTemplateImageryProvider } from 'cesium'
 import * as Cesium from 'cesium'
@@ -34,8 +34,6 @@ export const viewer = () => {
 		viewer.imageryLayers.addImageryProvider(providerFn())
 	})
 	
-	updateAttribution(0)
-
 	//viewer.cesiumWidget._creditContainer.style.display = 'none'
 
 	wireLayerControl(viewer)

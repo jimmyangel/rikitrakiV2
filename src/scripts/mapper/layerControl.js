@@ -11,7 +11,6 @@ export function wireLayerControl(viewer) {
 			const index = Number(e.target.value)
 
 			switchBasemap(viewer, index)
-			updateAttribution(index)
 
 			control.classList.remove('map-control-layers-expanded')
 		})
@@ -29,30 +28,12 @@ export function wireLayerControlToggle() {
 		control.classList.toggle('map-control-layers-expanded')
 	})
 
-	// Optional: close when clicking outside
+	// Close when clicking outside
 	document.addEventListener('click', e => {
 		if (!control.contains(e.target)) {
 				control.classList.remove('map-control-layers-expanded')
 		}
 	})
-}
-
-export function updateAttribution(index) {
-	const basemap = imageryProviders[index]
-
-	const credits = basemap.providers.map(providerFn => {
-		const provider = providerFn()
-		return provider.credit && provider.credit.html
-			? provider.credit.html
-			: provider.credit || ''
-	})
-
-	const el = document.getElementById('attributionText')
-	if (!el) return
-
-	const cesiumCredit = '<a href="https://cesium.com" target="_blank">Cesium</a> | '
-
-	el.innerHTML = cesiumCredit + credits.join(' | ')
 }
 
 
