@@ -2,6 +2,7 @@ import { constants } from '../config.js'
 import { imageryProviders } from './basemaps.js'
 import { wireLayerControl, wireLayerControlToggle } from './layerControl.js'
 import { wireLookDownControl } from './mapLookDownControl.js'
+import { wireZoomControl } from './zoomControl.js'
 import { Cartesian3, Ion, Math as CesiumMath, Terrain, Viewer, UrlTemplateImageryProvider } from 'cesium'
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
@@ -37,4 +38,5 @@ export const viewer = () => {
 	wireLayerControl(viewer)
 	wireLayerControlToggle()
 	wireLookDownControl(viewer)
+	wireZoomControl(viewer)
 }
