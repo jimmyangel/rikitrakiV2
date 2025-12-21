@@ -4,58 +4,58 @@ import LayerControl from './LayerControl.astro'
 import { Icon } from 'astro-icon/components'
 ---
 <div id="mapRoot">
-    <div id='cesiumContainer'></div>
+	<div id='cesiumContainer'></div>
 
-    <div class="map-top map-right">
-        <div class="map-bar map-control">
-            <a class="map-control-zoom-in" href="#" title="Zoom in">+</a>
-            <a class="map-control-zoom-out" href="#" title="Zoom out">-</a>
-        </div>
+	<div class="map-top map-right">
+		<div class="map-bar map-control">
+			<a class="map-control-zoom-in" href="#" title="Zoom in">+</a>
+			<a class="map-control-zoom-out" href="#" title="Zoom out">-</a>
+		</div>
 
-        <div class="map-bar map-control">
-            <a id="lookDown" href="#" title="Look down"><Icon name="fa7-solid:circle-arrow-down" class="map-look-down-icon" /></a>
-        </div>
-        <LayerControl />
-    </div>
-    <div class="map-bottom map-right" style="display: none;">
-        <div class="map-control-attribution map-control">
-            <div class="map-bar map-control" style="background-color: #fff; padding: 0px 4px;">
-                <span class="is-size-7" id="attributionText">Attribution</span>
-            </div>
-            
-        </div>
-    </div>
+		<div class="map-bar map-control">
+			<a id="lookDown" href="#" title="Look down"><Icon name="fa7-solid:circle-arrow-down" class="map-look-down-icon" /></a>
+		</div>
+		<LayerControl />
+	</div>
+	<div class="map-bottom map-right" style="display: none;">
+		<div class="map-control-attribution map-control">
+			<div class="map-bar map-control" style="background-color: #fff; padding: 0px 4px;">
+				<span class="is-size-7" id="attributionText">Attribution</span>
+			</div>
+			
+		</div>
+	</div>
 </div>
 
 <style>
-    #mapRoot {
-        position: relative;
-        height: 100%;
-        /* height: calc(100vh - 52px); */
-        font-family: sans-serif;
-    }
+	#mapRoot {
+		position: relative;
+		height: 100%;
+		/* height: calc(100vh - 52px); */
+		font-family: sans-serif;
+	}
 
-    #cesiumContainer {
-        position: absolute;
-        inset: 0;
-    }
+	#cesiumContainer {
+		position: absolute;
+		inset: 0;
+	}
 
-    .attribution-box {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        background: rgba(0,0,0,0.35);
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        color: #fff;
-        z-index: 9999;
-        pointer-events: auto;
-    }
+	.attribution-box {
+		position: absolute;
+		bottom: 10px;
+		right: 10px;
+		background: rgba(0,0,0,0.35);
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 11px;
+		color: #fff;
+		z-index: 9999;
+		pointer-events: auto;
+	}
 
 </style>
 
 <script>
-    import {viewer} from '../scripts/mapper/viewer.js'
-    viewer()
+	import {viewer} from '../scripts/mapper/viewer.js'
+	viewer()
 </script>

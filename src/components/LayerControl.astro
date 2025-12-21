@@ -3,33 +3,33 @@ import { imageryProviders } from '../scripts/mapper/basemaps.js'
 ---
 
 <div
-  id="layerControl"
-  title="Basemaps & overlays"
-  class="map-control map-control-layers"
-  aria-haspopup="true"
+	id="layerControl"
+	title="Basemaps & overlays"
+	class="map-control map-control-layers"
+	aria-haspopup="true"
 >
   <a class="map-control-layers-toggle" href="#"></a>
 
-  <form class="map-control-layers-list">
-    <div id="basemap-layer-control" class="map-control-layers-base">
-      {imageryProviders.map((provider, index) => (
-        <label>
-          <input
-            value={index}
-            type="radio"
-            class="basemap-layer map-control-layers-selector"
-            name="map-base-layers"
-            checked={index === 0}
-          />
-          <span> {provider.name}</span>
-        </label>
-      ))}
-    </div>
-  </form>
+	<form class="map-control-layers-list">
+		<div id="basemap-layer-control" class="map-control-layers-base">
+		{imageryProviders.map((provider, index) => (
+			<label>
+				<input
+					value={index}
+					type="radio"
+					class="basemap-layer map-control-layers-selector"
+					name="map-base-layers"
+					checked={index === 0}
+				/>
+				<span> {provider.name}</span>
+			</label>
+		))}
+		</div>
+	</form>
 </div>
 
 <style>
-    label {
-        font-size: 0.9rem;
-    }
+	label {
+		font-size: 0.9rem;
+	}
 </style>
