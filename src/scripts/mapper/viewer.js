@@ -33,8 +33,6 @@ export const viewer = () => {
 	imageryProviders[0].providers.forEach(providerFn => {
 		viewer.imageryLayers.addImageryProvider(providerFn())
 	})
-	
-	//viewer.cesiumWidget._creditContainer.style.display = 'none'
 
 	wireLayerControl(viewer)
 	wireLayerControlToggle()
