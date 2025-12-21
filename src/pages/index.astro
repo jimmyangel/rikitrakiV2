@@ -2,110 +2,200 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import SidePanel from '../components/SidePanel.astro'
 import MapPanel from '../components/MapPanel.astro'
-
 ---
 
 <BaseLayout>
-	<section class="main-layout" style="height: calc(100dvh - 52px);">
-	<div class="columns is-gapless" style="height: 100%; align-items: stretch;">
-		<aside class="column is-narrow">
-			<SidePanel />
-		</aside>
+	<section class="main-layout" style="height: calc(100dvh - 52px)">
+		<div class="columns is-gapless" style="height: 100%; align-items: stretch">
 
-		<div class="column">
-			<div class="map-grid">
-				<div class="map-grid-map">
-					<MapPanel />
+			<!-- SIDE PANEL -->
+			<aside class="column is-narrow side-panel isopen">
+				<div class="side-panel-content isopen">
+					<SidePanel />
 				</div>
-				<div class="map-grid-info">
-					HEY
+			</aside>
+
+			<!-- MAP COLUMN -->
+			<div class="column map-column">
+				<button id="toggleSidePanel" class="side-panel-open-button">☰</button>
+
+				<div class="map-grid">
+					<div class="map-grid-map">
+						<MapPanel />
+
+						<!-- bottom toggle lives inside map -->
+						<button id="toggleBottomPanel" class="bottom-panel-toggle">▼</button>
+					</div>
+
+					<!-- BOTTOM PANEL -->
+					<div class="bottom-panel isopen">
+						<div class="bottom-panel-content">
+							HEY
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-	</section>
 
+		</div>
+	</section>
 </BaseLayout>
 
 <style>
-	/* Desktop/tablet horizontal layout */
-	.columns {
-		/* Force Bulma's columns container to fill the available height
-		so the map column can stretch properly */
-		height: 100%;
+	/* ----------------------------------------------------------
+		SIDE PANEL
+	---------------------------------------------------------- */
+
+	.side-panel {
+		flex: none !important;
+		display: block !important;
+		overflow: hidden;
 	}
 
-	.columns > .column {
-		/* Ensure each column (side + map) fills the full height of .columns.
-		Without this, the map column collapses to content height. */
-		height: 100%;
+	.map-column {
+		position: relative;
 	}
 
-
-	/* Vertical tablet / phone layout */
-	@media (max-width: 768px) {
-		.columns {
-			/* Bulma stacks columns vertically on mobile.
-			We explicitly switch to flex-column so the second column
-			can grow to fill remaining space. */
-			flex-direction: column;
-
-			/* Make the stacked columns container fill the viewport height.
-			Prevents white space below the map. */
-			height: 100%;
+	/* desktop slide */
+	@media (min-width: 769px) {
+		.side-panel {
+			width: 20rem;
+			margin-left: 0 !important;
+			transition: margin-left .3s ease;
 		}
 
-		.columns > .column {
-			/* Allow the map column (the second one) to expand and fill
-			whatever space is left after the side panel. */
-			flex: 1 1 auto;
-
-			/* Required so the map-grid inside can stretch vertically. */
-			display: flex;
-			flex-direction: column;
+		.side-panel.isopen {
+			margin-left: 0 !important;
 		}
-	}
 
-	@media (max-width: 768px) {
-		aside.column.is-narrow {
-			/* Prevent the side panel (now on top) from taking the entire screen.
-			It becomes scrollable instead of pushing the map off-screen. */
-			max-height: 20vh;
+		.side-panel:not(.isopen) {
+			margin-left: -20rem !important;
+		}
 
-			/* Enable scrolling inside the side panel when content is tall. */
+		.side-panel-content {
+			height: 100vh;
 			overflow-y: auto;
 		}
 	}
 
+	/* mobile accordion */
+	@media (max-width: 768px) {
+		.side-panel {
+			width: 100%;
+			height: auto !important;
+			flex: none !important;
+			overflow: hidden;
+		}
 
-	/* Map + info panel layout */
-	.map-grid {
-		/* Use CSS Grid to split the map area (top) and info panel (bottom). */
-		display: grid;
+		.side-panel-content {
+			max-height: 80vh;
+			overflow-y: auto;
+			transition: max-height .3s ease;
+		}
 
-		/* Fill the full height of the parent column. */
-		height: 100%;
+		.side-panel-content:not(.isopen) {
+			max-height: 0;
+			overflow: hidden;
+		}
 
-		/* Map gets 4 parts, info panel gets 1 part.
-		Adjust these numbers to change the vertical ratio. */
-		grid-template-rows: 4fr 1fr;
+		.map-column {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
+
+		.map-grid {
+			flex: 1 1 auto;
+			min-height: 0;
+		}
 	}
 
+	/* ----------------------------------------------------------
+		BOTTOM PANEL (container animates)
+	---------------------------------------------------------- */
+
+	.map-grid {
+		display: grid;
+		height: 100%;
+		grid-template-rows: 1fr auto;
+	}
+
+	.bottom-panel {
+		background: #f5f5f5;
+		overflow: hidden;
+		height: 10rem;
+		max-height: 10rem;
+		transition: max-height .3s ease;
+	}
+
+	.bottom-panel:not(.isopen) {
+		max-height: 0;
+	}
+
+	.bottom-panel-content {
+		height: 100%;
+		overflow-y: auto;
+	}
+
+	.bottom-panel-toggle {
+		position: absolute;
+		bottom: .5rem;
+		right: 1rem;
+		z-index: 2000;
+		background: #333;
+		color: white;
+		border: none;
+		padding: .25rem .5rem;
+		cursor: pointer;
+		border-radius: 4px;
+		font-size: .8rem;
+	}
+
+	/* ----------------------------------------------------------
+		MAP GRID MAP
+	---------------------------------------------------------- */
+
 	.map-grid-map {
-		/* Critical for CSS Grid + Cesium:
-		Allows the map area to shrink without forcing overflow.
-		Without this, the map collapses on mobile. */
+		position: relative;
 		min-height: 0;
 	}
 
-	/* Info area styling */
-	.map-grid-info {
-		/* Padding for readability and spacing. */
-		padding: 1rem;
+	/* ----------------------------------------------------------
+		SIDE PANEL TOGGLE BUTTON
+	---------------------------------------------------------- */
 
-		/* Light background to visually separate it from the map. */
-		background: #f5f5f5;
+	.side-panel-open-button {
+		position: absolute;
+		top: .5rem;
+		left: .5rem;
+		z-index: 2000;
+		background: #333;
+		color: white;
+		border: none;
+		padding: .25rem .5rem;
+		cursor: pointer;
+		border-radius: 4px;
 	}
-
-
 </style>
+
+<script>
+	// @ts-nocheck
+	document.addEventListener('DOMContentLoaded', () => {
+		const sidePanel = document.querySelector('.side-panel')
+		const sidePanelContent = document.querySelector('.side-panel-content')
+		const toggleSide = document.getElementById('toggleSidePanel')
+
+		const bottomPanel = document.querySelector('.bottom-panel')
+		const toggleBottom = document.getElementById('toggleBottomPanel')
+
+		toggleSide?.addEventListener('click', () => {
+			sidePanel.classList.toggle('isopen')
+			sidePanelContent.classList.toggle('isopen')
+		})
+
+		toggleBottom?.addEventListener('click', () => {
+			bottomPanel.classList.toggle('isopen')
+			const isOpen = bottomPanel.classList.contains('isopen')
+			toggleBottom.textContent = isOpen ? '▼' : '▲'
+		})
+	})
+</script>
