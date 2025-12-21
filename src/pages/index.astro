@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import SidePanel from '../components/SidePanel.astro'
 import MapPanel from '../components/MapPanel.astro'
 import { Icon } from 'astro-icon/components'
+import '../styles/map-frame.css'
 ---
 
 <BaseLayout>
@@ -20,14 +21,13 @@ import { Icon } from 'astro-icon/components'
                 </div>
             </aside>
 
+            <button id="toggleSidePanel" class="side-panel-open-button hidden" title="Open panel">
+                <Icon name="fa7-solid:right-from-bracket" class="icon icon-desktop" />
+                <Icon name="fa7-solid:caret-down" class="icon icon-mobile" />
+            </button>
+
             <!-- MAP COLUMN -->
             <div class="column map-column">
-
-                <!-- SIDE PANEL OPEN BUTTON -->
-                <button id="toggleSidePanel" class="side-panel-open-button" title="Open panel">
-                    <Icon name="fa7-solid:right-from-bracket" class="icon icon-desktop" />
-                    <Icon name="fa7-solid:caret-down" class="icon icon-mobile" />
-                </button>
 
                 <div class="map-grid">
                     <div class="map-grid-map">
@@ -45,7 +45,7 @@ import { Icon } from 'astro-icon/components'
                         </div>
                     </div>
 
-                    <!-- BOTTOM PANEL OPEN BUTTON (now AFTER the panel, matching side panel pattern) -->
+                    <!-- BOTTOM PANEL OPEN BUTTON -->
                     <button id="toggleBottomPanel" class="bottom-panel-open-button" title="Open info panel">
                         <Icon name="fa7-solid:caret-up" class="icon" />
                     </button>
@@ -56,235 +56,7 @@ import { Icon } from 'astro-icon/components'
     </section>
 </BaseLayout>
 
-<style>
-    /* ----------------------------------------------------------
-        SIDE PANEL
-    ---------------------------------------------------------- */
-
-    .side-panel {
-        flex: none !important;
-        display: block !important;
-        overflow: hidden;
-    }
-
-    .map-column {
-        position: relative;
-    }
-
-    @media (min-width: 769px) {
-        .side-panel {
-            width: 20rem;
-            margin-left: 0 !important;
-            transition: margin-left .3s ease;
-        }
-
-        .side-panel:not(.isopen) {
-            margin-left: -20rem !important;
-        }
-
-        .side-panel-content {
-            height: 100vh;
-            overflow-y: auto;
-            position: relative;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .side-panel {
-            width: 100%;
-            height: auto !important;
-            flex: none !important;
-            overflow: hidden;
-        }
-
-        .side-panel-content {
-            max-height: 80vh;
-            overflow-y: auto;
-            transition: max-height .3s ease;
-            position: relative;
-        }
-
-        .side-panel-content:not(.isopen) {
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .map-column {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .map-grid {
-            flex: 1 1 auto;
-            min-height: 0;
-        }
-    }
-
-    /* ----------------------------------------------------------
-        SIDE PANEL ICONS
-    ---------------------------------------------------------- */
-
-    .icon-desktop {
-        display: block;
-    }
-
-    .icon-mobile {
-        display: none;
-    }
-
-    @media (max-width: 768px) {
-        .icon-desktop {
-            display: none;
-        }
-
-        .icon-mobile {
-            display: block;
-        }
-    }
-
-    .side-panel-open-button,
-    .side-panel-close-button {
-        position: absolute;
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 26px;
-        height: 26px;
-        border-radius: 4px;
-        background: #333;
-        color: white;
-        cursor: pointer;
-        border: none;
-        transition: background .15s ease;
-    }
-
-    .side-panel-open-button {
-        top: .5rem;
-        left: .5rem;
-    }
-
-    .side-panel-close-button {
-        top: .5rem;
-        right: .5rem;
-    }
-
-    .side-panel-open-button .icon,
-    .side-panel-close-button .icon {
-        font-size: 1.25rem;
-    }
-
-    .side-panel.isopen + .map-column .side-panel-open-button {
-        display: none;
-    }
-
-    /* ----------------------------------------------------------
-        BOTTOM PANEL
-    ---------------------------------------------------------- */
-
-    .map-grid {
-        display: grid;
-        height: 100%;
-        grid-template-rows: 1fr auto auto;
-    }
-
-    .bottom-panel {
-        background: #f5f5f5;
-        overflow: hidden;
-        height: 10rem;
-        max-height: 10rem;
-        transition: max-height .3s ease;
-        position: relative;
-        z-index: 20;
-    }
-
-    .bottom-panel:not(.isopen) {
-        max-height: 0;
-    }
-
-    .bottom-panel-content {
-        height: 100%;
-        overflow-y: auto;
-    }
-
-    /* ----------------------------------------------------------
-        BOTTOM PANEL ICONS (mirroring side panel)
-    ---------------------------------------------------------- */
-
-    .bottom-panel-open-button,
-    .bottom-panel-close-button {
-        position: absolute;
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 26px;
-        height: 26px;
-        border-radius: 4px;
-        background: #333;
-        color: white;
-        cursor: pointer;
-        border: none;
-        transition: background .15s ease;
-    }
-
-    .bottom-panel-open-button {
-        bottom: .5rem;
-        right: 10px;
-    }
-
-    .bottom-panel-close-button {
-        top: .5rem;
-        right: .5rem;
-    }
-
-    .bottom-panel-open-button .icon,
-    .bottom-panel-close-button .icon {
-        font-size: 1.25rem;
-    }
-
-    .bottom-panel.isopen + .bottom-panel-open-button {
-        display: none;
-    }
-
-    /* ----------------------------------------------------------
-        MAP GRID MAP
-    ---------------------------------------------------------- */
-
-    .map-grid-map {
-        position: relative;
-        min-height: 0;
-    }
-</style>
-
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const sidePanel = document.querySelector('.side-panel')
-        const sidePanelContent = document.querySelector('.side-panel-content')
-        const toggleSide = document.getElementById('toggleSidePanel')
-        const closeSide = document.querySelector('.side-panel-close-button')
-
-        const bottomPanel = document.querySelector('.bottom-panel')
-        const openBottom = document.getElementById('toggleBottomPanel')
-        const closeBottom = document.querySelector('.bottom-panel-close-button')
-
-        toggleSide?.addEventListener('click', () => {
-            sidePanel.classList.toggle('isopen')
-            sidePanelContent.classList.toggle('isopen')
-        })
-
-        closeSide?.addEventListener('click', () => {
-            sidePanel.classList.remove('isopen')
-            sidePanelContent.classList.remove('isopen')
-        })
-
-        openBottom?.addEventListener('click', () => {
-            bottomPanel.classList.add('isopen')
-        })
-
-        closeBottom?.addEventListener('click', () => {
-            bottomPanel.classList.remove('isopen')
-        })
-    })
+    import '/src/scripts/mapFrame.js'
 </script>
+

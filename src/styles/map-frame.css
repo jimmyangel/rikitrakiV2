@@ -1,0 +1,218 @@
+/* ----------------------------------------------------------
+    MAP FRAME TOKENS
+---------------------------------------------------------- */
+
+:root {
+    --z-map: 1;
+    --z-map-controls: 10;
+    --z-panels: 20;
+
+    --ui-radius: 4px;
+    --ui-bg: #333;
+    --ui-bg-hover: #444;
+
+    --ui-transition: .15s ease;
+    --ui-space: .5rem;
+    --ui-icon-size: 1.25rem;
+}
+
+/* ----------------------------------------------------------
+    SIDE PANEL
+---------------------------------------------------------- */
+
+.side-panel {
+    flex: none !important;
+    display: block !important;
+    overflow: hidden;
+}
+
+.map-column {
+    position: relative;
+}
+
+@media (min-width: 769px) {
+    .side-panel {
+        width: 20rem;
+        margin-left: 0 !important;
+        transition: margin-left .3s ease;
+    }
+
+    .side-panel:not(.isopen) {
+        margin-left: -20rem !important;
+    }
+
+    .side-panel-content {
+        height: 100vh;
+        overflow-y: auto;
+        position: relative;
+    }
+}
+
+@media (max-width: 768px) {
+    .side-panel {
+        width: 100%;
+        height: auto !important;
+        flex: none !important;
+        overflow: hidden;
+    }
+
+    .side-panel-content {
+        max-height: 80vh;
+        overflow-y: auto;
+        transition: max-height .3s ease;
+        position: relative;
+    }
+
+    .side-panel-content:not(.isopen) {
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .map-column {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .map-grid {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+}
+
+/* ----------------------------------------------------------
+    SIDE PANEL ICONS
+---------------------------------------------------------- */
+
+.icon-desktop {
+    display: block;
+}
+
+.icon-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .icon-desktop {
+        display: none;
+    }
+
+    .icon-mobile {
+        display: block;
+    }
+}
+
+.side-panel-open-button,
+.side-panel-close-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--ui-radius);
+    background: var(--ui-bg);
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: background var(--ui-transition);
+    z-index: var(--z-panels);
+}
+
+.side-panel-open-button {
+    position: fixed;
+    top: calc(52px + 0.5rem); /* below navbar */
+    left: 0.5rem;
+}
+
+.side-panel-open-button.hidden {
+    display: none;
+}
+
+.side-panel-close-button {
+    position: absolute;
+    top: var(--ui-space);
+    right: var(--ui-space);
+}
+
+.side-panel-open-button .icon,
+.side-panel-close-button .icon {
+    font-size: var(--ui-icon-size);
+}
+
+/* ----------------------------------------------------------
+    BOTTOM PANEL
+---------------------------------------------------------- */
+
+.map-grid {
+    display: grid;
+    height: 100%;
+    grid-template-rows: 1fr auto auto;
+}
+
+.bottom-panel {
+    background: #f5f5f5;
+    overflow: hidden;
+    height: 10rem;
+    max-height: 10rem;
+    transition: max-height .3s ease;
+    position: relative;
+    z-index: var(--z-panels);
+}
+
+.bottom-panel:not(.isopen) {
+    max-height: 0;
+}
+
+.bottom-panel-content {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* ----------------------------------------------------------
+    BOTTOM PANEL ICONS
+---------------------------------------------------------- */
+
+.bottom-panel-open-button,
+.bottom-panel-close-button {
+    position: absolute;
+    z-index: var(--z-panels);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--ui-radius);
+    background: var(--ui-bg);
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: background var(--ui-transition);
+}
+
+.bottom-panel-open-button {
+    bottom: var(--ui-space);
+    right: 10px;
+}
+
+.bottom-panel-close-button {
+    top: var(--ui-space);
+    right: var(--ui-space);
+}
+
+.bottom-panel-open-button .icon,
+.bottom-panel-close-button .icon {
+    font-size: var(--ui-icon-size);
+}
+
+.bottom-panel.isopen + .bottom-panel-open-button {
+    display: none;
+}
+
+/* ----------------------------------------------------------
+    MAP GRID MAP
+---------------------------------------------------------- */
+
+.map-grid-map {
+    position: relative;
+    min-height: 0;
+}
