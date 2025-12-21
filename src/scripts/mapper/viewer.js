@@ -36,7 +36,7 @@ export const viewer = () => {
     
     updateAttribution(0)
 
-    viewer.cesiumWidget._creditContainer.style.display = 'none'
+    //viewer.cesiumWidget._creditContainer.style.display = 'none'
 
     wireLayerControl(viewer)
     wireLayerControlToggle()
