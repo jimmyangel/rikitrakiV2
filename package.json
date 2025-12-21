@@ -15,5 +15,8 @@
     "bulma": "^1.0.4",
     "cesium": "^1.136.0",
     "sass": "^1.96.0"
+  },
+  "devDependencies": {
+    "@astrojs/ts-plugin": "^1.10.6"
   }
 }
