@@ -58,6 +58,10 @@ import '../styles/map-frame.css'
 
 <script>
 	import { mapFrame } from '../scripts/ui/mapFrame.js'
+	import { getTrackInfo } from '../scripts/data/getTrackInfo' // Temporary
+	import { getTracksByLoc } from '../scripts/data/getTracksByLoc' // Temporary
+
 	mapFrame() 
+	console.log(await getTracksByLoc(45.5152, -122.6784, 200))
 </script>
 
