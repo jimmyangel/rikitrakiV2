@@ -7,7 +7,7 @@ import { Cartesian3, Ion, Math as CesiumMath, Terrain, Viewer, UrlTemplateImager
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 
-export const viewer = () => {
+export const createViewer = () => {
 	window.CESIUM_BASE_URL = constants.CESIUM_BASE_URL
 
 	Ion.defaultAccessToken = constants.CESIUM_ACCESS_TOKEN
@@ -39,4 +39,6 @@ export const viewer = () => {
 	wireLayerControlToggle()
 	wireLookDownControl(viewer)
 	wireZoomControl(viewer)
+
+	return viewer
 }

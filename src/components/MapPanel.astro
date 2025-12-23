@@ -7,6 +7,39 @@ import { Icon } from 'astro-icon/components'
 <div id="mapRoot">
 	<div id='cesiumContainer'></div>
 
+<div class="x-data">
+<div 
+    id="trackPopUp"
+    x-data
+    x-show="$store.tracks.selected"
+    x-cloak
+    class="map-popup-container"
+>
+    <div id="trackPopUpContent" class="map-popup" style="z-index: 10;">
+        <a 
+            class="map-popup-close-button" 
+            href="#" 
+            @click.prevent="$store.tracks.clear()"
+        >×</a>
+
+        <div class="map-popup-content-wrapper">
+            <div 
+                id="trackPopUpLink" 
+                class="map-popup-content"
+                style="max-width: 300px;"
+                x-text="$store.tracks.selected?.trackName"
+            ></div>
+        </div>
+
+        <div class="map-popup-tip-container">
+            <div class="map-popup-tip"></div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
 	<div class="map-top map-right">
 		<ZoomControl />
 

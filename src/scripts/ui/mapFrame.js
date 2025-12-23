@@ -1,51 +1,44 @@
-import { viewer } from '../mapper/viewer.js'
+export const initUI = () => {
+	// Side panel
+	const sidePanel = document.querySelector('.side-panel')
+	const sidePanelContent = document.querySelector('.side-panel-content')
+	const toggleSide = document.getElementById('toggleSidePanel')
+	const closeSide = document.querySelector('.side-panel-close-button')
 
-export const mapFrame = () => {
-	document.addEventListener('DOMContentLoaded', () => {
-		// Initialize map
-		viewer()
+	// Bottom panel
+	const bottomPanel = document.querySelector('.bottom-panel')
+	const openBottom = document.getElementById('toggleBottomPanel')
+	const closeBottom = document.querySelector('.bottom-panel-close-button')
 
-		// Side panel
-		const sidePanel = document.querySelector('.side-panel')
-		const sidePanelContent = document.querySelector('.side-panel-content')
-		const toggleSide = document.getElementById('toggleSidePanel')
-		const closeSide = document.querySelector('.side-panel-close-button')
+	const openSide = () => {
+		toggleSide.classList.add('hidden')
+		sidePanel.classList.add('isopen')
+		sidePanelContent.classList.add('isopen')
+	}
 
-		// Bottom panel
-		const bottomPanel = document.querySelector('.bottom-panel')
-		const openBottom = document.getElementById('toggleBottomPanel')
-		const closeBottom = document.querySelector('.bottom-panel-close-button')
+	const closeSidePanel = () => {
+		sidePanel.classList.remove('isopen')
+		sidePanelContent.classList.remove('isopen')
 
-		const openSide = () => {
-			toggleSide.classList.add('hidden')
-			sidePanel.classList.add('isopen')
-			sidePanelContent.classList.add('isopen')
-		}
+		const delay = window.innerWidth <= 768 ? 300 : 0
 
-		const closeSidePanel = () => {
-			sidePanel.classList.remove('isopen')
-			sidePanelContent.classList.remove('isopen')
+		setTimeout(() => {
+			toggleSide.classList.remove('hidden')
+		}, delay)
+	}
 
-			const delay = window.innerWidth <= 768 ? 300 : 0
+	// Initial state
+	openSide()
 
-			setTimeout(() => {
-				toggleSide.classList.remove('hidden')
-			}, delay)
-		}
+	// Event listeners
+	toggleSide?.addEventListener('click', openSide)
+	closeSide?.addEventListener('click', closeSidePanel)
 
-		// Initial state
-		openSide()
+	openBottom?.addEventListener('click', () => {
+		bottomPanel.classList.add('isopen')
+	})
 
-		// Event listeners
-		toggleSide?.addEventListener('click', openSide)
-		closeSide?.addEventListener('click', closeSidePanel)
-
-		openBottom?.addEventListener('click', () => {
-			bottomPanel.classList.add('isopen')
-		})
-
-		closeBottom?.addEventListener('click', () => {
-			bottomPanel.classList.remove('isopen')
-		})
+	closeBottom?.addEventListener('click', () => {
+		bottomPanel.classList.remove('isopen')
 	})
 }

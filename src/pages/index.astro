@@ -57,11 +57,44 @@ import '../styles/map-frame.css'
 </BaseLayout>
 
 <script>
-	import { mapFrame } from '../scripts/ui/mapFrame.js'
+	import * as mapFrame from '../scripts/ui/mapFrame.js'
+	import   *  as map from '../scripts/mapper/map.js'
 	import { getTrackInfo } from '../scripts/data/getTrackInfo' // Temporary
 	import { getTracksByLoc } from '../scripts/data/getTracksByLoc' // Temporary
 
-	mapFrame() 
-	console.log(await getTracksByLoc(45.5152, -122.6784, 200))
+	document.addEventListener('alpine:init', () => {
+		// @ts-ignore
+		Alpine.store('tracks', {
+			all: [],
+			selected: null,
+
+			selectTrack(track) {
+				this.selected = track
+			},
+
+			clear() {
+				this.selected = null
+			}
+		})
+	})
+
+
+	document.addEventListener('DOMContentLoaded', async () => {
+		mapFrame.initUI() 
+		map.initMap()
+
+		const lat = 45.5152 
+		const lon = -122.6784 
+		const { tracks } = await getTracksByLoc(lat, lon, 200)
+
+		console.log(tracks)
+
+		// @ts-ignore
+		Alpine.store('tracks').all = tracks
+		
+		map.setTracks(tracks)
+	})
+
+	//console.log(await getTracksByLoc(45.5152, -122.6784, 200))
 </script>
 
