@@ -32,7 +32,7 @@
 
 @media (min-width: 769px) {
     .side-panel {
-        width: 20rem;
+        width: 20rem !important;
         margin-left: 0 !important;
         transition: margin-left .3s ease;
     }
