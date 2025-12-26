@@ -437,7 +437,7 @@
 
 	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
 	}
-.map-container a.map-popup-close-button {
+.map-popup a.map-popup-close-button {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -451,7 +451,7 @@
 	font-weight: bold;
 	background: transparent;
 	}
-.map-container a.map-popup-close-button:hover {
+.map-popup a.map-popup-close-button:hover {
 	color: #999;
 	}
 .map-popup-scrolled {
