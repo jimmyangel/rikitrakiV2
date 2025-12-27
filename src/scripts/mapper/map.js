@@ -4,34 +4,29 @@ import * as Cesium from 'cesium'
 let viewer = null
 let trackDataSource = null
 
-// Track the currently selected marker's world position
-let selectedEntityPosition = null
+let savedEntity = null
 
 export function initMap() {
     viewer = createViewer()
 
-    const popup = document.getElementById('trackPopUp')
-
 	viewer.scene.postRender.addEventListener(() => {
-		const popup = document.querySelector('#trackPopUpContent')
-		if (!popup) return
+		const popup = document.querySelector('#trackPopUp')
+		if (!popup || !savedEntity) return
 
-		const selected = Alpine.store('tracks').selected
-		if (!selected || !selectedEntityPosition) return
+		const time = viewer.clock.currentTime
+		const worldPos = savedEntity.position.getValue(time)
+		if (!worldPos) return
 
-		const windowPos = Cesium.SceneTransforms.worldToWindowCoordinates(
+		const projected = Cesium.SceneTransforms.worldToWindowCoordinates(
 			viewer.scene,
-			selectedEntityPosition
+			worldPos
 		)
+		if (!projected) return
 
-		if (!windowPos) return
-
-		popup.style.left = `${windowPos.x}px`
-		popup.style.top = `${windowPos.y}px`
+		// Anchor popup to the marker, but let CSS handle “above”
+		popup.style.left = `${projected.x}px`
+		popup.style.top = `${projected.y}px`
 	})
-
-
-
 
 }
 
@@ -54,10 +49,11 @@ export function setTracks(tracks) {
             id: track.trackId,
             position: Cesium.Cartesian3.fromDegrees(track.trackLatLng[1], track.trackLatLng[0]),
             billboard: { 
-                image: '/images/l-marker.png', 
+                image: '/images/l-marker.png',
                 scale: 0.8,
                 heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                pixelOffset: new Cesium.Cartesian2(0, -6)
+                pixelOffset: new Cesium.Cartesian2(0, -6),
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM
             },
             properties: {
                 track
@@ -65,27 +61,29 @@ export function setTracks(tracks) {
         })
     }
 
+    // CLICK HANDLER — using drillPick (reliable)
     viewer.screenSpaceEventHandler.setInputAction((movement) => {
-        const picked = viewer.scene.pick(movement.position)
-        if (!picked || !picked.id) return
 
-        const entity = picked.id
+        const hits = viewer.scene.drillPick(movement.position)
+        if (!hits || hits.length === 0) return
+
+        const hit = hits.find(h => h.id instanceof Cesium.Entity)
+        if (!hit) return
+
+        const entity = hit.id
         if (!entity.properties || !entity.properties.track) return
 
         const track = entity.properties.track.getValue()
         Alpine.store('tracks').selectTrack(track)
-        console.log('Selected track:', track)
 
-        selectedEntityPosition = Cesium.Property.getValueOrUndefined(
-            entity.position,
-            viewer.clock.currentTime
-        )
+        savedEntity = entity
 
-        console.log('Popup world position:', selectedEntityPosition)
+        // Show popup immediately
+        const popup = document.querySelector('#trackPopUp')
+        popup.style.display = 'block'
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
     viewer.dataSources.add(trackDataSource)
-
     viewer.flyTo(trackDataSource)
 
     console.log(`Added ${tracks.length} markers`)
