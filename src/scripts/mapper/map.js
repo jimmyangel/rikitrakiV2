@@ -6,85 +6,151 @@ let trackDataSource = null
 
 let savedEntity = null
 
+// Entity screen position at click time
+let anchorEntityScreenPos = null
+
+// Popup screen position at click time
+let anchorPopupPos = null
+
 export function initMap() {
-    viewer = createViewer()
+  viewer = createViewer()
 
-	viewer.scene.postRender.addEventListener(() => {
-		const popup = document.querySelector('#trackPopUp')
-		if (!popup || !savedEntity) return
+  //
+  // POST-RENDER: move popup by screen-space delta of entity position
+  //
+  viewer.scene.postRender.addEventListener(() => {
+    if (!savedEntity || !anchorEntityScreenPos || !anchorPopupPos) return
 
-		const time = viewer.clock.currentTime
-		const worldPos = savedEntity.position.getValue(time)
-		if (!worldPos) return
+    const popup = document.querySelector('#trackPopUp')
+    if (!popup) return
 
-		const projected = Cesium.SceneTransforms.worldToWindowCoordinates(
-			viewer.scene,
-			worldPos
-		)
-		if (!projected) return
+    const time = viewer.clock.currentTime
+    const worldPos = savedEntity.position.getValue(time)
+    if (!worldPos) return
 
-		// Anchor popup to the marker, but let CSS handle “above”
-		popup.style.left = `${projected.x}px`
-		popup.style.top = `${projected.y}px`
-	})
+    const newScreenPos = Cesium.SceneTransforms.worldToWindowCoordinates(
+      viewer.scene,
+      worldPos
+    )
+    if (!newScreenPos) return
 
+    const dx = newScreenPos.x - anchorEntityScreenPos.x
+    const dy = newScreenPos.y - anchorEntityScreenPos.y
+
+    popup.style.left = `${anchorPopupPos.x + dx}px`
+    popup.style.top  = `${anchorPopupPos.y + dy}px`
+  })
 }
 
 export function setTracks(tracks) {
-    if (!viewer) {
-        console.warn('setTracks called before initMap()')
-        return
+  if (!viewer) {
+    console.warn('setTracks called before initMap()')
+    return
+  }
+
+  if (trackDataSource) {
+    viewer.dataSources.remove(trackDataSource)
+  }
+
+  trackDataSource = new Cesium.CustomDataSource('tracks')
+
+  const entities = []
+  const cartographics = []
+
+  //
+  // Add markers (legacy-style: simple billboard, no clamp/verticalOrigin)
+  //
+  for (const track of tracks) {
+    if (!track.trackLatLng[1] || !track.trackLatLng[0]) continue
+
+    const entity = trackDataSource.entities.add({
+      id: track.trackId,
+      name: track.trackId,
+      position: Cesium.Cartesian3.fromDegrees(
+        track.trackLatLng[1],
+        track.trackLatLng[0]
+      ),
+      billboard: {
+        image: '/images/l-marker.png',
+        scale: 0.8,
+		disableDepthTestDistance: Number.POSITIVE_INFINITY
+      },
+      properties: {
+        track
+      }
+    })
+
+    entities.push(entity)
+    cartographics.push(
+      Cesium.Cartographic.fromDegrees(
+        track.trackLatLng[1],
+        track.trackLatLng[0]
+      )
+    )
+  }
+
+  //
+  // Legacy-style terrain sampling to set explicit height
+  //
+  if (cartographics.length > 0) {
+    Cesium.sampleTerrain(viewer.terrainProvider, 14, cartographics).then(
+      (updated) => {
+        for (let i = 0; i < updated.length; i++) {
+          const c = updated[i]
+          const e = entities[i]
+          e.position = new Cesium.ConstantPositionProperty(
+            Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, c.height)
+          )
+        }
+      }
+    )
+  }
+
+  //
+  // CLICK HANDLER — anchor to click + entity screen position
+  //
+  viewer.screenSpaceEventHandler.setInputAction((movement) => {
+    const picked = viewer.scene.pick(movement.position)
+    if (!picked || !(picked.id instanceof Cesium.Entity)) return
+
+    const entity = picked.id
+    if (!entity.properties || !entity.properties.track) return
+
+    const track = entity.properties.track.getValue()
+    Alpine.store('tracks').selectTrack(track)
+
+    savedEntity = entity
+
+    const time = viewer.clock.currentTime
+    const worldPos = entity.position.getValue(time)
+    if (!worldPos) return
+
+    const entityScreenPos = Cesium.SceneTransforms.worldToWindowCoordinates(
+      viewer.scene,
+      worldPos
+    )
+    if (!entityScreenPos) return
+
+    anchorEntityScreenPos = {
+      x: entityScreenPos.x,
+      y: entityScreenPos.y
     }
 
-    if (trackDataSource) {
-        viewer.dataSources.remove(trackDataSource)
+    const popup = document.querySelector('#trackPopUp')
+    popup.style.display = 'block'
+
+    // Anchor popup at click position (legacy behavior)
+    anchorPopupPos = {
+      x: movement.position.x,
+      y: movement.position.y
     }
 
-    trackDataSource = new Cesium.CustomDataSource('tracks')
+    popup.style.left = `${anchorPopupPos.x}px`
+    popup.style.top  = `${anchorPopupPos.y}px`
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
-    for (const track of tracks) {
-        if (!track.trackLatLng[1] || !track.trackLatLng[0]) continue
+  viewer.dataSources.add(trackDataSource)
+  viewer.flyTo(trackDataSource)
 
-        trackDataSource.entities.add({
-            id: track.trackId,
-            position: Cesium.Cartesian3.fromDegrees(track.trackLatLng[1], track.trackLatLng[0]),
-            billboard: { 
-                image: '/images/l-marker.png',
-                scale: 0.8,
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                pixelOffset: new Cesium.Cartesian2(0, -6),
-                verticalOrigin: Cesium.VerticalOrigin.BOTTOM
-            },
-            properties: {
-                track
-            }
-        })
-    }
-
-    // CLICK HANDLER — using drillPick (reliable)
-    viewer.screenSpaceEventHandler.setInputAction((movement) => {
-
-        const hits = viewer.scene.drillPick(movement.position)
-        if (!hits || hits.length === 0) return
-
-        const hit = hits.find(h => h.id instanceof Cesium.Entity)
-        if (!hit) return
-
-        const entity = hit.id
-        if (!entity.properties || !entity.properties.track) return
-
-        const track = entity.properties.track.getValue()
-        Alpine.store('tracks').selectTrack(track)
-
-        savedEntity = entity
-
-        // Show popup immediately
-        const popup = document.querySelector('#trackPopUp')
-        popup.style.display = 'block'
-    }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
-
-    viewer.dataSources.add(trackDataSource)
-    viewer.flyTo(trackDataSource)
-
-    console.log(`Added ${tracks.length} markers`)
+  console.log(`Added ${tracks.length} markers`)
 }
