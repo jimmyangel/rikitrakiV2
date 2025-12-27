@@ -3,60 +3,32 @@ import '../styles/map.css'
 import LayerControl from './LayerControl.astro'
 import ZoomControl from './ZoomControl.astro'
 import { Icon } from 'astro-icon/components'
+import MapPopup from '../components/MapPopup.astro'
 ---
-<div id="mapRoot">
-	<div id='cesiumContainer'></div>
+<div id="mapRoot" style="position: relative;">
+    <div id="cesiumContainer"></div>
 
-<div class="x-data">
-<div 
-    id="trackPopUp"
-    x-data
-    x-show="$store.tracks.selected"
-    x-cloak
-    class="map-popup-container"
->
-    <div id="trackPopUpContent" class="map-popup" style="z-index: 10;">
-        <a 
-            class="map-popup-close-button" 
-            href="#" 
-            @click.prevent="$store.tracks.clear()"
-        >×</a>
+    <MapPopup />
 
-        <div class="map-popup-content-wrapper">
-            <div 
-                id="trackPopUpLink" 
-                class="map-popup-content"
-                style="max-width: 300px;"
-                x-text="$store.tracks.selected?.trackName"
-            ></div>
+    <div class="map-top map-right">
+        <ZoomControl />
+        <div class="map-bar map-control">
+            <a id="lookDown" href="#" title="Look down">
+                <Icon name="fa7-solid:circle-arrow-down" class="map-look-down-icon" />
+            </a>
         </div>
+        <LayerControl />
+    </div>
 
-        <div class="map-popup-tip-container">
-            <div class="map-popup-tip"></div>
+    <div class="map-bottom map-right" style="display: none;">
+        <div class="map-control-attribution map-control">
+            <div class="map-bar map-control" style="background-color: #fff; padding: 0px 4px;">
+                <span class="is-size-7" id="attributionText">Attribution</span>
+            </div>
         </div>
     </div>
 </div>
 
-</div>
-
-
-	<div class="map-top map-right">
-		<ZoomControl />
-
-		<div class="map-bar map-control">
-			<a id="lookDown" href="#" title="Look down"><Icon name="fa7-solid:circle-arrow-down" class="map-look-down-icon" /></a>
-		</div>
-		<LayerControl />
-	</div>
-	<div class="map-bottom map-right" style="display: none;">
-		<div class="map-control-attribution map-control">
-			<div class="map-bar map-control" style="background-color: #fff; padding: 0px 4px;">
-				<span class="is-size-7" id="attributionText">Attribution</span>
-			</div>
-			
-		</div>
-	</div>
-</div>
 
 <style>
 	#mapRoot {
@@ -83,5 +55,4 @@ import { Icon } from 'astro-icon/components'
 		z-index: 9999;
 		pointer-events: auto;
 	}
-
 </style>

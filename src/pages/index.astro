@@ -30,7 +30,7 @@ import '../styles/map-frame.css'
             <div class="column map-column">
 
                 <div class="map-grid">
-                    <div class="map-grid-map">
+                    <div class="map-grid-map" style="position: relative;">
                         <MapPanel />
                     </div>
 
@@ -97,4 +97,10 @@ import '../styles/map-frame.css'
 
 	//console.log(await getTracksByLoc(45.5152, -122.6784, 200))
 </script>
+
+<style>
+	.columns { 
+		position: relative; z-index: 0; 
+	}
+</style>
 

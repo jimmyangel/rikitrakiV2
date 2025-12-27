@@ -16,18 +16,29 @@
     --ui-icon-size: 1.25rem;
 }
 
+.main-layout {
+    position: relative;
+    z-index: 0;
+}
+
+
 /* ----------------------------------------------------------
     SIDE PANEL
 ---------------------------------------------------------- */
 
 .side-panel {
+    position: relative;
     flex: none !important;
     display: block !important;
     overflow: hidden;
+    z-index: var(--z-panels);
+	background: #fff;
 }
+
 
 .map-column {
     position: relative;
+	z-index: 1;
 }
 
 @media (min-width: 769px) {

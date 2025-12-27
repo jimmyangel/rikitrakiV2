@@ -2,3 +2,6 @@
 @charset "utf-8";
 @use "bulma";
 
+[x-cloak] {
+	display: none !important;
+}

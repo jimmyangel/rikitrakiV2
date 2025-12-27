@@ -401,12 +401,17 @@
 	}
 .map-popup-content-wrapper {
 	padding: 1px;
-	text-align: left;
+	text-align: center;
+	max-height: 200px;
+	overflow-y: auto;
 	border-radius: 12px;
 	}
 .map-popup-content {
 	margin: 13px 19px;
 	line-height: 1.4;
+	font-size: 12px;
+	max-width: 300px;
+	white-space: nowrap;
 	}
 .map-popup-content p {
 	margin: 18px 0;
@@ -487,4 +492,6 @@
 	width: 24px;
 	height: 24px; 
 }
+
+
 
