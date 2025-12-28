@@ -58,7 +58,7 @@ export function setTracks(tracks) {
   const cartographics = []
 
   //
-  // Add markers (legacy-style: simple billboard, no clamp/verticalOrigin)
+  // Add markers
   //
   for (const track of tracks) {
     if (!track.trackLatLng[1] || !track.trackLatLng[0]) continue
@@ -90,7 +90,7 @@ export function setTracks(tracks) {
   }
 
   //
-  // Legacy-style terrain sampling to set explicit height
+  // TERRAIN SAMPLING
   //
   if (cartographics.length > 0) {
     Cesium.sampleTerrain(viewer.terrainProvider, 14, cartographics).then(
@@ -107,7 +107,30 @@ export function setTracks(tracks) {
   }
 
   //
-  // CLICK HANDLER — anchor to click + entity screen position
+  // HOVER CURSOR — clean Cesium-native version
+  //
+  let isPointer = false
+
+  viewer.screenSpaceEventHandler.setInputAction((movement) => {
+    const picked = viewer.scene.pick(movement.endPosition)
+
+    const shouldBePointer =
+      picked &&
+      picked.id instanceof Cesium.Entity &&
+      picked.id.properties &&
+      picked.id.properties.track
+
+    if (shouldBePointer && !isPointer) {
+      isPointer = true
+      viewer.canvas.style.cursor = 'pointer'
+    } else if (!shouldBePointer && isPointer) {
+      isPointer = false
+      viewer.canvas.style.cursor = 'default'
+    }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+
+  //
+  // CLICK HANDLER — anchor popup
   //
   viewer.screenSpaceEventHandler.setInputAction((movement) => {
     const picked = viewer.scene.pick(movement.position)
@@ -139,7 +162,6 @@ export function setTracks(tracks) {
     const popup = document.querySelector('#trackPopUp')
     popup.style.display = 'block'
 
-    // Anchor popup at click position (legacy behavior)
     anchorPopupPos = {
       x: movement.position.x,
       y: movement.position.y
@@ -147,7 +169,6 @@ export function setTracks(tracks) {
 
     popup.style.left = `${anchorPopupPos.x}px`
     popup.style.top  = `${anchorPopupPos.y}px`
-	
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
   viewer.dataSources.add(trackDataSource)
