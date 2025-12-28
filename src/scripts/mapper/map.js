@@ -73,7 +73,7 @@ export function setTracks(tracks) {
       billboard: {
         image: '/images/l-marker.png',
         scale: 0.8,
-		disableDepthTestDistance: Number.POSITIVE_INFINITY
+        disableDepthTestDistance: Number.POSITIVE_INFINITY
       },
       properties: {
         track
@@ -147,6 +147,7 @@ export function setTracks(tracks) {
 
     popup.style.left = `${anchorPopupPos.x}px`
     popup.style.top  = `${anchorPopupPos.y}px`
+	
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
   viewer.dataSources.add(trackDataSource)

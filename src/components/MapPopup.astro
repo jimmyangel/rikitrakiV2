@@ -2,16 +2,17 @@
 
 ---
 <div id="trackPopUp" x-show="$store.tracks.selected" x-cloak x-data class="map-popup-container">
-	<div id="trackPopUpContent" class="map-popup" style="z-index: 10;">
-		<a class="map-popup-close-button" href="#" @click.prevent="$store.tracks.clear()">×</a>
-		<div class="map-popup-content-wrapper">
-			<div id="trackPopUpLink" class="map-popup-content" x-text="$store.tracks.selected?.trackName"></div>
-		</div>
-		<div class="map-popup-tip-container">
-			<div class="map-popup-tip"></div>
-		</div>
-	</div>
+    <div id="trackPopUpContent" class="map-popup" style="z-index: 10;">
+        <div class="map-popup-inner">
+            <a class="map-popup-close-button" href="#" @click.prevent="$store.tracks.clear()">×</a>
+            <div class="map-popup-content-wrapper">
+                <div id="trackPopUpLink" class="map-popup-content" x-text="$store.tracks.selected?.trackName"></div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
 
 <style>
 	.map-popup-container {
@@ -25,7 +26,7 @@
 	.map-popup {
 		pointer-events: auto; 
 		position: absolute; 
-		transform: translate(-50%, -100%);
+		transform: translate(-50%, -120%);
 	}
 
 	#trackPopUp {
