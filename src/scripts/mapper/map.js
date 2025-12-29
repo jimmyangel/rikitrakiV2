@@ -132,44 +132,57 @@ export function setTracks(tracks) {
   //
   // CLICK HANDLER — anchor popup
   //
-  viewer.screenSpaceEventHandler.setInputAction((movement) => {
-    const picked = viewer.scene.pick(movement.position)
-    if (!picked || !(picked.id instanceof Cesium.Entity)) return
+viewer.screenSpaceEventHandler.setInputAction((movement) => {
+  const pickedArray = viewer.scene.drillPick(movement.position)
 
-    const entity = picked.id
-    if (!entity.properties || !entity.properties.track) return
-
-    const track = entity.properties.track.getValue()
-    Alpine.store('tracks').selectTrack(track)
-
-    savedEntity = entity
-
-    const time = viewer.clock.currentTime
-    const worldPos = entity.position.getValue(time)
-    if (!worldPos) return
-
-    const entityScreenPos = Cesium.SceneTransforms.worldToWindowCoordinates(
-      viewer.scene,
-      worldPos
+  const pickedTracks = pickedArray
+    .map(p => p.id)
+    .filter(id =>
+      id instanceof Cesium.Entity &&
+      id.properties &&
+      id.properties.track
     )
-    if (!entityScreenPos) return
 
-    anchorEntityScreenPos = {
-      x: entityScreenPos.x,
-      y: entityScreenPos.y
-    }
+  if (pickedTracks.length === 0) return
 
-    const popup = document.querySelector('#trackPopUp')
-    popup.style.display = 'block'
+  const linkContainer = document.querySelector('#trackPopUpLink')
+  linkContainer.innerHTML = ''
 
-    anchorPopupPos = {
-      x: movement.position.x,
-      y: movement.position.y
-    }
+  for (const entity of pickedTracks) {
+    const track = entity.properties.track.getValue()
+    const div = document.createElement('div')
+    div.textContent = track.trackName
+    linkContainer.appendChild(div)
+  }
 
-    popup.style.left = `${anchorPopupPos.x}px`
-    popup.style.top  = `${anchorPopupPos.y}px`
-  }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+  // ⭐ Tell Alpine to show the popup
+  Alpine.store('tracks').selected = { multi: true }
+
+  // Anchor popup to first entity
+  savedEntity = pickedTracks[0]
+
+  const time = viewer.clock.currentTime
+  const worldPos = savedEntity.position.getValue(time)
+  const entityScreenPos = Cesium.SceneTransforms.worldToWindowCoordinates(
+    viewer.scene,
+    worldPos
+  )
+
+  anchorEntityScreenPos = {
+    x: entityScreenPos.x,
+    y: entityScreenPos.y
+  }
+
+  anchorPopupPos = {
+    x: movement.position.x,
+    y: movement.position.y
+  }
+
+  const popup = document.querySelector('#trackPopUp')
+  popup.style.left = `${anchorPopupPos.x}px`
+  popup.style.top  = `${anchorPopupPos.y}px`
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+
 
   viewer.dataSources.add(trackDataSource)
   viewer.flyTo(trackDataSource)
