@@ -30,8 +30,9 @@ import '../styles/map-frame.css'
             <div class="column map-column">
 
                 <div class="map-grid">
-                    <div class="map-grid-map" style="position: relative;">
+                    <div class="map-grid-map map-touch-wrapper" style="position: relative;">
                         <MapPanel />
+						<div class="map-touch-overlay"></div>
                     </div>
 
                     <!-- BOTTOM PANEL -->
@@ -62,11 +63,14 @@ import '../styles/map-frame.css'
 	import { getTrackInfo } from '../scripts/data/getTrackInfo' // Temporary
 	import { getTracksByLoc } from '../scripts/data/getTracksByLoc' // Temporary
 
+
 	document.addEventListener('alpine:init', () => {
-		// @ts-ignore
 		Alpine.store('tracks', {
 			all: [],
 			selected: null,
+			loadingTracks: false, 
+			loadingCesium: false, 
+			get loading() { return this.loadingTracks || this.loadingCesium },
 
 			selectTrack(track) {
 				this.selected = track
@@ -78,18 +82,19 @@ import '../styles/map-frame.css'
 		})
 	})
 
-
 	document.addEventListener('DOMContentLoaded', async () => {
 		mapFrame.initUI() 
 		map.initMap()
 
 		const lat = 45.5152 
 		const lon = -122.6784 
+		
+		Alpine.store('tracks').loadingTracks = true
 		const { tracks } = await getTracksByLoc(lat, lon, 200)
+		Alpine.store('tracks').loadingTracks = false
 
 		console.log(tracks)
 
-		// @ts-ignore
 		Alpine.store('tracks').all = tracks
 		
 		map.setTracks(tracks)
@@ -109,5 +114,24 @@ import '../styles/map-frame.css'
 		pointer-events: auto;
 	}
 
+	@media (max-width: 768px) {
+		.map-touch-wrapper {
+			position: relative;
+		}
+
+		.map-touch-overlay {
+			position: absolute;
+			inset: 0;
+			/* overlay is "real", so it captures touches instead of Cesium */
+			pointer-events: auto;
+			background: transparent;
+		}
+
+		/* when map is active, remove the overlay from the event chain */
+		.map-touch-wrapper.map-active .map-touch-overlay {
+			pointer-events: none;
+		}
+	}
+	
 </style>
 

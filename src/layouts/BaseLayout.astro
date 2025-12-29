@@ -15,25 +15,13 @@ import { Icon } from 'astro-icon/components'
 
     <body class="has-navbar-fixed-top">
 
-        <nav 
-            class="navbar is-fixed-top is-dark" 
-            role="navigation" 
-            aria-label="main navigation"
-            x-data="{ open: false }"
-        >
+        <nav class="navbar is-fixed-top is-dark" role="navigation" aria-label="main navigation" x-data="{ open: false }">
             <div class="navbar-brand">
                 <a class="navbar-item" style="padding: 0px;">
                     <Logo />
                 </a>
 
-                <a 
-                    role="button" 
-                    class="navbar-burger has-text-white"
-                    :class="{ 'is-active': open }"
-                    @click="open = !open"
-                    aria-label="menu" 
-                    aria-expanded="false"
-                >
+                <a role="button" class="navbar-burger has-text-white" :class="{ 'is-active': open }" @click="open = !open" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
@@ -41,12 +29,8 @@ import { Icon } from 'astro-icon/components'
                 </a>
             </div>
 
-            <div 
-                class="navbar-menu"
-                :class="{ 'is-active': open }"
-            >
+            <div class="navbar-menu" :class="{ 'is-active': open }">
                 <div class="navbar-start"></div>
-
                 <div class="navbar-end">
                     <a class="navbar-item" style="max-height: 62px;">
                         <Icon name="fa7-solid:user" class="is-size-4"/>

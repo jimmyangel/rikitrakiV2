@@ -13,33 +13,57 @@ let anchorEntityScreenPos = null
 let anchorPopupPos = null
 
 export function initMap() {
-  viewer = createViewer()
+	Alpine.store('tracks').loadingCesium = true
+	viewer = createViewer()
 
-  //
-  // POST-RENDER: move popup by screen-space delta of entity position
-  //
-  viewer.scene.postRender.addEventListener(() => {
-    if (!savedEntity || !anchorEntityScreenPos || !anchorPopupPos) return
+	const wrapper = document.querySelector('.map-touch-wrapper')
 
-    const popup = document.querySelector('#trackPopUp')
-    if (!popup) return
+	if (window.matchMedia('(max-width: 768px)').matches) {
+		// Tap on map area → activate map (remove overlay)
+		wrapper.addEventListener('touchstart', () => {
+			wrapper.classList.add('map-active')
+		})
 
-    const time = viewer.clock.currentTime
-    const worldPos = savedEntity.position.getValue(time)
-    if (!worldPos) return
+		// Tap anywhere else → deactivate map (overlay back on)
+		document.addEventListener('touchstart', (e) => {
+			if (!wrapper.contains(e.target)) {
+				wrapper.classList.remove('map-active')
+			}
+		})
+	}
 
-    const newScreenPos = Cesium.SceneTransforms.worldToWindowCoordinates(
-      viewer.scene,
-      worldPos
-    )
-    if (!newScreenPos) return
+	//
+	// POST-RENDER: move popup by screen-space delta of entity position
+	//
+	viewer.scene.postRender.addEventListener(() => {
+		if (!savedEntity || !anchorEntityScreenPos || !anchorPopupPos) return
 
-    const dx = newScreenPos.x - anchorEntityScreenPos.x
-    const dy = newScreenPos.y - anchorEntityScreenPos.y
+		const popup = document.querySelector('#trackPopUp')
+		if (!popup) return
 
-    popup.style.left = `${anchorPopupPos.x + dx}px`
-    popup.style.top  = `${anchorPopupPos.y + dy}px`
-  })
+		const time = viewer.clock.currentTime
+		const worldPos = savedEntity.position.getValue(time)
+		if (!worldPos) return
+
+		const newScreenPos = Cesium.SceneTransforms.worldToWindowCoordinates(
+			viewer.scene,
+			worldPos
+		)
+		if (!newScreenPos) return
+
+		const dx = newScreenPos.x - anchorEntityScreenPos.x
+		const dy = newScreenPos.y - anchorEntityScreenPos.y
+
+		popup.style.left = `${anchorPopupPos.x + dx}px`
+		popup.style.top  = `${anchorPopupPos.y + dy}px`
+	})
+
+	// Stop spinner when ready
+	viewer.scene.globe.tileLoadProgressEvent.addEventListener((pending) => {
+		if (pending === 0) {
+			Alpine.store('tracks').loadingCesium = false
+		}
+	})
 }
 
 export function setTracks(tracks) {
@@ -155,7 +179,7 @@ viewer.screenSpaceEventHandler.setInputAction((movement) => {
     linkContainer.appendChild(div)
   }
 
-  // ⭐ Tell Alpine to show the popup
+  // Tell Alpine to show the popup
   Alpine.store('tracks').selected = { multi: true }
 
   // Anchor popup to first entity
