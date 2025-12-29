@@ -33,6 +33,7 @@ import '../styles/map-frame.css'
                     <div class="map-grid-map map-touch-wrapper" style="position: relative;">
                         <MapPanel />
 						<div class="map-touch-overlay"></div>
+						<div class="map-interact-hint">Tap to interact</div>
                     </div>
 
                     <!-- BOTTOM PANEL -->
@@ -114,24 +115,45 @@ import '../styles/map-frame.css'
 		pointer-events: auto;
 	}
 
-	@media (max-width: 768px) {
-		.map-touch-wrapper {
-			position: relative;
-		}
+@media (max-width: 768px) {
+    .map-touch-wrapper {
+        position: relative;
+    }
 
-		.map-touch-overlay {
-			position: absolute;
-			inset: 0;
-			/* overlay is "real", so it captures touches instead of Cesium */
-			pointer-events: auto;
-			background: transparent;
-		}
+    .map-touch-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: auto;
+        background: transparent;
+    }
 
-		/* when map is active, remove the overlay from the event chain */
-		.map-touch-wrapper.map-active .map-touch-overlay {
-			pointer-events: none;
-		}
-	}
+    .map-touch-wrapper.map-active .map-touch-overlay {
+        pointer-events: none;
+    }
+
+    /* --- Tap to interact hint (top, light theme) --- */
+    .map-interact-hint {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 6px 12px;
+        background: rgba(255, 255, 255, 0.55); /* soft light pill */
+        color: #000; /* readable on white */
+        font-size: 12px;
+        border-radius: 6px;
+        pointer-events: none;
+        opacity: 1;
+        transition: opacity 0.25s ease-out;
+        backdrop-filter: blur(6px); /* subtle glass effect */
+    }
+
+    .map-touch-wrapper.map-active .map-interact-hint {
+        opacity: 0;
+    }
+}
+
+
 
 </style>
 

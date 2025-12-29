@@ -18,6 +18,7 @@ export function initMap() {
 
 	const wrapper = document.querySelector('.map-touch-wrapper')
 
+	// Handle mobile scrolling through map
 	if (window.matchMedia('(max-width: 768px)').matches) {
 		// Tap on map area → activate map (remove overlay)
 		wrapper.addEventListener('touchstart', () => {
