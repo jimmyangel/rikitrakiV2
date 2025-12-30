@@ -132,21 +132,22 @@ import '../styles/map-frame.css'
     }
 
     /* --- Tap to interact hint (top, light theme) --- */
-    .map-interact-hint {
-        position: absolute;
-        top: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 6px 12px;
-        background: rgba(255, 255, 255, 0.55); /* soft light pill */
-        color: #000; /* readable on white */
-        font-size: 12px;
-        border-radius: 6px;
-        pointer-events: none;
-        opacity: 1;
-        transition: opacity 0.25s ease-out;
-        backdrop-filter: blur(6px); /* subtle glass effect */
-    }
+	.map-interact-hint {
+		position: absolute;
+		top: 12px;
+		left: 50%;
+		transform: translateX(-50%);
+		padding: 6px 12px;
+		background: rgba(255, 255, 255, 0.55);
+		color: #000;
+		font-size: 12px;
+		border-radius: 6px;
+		pointer-events: auto; /* <-- IMPORTANT */
+		opacity: 1;
+		transition: opacity 0.25s ease-out;
+		backdrop-filter: blur(6px);
+	}
+
 
     .map-touch-wrapper.map-active .map-interact-hint {
         opacity: 0;

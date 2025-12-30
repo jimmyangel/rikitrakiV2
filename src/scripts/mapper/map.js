@@ -13,6 +13,8 @@ let anchorEntityScreenPos = null
 let anchorPopupPos = null
 
 export function initMap() {
+
+	// Start spinner
 	Alpine.store('tracks').loadingCesium = true
 	viewer = createViewer()
 
@@ -20,12 +22,16 @@ export function initMap() {
 
 	// Handle mobile scrolling through map
 	if (window.matchMedia('(max-width: 768px)').matches) {
-		// Tap on map area → activate map (remove overlay)
-		wrapper.addEventListener('touchstart', () => {
+		const wrapper = document.querySelector('.map-touch-wrapper')
+		const hint = wrapper.querySelector('.map-interact-hint')
+
+		// Tap the hint → activate map
+		hint.addEventListener('touchstart', (e) => {
+			e.stopPropagation() // prevent bubbling to wrapper
 			wrapper.classList.add('map-active')
 		})
 
-		// Tap anywhere else → deactivate map (overlay back on)
+		// Tap outside → deactivate map
 		document.addEventListener('touchstart', (e) => {
 			if (!wrapper.contains(e.target)) {
 				wrapper.classList.remove('map-active')
