@@ -21,7 +21,6 @@
     z-index: 0;
 }
 
-
 /* ----------------------------------------------------------
     SIDE PANEL
 ---------------------------------------------------------- */
@@ -32,13 +31,12 @@
     display: block !important;
     overflow: hidden;
     z-index: var(--z-panels);
-	background: #fff;
+    background: #fff;
 }
-
 
 .map-column {
     position: relative;
-	z-index: 1;
+    z-index: 1;
 }
 
 .side-panel-inner {
@@ -49,7 +47,7 @@
 
 @media (min-width: 769px) {
     .side-panel {
-		height: 100%;
+        height: 100%;
         width: 20rem !important;
         margin-left: 0 !important;
         transition: margin-left .3s ease;
@@ -59,11 +57,11 @@
         margin-left: -20rem !important;
     }
 
-	.side-panel-content {
-		height: 100%; 
-		overflow-y: auto; 
-		position: relative; 
-	}
+    .side-panel-content {
+        height: 100%;
+        overflow-y: auto;
+        position: relative;
+    }
 }
 
 @media (max-width: 768px) {
@@ -138,7 +136,7 @@
 
 .side-panel-open-button {
     position: fixed;
-    top: calc(52px + 0.5rem); /* below navbar */
+    top: calc(52px + 0.5rem);
     left: 0.5rem;
 }
 
@@ -165,6 +163,21 @@
     display: grid;
     height: 100%;
     grid-template-rows: 1fr auto auto;
+}
+
+/* ----------------------------------------------------------
+   FIX SAFARI SHRINK/EXPAND — STABLE HEIGHT CHAIN
+---------------------------------------------------------- */
+
+.map-grid {
+    height: 100%;
+    min-height: 0;
+}
+
+.map-grid-map {
+    height: 100%;
+    min-height: 0;
+    position: relative;
 }
 
 .bottom-panel {

@@ -7,7 +7,7 @@ import '../styles/map-frame.css'
 ---
 
 <BaseLayout>
-    <section class="main-layout" style="height: calc(100dvh - 52px)">
+    <section class="main-layout">
         <div class="map-frame">
 
             <!-- SIDE PANEL -->
@@ -100,18 +100,14 @@ import '../styles/map-frame.css'
 </script>
 
 <style>
-/* ----------------------------------------------------------
-   BASE MAP FRAME
----------------------------------------------------------- */
-
-.map-frame {
+/* main-layout fills app-root */
+.main-layout {
     height: 100%;
-    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
-/* ----------------------------------------------------------
-   DESKTOP LAYOUT (REAL FLEX LAYOUT)
----------------------------------------------------------- */
+/* DESKTOP */
 @media (min-width: 769px) {
     .map-frame {
         display: flex;
@@ -133,15 +129,12 @@ import '../styles/map-frame.css'
         height: 100%;
         min-width: 0;
         min-height: 0;
-        position: relative; /* needed for bottom button */
+        position: relative;
     }
 }
 
-/* ----------------------------------------------------------
-   MOBILE LAYOUT (STACKED)
----------------------------------------------------------- */
+/* MOBILE */
 @media (max-width: 768px) {
-
     .map-frame {
         display: block;
         width: 100%;
@@ -159,14 +152,11 @@ import '../styles/map-frame.css'
         display: flex;
         flex-direction: column;
         min-height: 0;
-        position: relative; /* needed for bottom button */
+        position: relative;
     }
 }
 
-/* ----------------------------------------------------------
-   BOTTOM PANEL OPEN BUTTON — FIXED POSITIONING
----------------------------------------------------------- */
-
+/* Bottom panel open button */
 .bottom-panel-open-button {
     position: absolute;
     right: 1rem;
@@ -174,9 +164,7 @@ import '../styles/map-frame.css'
     z-index: 20;
 }
 
-/* ----------------------------------------------------------
-   MAP TOUCH OVERLAY + HINT
----------------------------------------------------------- */
+/* Touch overlay */
 @media (max-width: 768px) {
     .map-touch-wrapper {
         position: relative;

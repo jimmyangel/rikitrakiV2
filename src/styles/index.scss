@@ -2,6 +2,14 @@
 @charset "utf-8";
 @use "bulma";
 
+:root {
+  --navbar-height: 52px;
+}
+
+body.has-navbar-fixed-top {
+  padding-top: var(--navbar-height) !important;
+}
+
 [x-cloak] {
 	display: none !important;
 }
