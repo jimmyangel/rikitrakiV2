@@ -42,13 +42,14 @@
 }
 
 .side-panel-inner {
-	overflow-y: auto;
-	top: 0;
-	max-height: 82vh;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
 }
 
 @media (min-width: 769px) {
     .side-panel {
+		height: 100%;
         width: 20rem !important;
         margin-left: 0 !important;
         transition: margin-left .3s ease;
@@ -58,11 +59,11 @@
         margin-left: -20rem !important;
     }
 
-    .side-panel-content {
-        height: 100vh;
-        overflow-y: auto;
-        position: relative;
-    }
+	.side-panel-content {
+		height: 100%; 
+		overflow-y: auto; 
+		position: relative; 
+	}
 }
 
 @media (max-width: 768px) {
