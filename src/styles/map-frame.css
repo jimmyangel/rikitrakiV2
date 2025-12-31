@@ -41,6 +41,12 @@
 	z-index: 1;
 }
 
+.side-panel-inner {
+	overflow-y: auto;
+	top: 0;
+	max-height: 82vh;
+}
+
 @media (min-width: 769px) {
     .side-panel {
         width: 20rem !important;

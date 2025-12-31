@@ -109,12 +109,6 @@ import '../styles/map-frame.css'
 		position: relative; z-index: 0; 
 	}
 
-	#trackPopUp {
-		position: fixed;
-		z-index: 20;
-		pointer-events: auto;
-	}
-
 @media (max-width: 768px) {
     .map-touch-wrapper {
         position: relative;
@@ -147,7 +141,6 @@ import '../styles/map-frame.css'
 		transition: opacity 0.25s ease-out;
 		backdrop-filter: blur(6px);
 	}
-
 
     .map-touch-wrapper.map-active .map-interact-hint {
         opacity: 0;
