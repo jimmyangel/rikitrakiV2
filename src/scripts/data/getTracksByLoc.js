@@ -1,7 +1,7 @@
 import { getTrackInfo } from './getTrackInfo.js'
 import { haversineKm } from '../utils/geoUtils.js'
 
-export async function getTracksByLoc(lat, lon, target = 1000) {
+export async function getTracksByLoc(lat, lon, maxTracksTarget = 200, minTracksTarget = 10, maxRadius = 500) {
     // 1. Fetch all tracks (temporary implementation)
     const all = await getTrackInfo()
 
@@ -20,8 +20,22 @@ export async function getTracksByLoc(lat, lon, target = 1000) {
     // 4. Sort by distance
     withDist.sort((a, b) => a.distKm - b.distKm)
 
-    // 5. Take closest N
-    const selected = withDist.slice(0, target)
+    //
+    // 5. Determine radius and selection
+    //
+    const withinMaxRadius = withDist.filter(t => t.distKm <= maxRadius)
+
+    let selected = []
+
+    if (withinMaxRadius.length >= minTracksTarget) {
+        // Case A: Enough tracks within maxRadius
+        // Take up to maxTracksTarget, but only those within maxRadius
+        selected = withinMaxRadius.slice(0, maxTracksTarget)
+    } else {
+        // Case B: Not enough tracks within maxRadius
+        // We are allowed to exceed maxRadius, but only until we reach minTracksTarget
+        selected = withDist.slice(0, minTracksTarget)
+    }
 
     // 6. Actual radius = distance to farthest included track
     const radiusKm = selected.length
