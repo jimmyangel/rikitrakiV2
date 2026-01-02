@@ -2,85 +2,102 @@
 import { Icon } from 'astro-icon/components'
 ---
 
-<div class="side-panel-inner">
-	<div class="panel has-text-centered">
-		<div class="panel-heading is-size-6 has-background-light has-text-black">
-			Tracks Found In The Area
-		</div>
-		<div class="panel-block" x-data>
-			<div
-				x-text="`${Alpine.store('tracks').count ?? '…'} tracks within a ${Alpine.store('tracks').radiusDisplay ?? '…'} ${Alpine.store('tracks').distanceUnit} radius, centered at ${Alpine.store('tracks').lat?.toFixed(3) ?? '…'}° N, ${Math.abs(Alpine.store('tracks').lon)?.toFixed(3) ?? '…'}° W.`">
-			</div>
-		</div>
-		<div class="panel-block is-size-7">
-			Change search center by long tap/click on the map
-		</div>
-		<div class="panel-block">
-			<div class="control has-icons-left">
-				<input class="input" type="search" placeholder="Name filter">
-				<span class="icon is-left">
-					<Icon name="fa7-solid:search" />
-				</span>
-        	</div>
-		</div>
-	</div>
-	<div x-data>
-		<div class="box is-size-6 has-text-centered has-background-light has-text-weight-bold">
-			Track List
-		</div>
+<div class="side-panel-inner" x-data="{ filter: '' }">
+    <div class="panel has-text-centered">
+        <div class="panel-heading is-size-6 has-background-light has-text-black">
+            Tracks Found In The Area
+        </div>
 
-		<template x-for="t in $store.tracks.all" :key="t.trackId">
-			<div class="card" x-data="{ open: false }">
+        <div class="panel-block">
+            <div
+                x-text="`${Alpine.store('tracks').count ?? '…'} tracks within a ${Alpine.store('tracks').radiusDisplay ?? '…'} ${Alpine.store('tracks').distanceUnit} radius, centered at ${Alpine.store('tracks').lat?.toFixed(3) ?? '…'}° N, ${Math.abs(Alpine.store('tracks').lon)?.toFixed(3) ?? '…'}° W.`">
+            </div>
+        </div>
 
-				<header class="card-header">
-					<p class="card-header-title has-text-weight-medium track-title"
-					x-text="t.trackName"></p>
+        <div class="panel-block is-size-7">
+            Change search center by long tap/click on the map
+        </div>
 
-					<button class="card-header-icon"
-							@click="open = !open">
-						<span class="icon">
-							<template x-if="open">
-								<Icon name="fa7-solid:chevron-up" />
-							</template>
-							<template x-if="!open">
-								<Icon name="fa7-solid:chevron-down" />
-							</template>
-						</span>
-					</button>
-				</header>
+        <div class="panel-block">
+            <div class="control has-icons-left">
+                <input class="input"
+                       type="search"
+                       placeholder="Track name filter"
+                       x-model="filter">
+                <span class="icon is-left">
+                    <Icon name="fa7-solid:search" />
+                </span>
+            </div>
+        </div>
+    </div>
 
-				<div class="card-content"
-					x-show="open"
-					x-transition.duration.200ms>
-					<div class="fixed-grid">
-						<div class="grid">
+    <div>
+        <div class="box is-size-6 has-text-centered has-background-light has-text-weight-bold">
+            Track List
+        </div>
 
-							<div class="cell has-text-weight-medium has-text-right">Username:</div>
-							<div class="cell" x-text="t.username"></div>
+        <template
+            x-for="t in Alpine.store('tracks').all.filter(track => {
+                const q = filter.toLowerCase().trim()
+                if (!q) return true
+                return (track.trackName || '').toLowerCase().includes(q)
+            })"
+            :key="t.trackId"
+        >
+            <div class="card" x-data="{ open: false }">
 
-							<div class="cell has-text-weight-medium has-text-right">Date created:</div>
-							<div class="cell" x-text="t.createdDate.split('T')[0]"></div>
+                <header class="card-header">
+                    <p class="card-header-title has-text-weight-medium track-title"
+                       x-text="t.trackName"></p>
 
-							<div class="cell has-text-weight-medium has-text-right">Level:</div>
-							<div class="cell" x-text="t.trackLevel"></div>
+                    <button class="card-header-icon"
+                            @click="open = !open">
+                        <span class="icon">
+                            <template x-if="open">
+                                <Icon name="fa7-solid:chevron-up" />
+                            </template>
+                            <template x-if="!open">
+                                <Icon name="fa7-solid:chevron-down" />
+                            </template>
+                        </span>
+                    </button>
+                </header>
 
-							<div class="cell has-text-weight-medium has-text-right">Activity:</div>
-							<div class="cell" x-text="t.trackType"></div>
+                <div class="card-content"
+                     x-show="open"
+                     x-transition.duration.200ms>
+                    <div class="fixed-grid">
+                        <div class="grid">
 
-							<div class="cell has-text-weight-medium has-text-right">Region tags:</div>
-							<div class="cell" x-text="t.trackRegionTags[0] ?? ''"></div>
+                            <div class="cell has-text-weight-medium has-text-right">Username:</div>
+                            <div class="cell" x-text="t.username"></div>
 
-							<div class="cell"></div>
-							<div class="cell" x-text="t.trackRegionTags[1] ?? ''"></div>
+                            <div class="cell has-text-weight-medium has-text-right">Date created:</div>
+                            <div class="cell" x-text="t.createdDate.split('T')[0]"></div>
 
-						</div>
-					</div>
-				</div>
+                            <div class="cell has-text-weight-medium has-text-right">Level:</div>
+                            <div class="cell" x-text="t.trackLevel"></div>
 
-			</div>
-		</template>
-	</div>
+                            <div class="cell has-text-weight-medium has-text-right">Activity:</div>
+                            <div class="cell" x-text="t.trackType"></div>
+
+                            <div class="cell has-text-weight-medium has-text-right">Region tags:</div>
+                            <div class="cell" x-text="t.trackRegionTags[0] ?? ''"></div>
+
+                            <div class="cell"></div>
+                            <div class="cell" x-text="t.trackRegionTags[1] ?? ''"></div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+    </div>
 </div>
+
+
+
 
 <style>
 	.box {

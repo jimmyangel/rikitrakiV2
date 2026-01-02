@@ -69,6 +69,7 @@ import '../styles/map-frame.css'
 	document.addEventListener('alpine:init', () => {
 		Alpine.store('tracks', {
 			all: [],
+			filter: '',
 			selected: null,
 
 			loadingTracks: false,
@@ -120,7 +121,7 @@ import '../styles/map-frame.css'
 					this.radiusKm = radiusKm
 					this.count = count
 
-					map.setTracks(tracks)
+					await map.setTracks(tracks)
 				} finally {
 					this.loadingTracks = false
 				}
