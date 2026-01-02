@@ -142,12 +142,30 @@ export function setSearchCenter(lat, lon) {
     })
 }
 
-export function setTracks(tracks) {
+export async function setTracks(tracks) {
     if (!viewer) {
         console.warn('setTracks called before initMap()')
         return
     }
 
+    //
+    // Ensure terrain provider exists AND is ready
+    //
+    // Phase 1: wait until Cesium attaches the terrain provider
+    //
+    while (!viewer.terrainProvider) {
+        await new Promise(r => setTimeout(r, 10))
+    }
+
+    //
+    // Phase 2: wait until the provider is fully ready
+    //
+    await viewer.terrainProvider.readyPromise
+
+
+    //
+    // Reset data source
+    //
     if (trackDataSource) {
         viewer.dataSources.remove(trackDataSource)
     }
@@ -157,6 +175,9 @@ export function setTracks(tracks) {
     const entities = []
     const cartographics = []
 
+    //
+    // Build entities + cartographics
+    //
     for (const track of tracks) {
         if (!track.trackLatLng[1] || !track.trackLatLng[0]) continue
 
@@ -172,12 +193,11 @@ export function setTracks(tracks) {
                 scale: 0.8,
                 disableDepthTestDistance: Number.POSITIVE_INFINITY
             },
-            properties: {
-                track
-            }
+            properties: { track }
         })
 
         entities.push(entity)
+
         cartographics.push(
             Cesium.Cartographic.fromDegrees(
                 track.trackLatLng[1],
@@ -186,20 +206,35 @@ export function setTracks(tracks) {
         )
     }
 
+
+    //
+    // Sample terrain safely (terrain is guaranteed ready)
+    //
     if (cartographics.length > 0) {
-        Cesium.sampleTerrain(viewer.terrainProvider, 14, cartographics).then(
-            (updated) => {
-                for (let i = 0; i < updated.length; i++) {
-                    const c = updated[i]
-                    const e = entities[i]
-                    e.position = new Cesium.ConstantPositionProperty(
-                        Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, c.height)
-                    )
-                }
-            }
+        const updated = await Cesium.sampleTerrain(
+            viewer.terrainProvider,
+            14,
+            cartographics
         )
+
+        for (let i = 0; i < updated.length; i++) {
+            const c = updated[i]
+            const e = entities[i]
+
+            e.position = new Cesium.ConstantPositionProperty(
+                Cesium.Cartesian3.fromRadians(
+                    c.longitude,
+                    c.latitude,
+                    c.height
+                )
+            )
+        }
     }
 
+
+    //
+    // Pointer cursor logic
+    //
     let isPointer = false
 
     viewer.screenSpaceEventHandler.setInputAction((movement) => {
@@ -220,6 +255,10 @@ export function setTracks(tracks) {
         }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
+
+    //
+    // Click handler
+    //
     viewer.screenSpaceEventHandler.setInputAction((movement) => {
         const pickedArray = viewer.scene.drillPick(movement.position)
 
@@ -269,11 +308,17 @@ export function setTracks(tracks) {
         popup.style.top  = `${anchorPopupPos.y}px`
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
+
+    //
+    // Add + fly
+    //
     viewer.dataSources.add(trackDataSource)
     viewer.flyTo(trackDataSource)
 
     console.log(`Added ${tracks.length} markers`)
 }
+
+
 
 function handleLongPress(position) {
     if (!viewer) return
