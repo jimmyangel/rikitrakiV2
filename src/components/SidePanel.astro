@@ -3,6 +3,17 @@
 ---
 
 <div class="side-panel-inner">
+	<div class="panel">
+		<div class="panel-heading has-text-centered is-size-6 has-background-light has-text-black">
+			Tracks Found In This Area
+		</div>
+		<div class="panel-block has-text-centered" x-data>
+			<span x-text="`${Alpine.store('tracks').count ?? '…'} tracks within a ${Alpine.store('tracks').radiusKm?.toFixed(0) ?? '…'} km radius, centered at ${Alpine.store('tracks').lat?.toFixed(3) ?? '…'}° N, ${Math.abs(Alpine.store('tracks').lon)?.toFixed(3) ?? '…'}° W.`"></span>
+		</div>
+
+
+
+	</div>
 
 	<p>First row</p>
 	<p>HEYsdfsdfsdfsfds sdf d fsd f sdf sd f xyztt sdsdfsd</p>
@@ -49,4 +60,5 @@
 	<p>HEYsdfsdfsdfsfds sdf d fsd f sdf sd f </p>    <p>HEYsdfsdfsdfsfds sdf d fsd f sdf sd f </p>
 	<p>Last row</p>
 </div>
+
 

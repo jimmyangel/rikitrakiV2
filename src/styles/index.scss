@@ -1,9 +1,13 @@
 // Bulma
 @charset "utf-8";
-@use "bulma";
+
+@use "bulma/sass" with (
+	$panel-radius: 0px,
+	$panel-heading-radius: 0px
+);
 
 :root {
-  --navbar-height: 52px;
+	--navbar-height: 52px;
 }
 
 body.has-navbar-fixed-top {

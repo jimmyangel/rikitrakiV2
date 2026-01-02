@@ -64,38 +64,54 @@ import '../styles/map-frame.css'
     import * as map from '../scripts/mapper/map.js'
     import { getTrackInfo } from '../scripts/data/getTrackInfo'
     import { getTracksByLoc } from '../scripts/data/getTracksByLoc'
+	import { getApproxLocation } from '../scripts/utils/geoUtils.js'
 
-    document.addEventListener('alpine:init', () => {
-        Alpine.store('tracks', {
-            all: [],
-            selected: null,
-            loadingTracks: false,
-            loadingCesium: false,
-            get loading() { return this.loadingTracks || this.loadingCesium },
+	document.addEventListener('alpine:init', () => {
+		Alpine.store('tracks', {
+			all: [],
+			selected: null,
+			loadingTracks: false,
+			loadingCesium: false,
+			lat: null,
+			lon: null,
+			radiusKm: null,
+			count: null,
 
-            selectTrack(track) {
-                this.selected = track
-            },
+			get loading() {
+				return this.loadingTracks || this.loadingCesium
+			},
 
-            clear() {
-                this.selected = null
-            }
-        })
-    })
+			selectTrack(track) {
+				this.selected = track
+			},
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        mapFrame.initUI()
-        map.initMap()
+			clear() {
+				this.selected = null
+			}
+		})
+	})
 
-        const lat = 45.5152
-        const lon = -122.6784
 
-        Alpine.store('tracks').loadingTracks = true
-        const { tracks } = await getTracksByLoc(lat, lon, 200)
-        Alpine.store('tracks').loadingTracks = false
 
-        Alpine.store('tracks').all = tracks
-        map.setTracks(tracks)
-    })
+	document.addEventListener('DOMContentLoaded', async () => {
+		mapFrame.initUI()
+		map.initMap()
+
+		const { lat, lon } = await getApproxLocation()
+
+		Alpine.store('tracks').lat = lat
+		Alpine.store('tracks').lon = lon
+
+		Alpine.store('tracks').loadingTracks = true
+		const { tracks, radiusKm, count } = await getTracksByLoc(lat, lon, 200)
+		Alpine.store('tracks').loadingTracks = false
+
+		Alpine.store('tracks').all = tracks
+		Alpine.store('tracks').radiusKm = radiusKm
+		Alpine.store('tracks').count = count
+
+		map.setTracks(tracks)
+	})
+
 </script>
 
