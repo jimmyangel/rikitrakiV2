@@ -111,6 +111,11 @@ import '../styles/map-frame.css'
 					const { tracks, radiusKm, count } =
 						await getTracksByLoc(this.lat, this.lon, 200)
 
+					// Sort by trackName (case‑insensitive, stable)
+					tracks.sort((a, b) =>
+						a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
+					)
+
 					this.all = tracks
 					this.radiusKm = radiusKm
 					this.count = count
