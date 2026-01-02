@@ -70,20 +70,24 @@ import '../styles/map-frame.css'
 		Alpine.store('tracks', {
 			all: [],
 			selected: null,
+
 			loadingTracks: false,
 			loadingCesium: false,
 
 			lat: null,
 			lon: null,
-			countryCode: 'US',   // new
+			countryCode: 'US',
+
 			radiusKm: null,
 			count: null,
 
+			//
+			// Derived state
+			//
 			get loading() {
 				return this.loadingTracks || this.loadingCesium
 			},
 
-			// --- Derived state for units ---
 			get distanceUnit() {
 				return this.countryCode === 'US' ? 'mi' : 'km'
 			},
@@ -93,6 +97,28 @@ import '../styles/map-frame.css'
 				return this.countryCode === 'US'
 					? Math.round(this.radiusKm * 0.621371)
 					: this.radiusKm
+			},
+
+			//
+			// Reload using your existing getTracksByLoc()
+			//
+			async reload() {
+				if (this.lat == null || this.lon == null) return
+
+				this.loadingTracks = true
+
+				try {
+					const { tracks, radiusKm, count } =
+						await getTracksByLoc(this.lat, this.lon, 200)
+
+					this.all = tracks
+					this.radiusKm = radiusKm
+					this.count = count
+
+					map.setTracks(tracks)
+				} finally {
+					this.loadingTracks = false
+				}
 			},
 
 			selectTrack(track) {
@@ -106,6 +132,7 @@ import '../styles/map-frame.css'
 	})
 
 
+
 	document.addEventListener('DOMContentLoaded', async () => {
 		mapFrame.initUI()
 		map.initMap()
@@ -117,15 +144,7 @@ import '../styles/map-frame.css'
 		Alpine.store('tracks').lat = lat
 		Alpine.store('tracks').lon = lon
 
-		Alpine.store('tracks').loadingTracks = true
-		const { tracks, radiusKm, count } = await getTracksByLoc(lat, lon, 200)
-		Alpine.store('tracks').loadingTracks = false
-
-		Alpine.store('tracks').all = tracks
-		Alpine.store('tracks').radiusKm = radiusKm
-		Alpine.store('tracks').count = count
-
-		map.setTracks(tracks)
+		Alpine.store('tracks').reload()
 	})
 
 </script>

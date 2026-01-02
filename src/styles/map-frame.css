@@ -83,6 +83,10 @@
 @media (max-width: 768px) {
     .map-touch-wrapper {
         position: relative;
+        -webkit-touch-callout: none; 
+        -webkit-user-select: none; 
+        user-select: none; 
+        touch-action: none;
     }
 
     .map-touch-overlay {
