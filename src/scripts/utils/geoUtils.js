@@ -19,11 +19,15 @@ export async function getApproxLocation() {
         if (res.ok) {
             const data = await res.json();
             if (data && data.latitude && data.longitude) {
-                return { lat: data.latitude, lon: data.longitude };
+                return {
+                    lat: data.latitude,
+                    lon: data.longitude,
+                    countryCode: data.country_code || 'US'
+                }
             }
         }
     } catch (e) {
-        console.warn('ipapi.co failed', e);
+        console.warn('ipapi.co failed', e)
     }
 
     // 2. Fallback: ipwho.is (fast + simple)
@@ -32,17 +36,23 @@ export async function getApproxLocation() {
         if (res.ok) {
             const data = await res.json();
             if (data && data.latitude && data.longitude) {
-                return { lat: data.latitude, lon: data.longitude };
+                return {
+                    lat: data.latitude,
+                    lon: data.longitude,
+                    countryCode: data.country_code || 'US'
+                }
             }
         }
     } catch (e) {
-        console.warn('ipwho.is failed', e);
+        console.warn('ipwho.is failed', e)
     }
 
-    // 3. Final fallback: your default location
+    // 3. Final fallback: your default location (Portland)
     return {
         lat: 45.5152,
-        lon: -122.6784
-    };
+        lon: -122.6784,
+        countryCode: 'US'
+    }
 }
+
 

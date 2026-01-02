@@ -8,11 +8,10 @@
 			Tracks Found In This Area
 		</div>
 		<div class="panel-block has-text-centered" x-data>
-			<span x-text="`${Alpine.store('tracks').count ?? '…'} tracks within a ${Alpine.store('tracks').radiusKm?.toFixed(0) ?? '…'} km radius, centered at ${Alpine.store('tracks').lat?.toFixed(3) ?? '…'}° N, ${Math.abs(Alpine.store('tracks').lon)?.toFixed(3) ?? '…'}° W.`"></span>
+			<span
+				x-text="`${Alpine.store('tracks').count ?? '…'} tracks within a ${Alpine.store('tracks').radiusDisplay ?? '…'} ${Alpine.store('tracks').distanceUnit} radius, centered at ${Alpine.store('tracks').lat?.toFixed(3) ?? '…'}° N, ${Math.abs(Alpine.store('tracks').lon)?.toFixed(3) ?? '…'}° W.`">
+			</span>
 		</div>
-
-
-
 	</div>
 
 	<p>First row</p>

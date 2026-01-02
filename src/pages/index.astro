@@ -72,13 +72,27 @@ import '../styles/map-frame.css'
 			selected: null,
 			loadingTracks: false,
 			loadingCesium: false,
+
 			lat: null,
 			lon: null,
+			countryCode: 'US',   // new
 			radiusKm: null,
 			count: null,
 
 			get loading() {
 				return this.loadingTracks || this.loadingCesium
+			},
+
+			// --- Derived state for units ---
+			get distanceUnit() {
+				return this.countryCode === 'US' ? 'mi' : 'km'
+			},
+
+			get radiusDisplay() {
+				if (this.radiusKm == null) return null
+				return this.countryCode === 'US'
+					? Math.round(this.radiusKm * 0.621371)
+					: this.radiusKm
 			},
 
 			selectTrack(track) {
@@ -92,12 +106,13 @@ import '../styles/map-frame.css'
 	})
 
 
-
 	document.addEventListener('DOMContentLoaded', async () => {
 		mapFrame.initUI()
 		map.initMap()
 
 		const { lat, lon } = await getApproxLocation()
+
+		map.setSearchCenter(lat, lon)
 
 		Alpine.store('tracks').lat = lat
 		Alpine.store('tracks').lon = lon

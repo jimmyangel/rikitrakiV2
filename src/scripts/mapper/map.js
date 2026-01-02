@@ -2,6 +2,8 @@ import { createViewer } from '../mapper/viewer.js'
 import * as Cesium from 'cesium'
 
 let viewer = null
+let searchCenterEntity = null
+
 let trackDataSource = null
 
 let savedEntity = null
@@ -72,6 +74,29 @@ export function initMap() {
 		}
 	})
 }
+
+export function setSearchCenter(lat, lon) {
+    if (!viewer) return
+
+    // remove old marker if it exists
+    if (searchCenterEntity) {
+        viewer.entities.remove(searchCenterEntity)
+    }
+
+    searchCenterEntity = viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        point: {
+            pixelSize: 12,
+            translucent: true,
+            color: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.9),
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 2,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY
+        }
+    })
+
+}
+
 
 export function setTracks(tracks) {
   if (!viewer) {
