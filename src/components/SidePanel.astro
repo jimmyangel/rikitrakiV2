@@ -2,7 +2,33 @@
 import { Icon } from 'astro-icon/components'
 ---
 
-<div class="side-panel-inner" x-data="{ filter: '' }">
+<div class="side-panel-inner"
+     x-data="{
+        filter: '',
+        get filtered() {
+            const all = Alpine.store('tracks').all
+            const q = this.filter.toLowerCase().trim()
+            if (!q) return all
+
+            // SAFE SPLIT — this is the fix
+            const tokens = q.split(' ').filter(Boolean)
+
+            return all.filter(track => {
+                const haystack = [
+                    track.trackName,
+                    track.username,
+                    track.trackType,
+                    track.trackLevel,
+                    ...(track.trackRegionTags || [])
+                ]
+                .join(' ')
+                .toLowerCase()
+
+                return tokens.every(token => haystack.includes(token))
+            })
+        }
+     }">
+
     <div class="panel has-text-centered">
         <div class="panel-heading is-size-6 has-background-light has-text-black">
             Tracks Found In The Area
@@ -25,7 +51,7 @@ import { Icon } from 'astro-icon/components'
                        placeholder="Track name, user, activity, level…"
                        x-model="filter">
                 <span class="icon is-left">
-                    <Icon name="fa7-solid:search" />
+                    <Icon name={"fa7-solid:search"} />
                 </span>
             </div>
         </div>
@@ -36,20 +62,7 @@ import { Icon } from 'astro-icon/components'
             Track List
         </div>
 
-        <template
-            x-for="t in Alpine.store('tracks').all.filter(track => {
-                const q = filter.toLowerCase().trim()
-                if (!q) return true
-
-                return (
-                    (track.trackName || '').toLowerCase().includes(q) ||
-                    (track.username || '').toLowerCase().includes(q) ||
-                    (track.trackType || '').toLowerCase().includes(q) ||
-                    (track.trackLevel || '').toLowerCase().includes(q)
-                )
-            })"
-            :key="t.trackId"
-        >
+        <template x-for="t in filtered" :key="t.trackId">
             <div class="card" x-data="{ open: false }">
 
                 <header class="card-header">
@@ -60,10 +73,10 @@ import { Icon } from 'astro-icon/components'
                             @click="open = !open">
                         <span class="icon">
                             <template x-if="open">
-                                <Icon name="fa7-solid:chevron-up" />
+                                <Icon name={"fa7-solid:chevron-up"} />
                             </template>
                             <template x-if="!open">
-                                <Icon name="fa7-solid:chevron-down" />
+                                <Icon name={"fa7-solid:chevron-down"} />
                             </template>
                         </span>
                     </button>
@@ -101,9 +114,6 @@ import { Icon } from 'astro-icon/components'
         </template>
     </div>
 </div>
-
-
-
 
 
 <style>
