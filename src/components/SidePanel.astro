@@ -22,7 +22,7 @@ import { Icon } from 'astro-icon/components'
             <div class="control has-icons-left">
                 <input class="input"
                        type="search"
-                       placeholder="Track name filter"
+                       placeholder="Track name, user, activity, level…"
                        x-model="filter">
                 <span class="icon is-left">
                     <Icon name="fa7-solid:search" />
@@ -40,7 +40,13 @@ import { Icon } from 'astro-icon/components'
             x-for="t in Alpine.store('tracks').all.filter(track => {
                 const q = filter.toLowerCase().trim()
                 if (!q) return true
-                return (track.trackName || '').toLowerCase().includes(q)
+
+                return (
+                    (track.trackName || '').toLowerCase().includes(q) ||
+                    (track.username || '').toLowerCase().includes(q) ||
+                    (track.trackType || '').toLowerCase().includes(q) ||
+                    (track.trackLevel || '').toLowerCase().includes(q)
+                )
             })"
             :key="t.trackId"
         >
@@ -95,6 +101,7 @@ import { Icon } from 'astro-icon/components'
         </template>
     </div>
 </div>
+
 
 
 
