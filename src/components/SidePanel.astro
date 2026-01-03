@@ -2,32 +2,7 @@
 import { Icon } from 'astro-icon/components'
 ---
 
-<div class="side-panel-inner"
-     x-data="{
-        filter: '',
-        get filtered() {
-            const all = Alpine.store('tracks').all
-            const q = this.filter.toLowerCase().trim()
-            if (!q) return all
-
-            // SAFE SPLIT — this is the fix
-            const tokens = q.split(' ').filter(Boolean)
-
-            return all.filter(track => {
-                const haystack = [
-                    track.trackName,
-                    track.username,
-                    track.trackType,
-                    track.trackLevel,
-                    ...(track.trackRegionTags || [])
-                ]
-                .join(' ')
-                .toLowerCase()
-
-                return tokens.every(token => haystack.includes(token))
-            })
-        }
-     }">
+<div class="side-panel-inner" x-data>
 
     <div class="panel has-text-centered">
         <div class="panel-heading is-size-6 has-background-light has-text-black">
@@ -36,7 +11,7 @@ import { Icon } from 'astro-icon/components'
 
         <div class="panel-block">
             <div
-                x-text="`${Alpine.store('tracks').count ?? '…'} tracks within a ${Alpine.store('tracks').radiusDisplay ?? '…'} ${Alpine.store('tracks').distanceUnit} radius, centered at ${Alpine.store('tracks').lat?.toFixed(3) ?? '…'}° N, ${Math.abs(Alpine.store('tracks').lon)?.toFixed(3) ?? '…'}° W.`">
+                x-text="`${$store.tracks.count ?? '…'} tracks within a ${$store.tracks.radiusDisplay ?? '…'} ${$store.tracks.distanceUnit} radius, centered at ${$store.tracks.lat?.toFixed(3) ?? '…'}° N, ${Math.abs($store.tracks.lon)?.toFixed(3) ?? '…'}° W.`">
             </div>
         </div>
 
@@ -49,7 +24,7 @@ import { Icon } from 'astro-icon/components'
                 <input class="input"
                        type="search"
                        placeholder="Track name, user, activity, level…"
-                       x-model="filter">
+                       x-model="$store.tracks.filter">
                 <span class="icon is-left">
                     <Icon name={"fa7-solid:search"} />
                 </span>
@@ -62,7 +37,7 @@ import { Icon } from 'astro-icon/components'
             Track List
         </div>
 
-        <template x-for="t in filtered" :key="t.trackId">
+        <template x-for="t in $store.tracks.filtered" :key="t.trackId">
             <div class="card" x-data="{ open: false }">
 
                 <header class="card-header">
@@ -114,7 +89,6 @@ import { Icon } from 'astro-icon/components'
         </template>
     </div>
 </div>
-
 
 <style>
 	.box {

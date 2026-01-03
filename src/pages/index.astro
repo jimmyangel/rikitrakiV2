@@ -65,79 +65,11 @@ import '../styles/map-frame.css'
     import { getTrackInfo } from '../scripts/data/getTrackInfo'
     import { getTracksByLoc } from '../scripts/data/getTracksByLoc'
 	import { getApproxLocation } from '../scripts/utils/geoUtils.js'
+	import initTracksStore from '../scripts/stores/tracks.js'
 
 	document.addEventListener('alpine:init', () => {
-		Alpine.store('tracks', {
-			all: [],
-			filter: '',
-			selected: null,
-
-			loadingTracks: false,
-			loadingCesium: false,
-
-			lat: null,
-			lon: null,
-			countryCode: 'US',
-
-			radiusKm: null,
-			count: null,
-
-			//
-			// Derived state
-			//
-			get loading() {
-				return this.loadingTracks || this.loadingCesium
-			},
-
-			get distanceUnit() {
-				return this.countryCode === 'US' ? 'mi' : 'km'
-			},
-
-			get radiusDisplay() {
-				if (this.radiusKm == null) return null
-				return this.countryCode === 'US'
-					? Math.round(this.radiusKm * 0.621371)
-					: this.radiusKm
-			},
-
-			//
-			// Reload using getTracksByLoc()
-			//
-			async reload() {
-				if (this.lat == null || this.lon == null) return
-
-				this.loadingTracks = true
-
-				try {
-					const { tracks, radiusKm, count } =
-						await getTracksByLoc(this.lat, this.lon, 200)
-
-					// Sort by trackName (case‑insensitive, stable)
-					tracks.sort((a, b) =>
-						a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
-					)
-
-					this.all = tracks
-					this.radiusKm = radiusKm
-					this.count = count
-
-					await map.setTracks(tracks)
-				} finally {
-					this.loadingTracks = false
-				}
-			},
-
-			selectTrack(track) {
-				this.selected = track
-			},
-
-			clear() {
-				this.selected = null
-			}
-		})
+		initTracksStore(Alpine)
 	})
-
-
 
 	document.addEventListener('DOMContentLoaded', async () => {
 		mapFrame.initUI()
