@@ -11,28 +11,6 @@ import { Icon } from 'astro-icon/components'
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="generator" content={Astro.generator} />
         <title>RikiTraki</title>
-
-        <!-- Stable viewport height for iPhone Safari -->
-		<script>
-			function updateAppHeight() {
-				const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height'));
-				const height = window.visualViewport
-					? window.visualViewport.height - navbarHeight
-					: window.innerHeight - navbarHeight;
-
-				document.documentElement.style.setProperty('--app-height', `${height}px`);
-			}
-
-			// iPhone Safari triggers viewport changes here:
-			window.visualViewport?.addEventListener('resize', updateAppHeight);
-			window.visualViewport?.addEventListener('scroll', updateAppHeight);
-
-			window.addEventListener('orientationchange', updateAppHeight);
-			window.addEventListener('resize', updateAppHeight);
-
-			updateAppHeight();
-		</script>
-
     </head>
 
     <body class="has-navbar-fixed-top">
@@ -72,15 +50,23 @@ import { Icon } from 'astro-icon/components'
 </html>
 
 <style>
-    /* App root fills the visible viewport (minus navbar) */
+
+    html, body {
+        height: 100%;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
+    }
+
     .app-root {
-        height: var(--app-height);
+        height: calc(100dvh - var(--navbar-height));
         display: flex;
         flex-direction: column;
+        min-height: 0;
     }
 
     .navbar-item svg,
     .navbar-brand svg {
         max-height: 4rem;
     }
+
 </style>

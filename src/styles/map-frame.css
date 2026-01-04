@@ -80,14 +80,27 @@
 }
 
 /* Touch overlay */
+.map-touch-wrapper {
+    position: relative;
+    touch-action: pan-x pan-y;
+}
+
+.map-touch-wrapper,
+.map-touch-wrapper * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+
 @media (max-width: 768px) {
-    .map-touch-wrapper {
+    /*.map-touch-wrapper {
         position: relative;
-        -webkit-touch-callout: none; 
-        -webkit-user-select: none; 
-        user-select: none; 
-        touch-action: none;
-    }
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: pan-x pan-y;
+    } */
 
     .map-touch-overlay {
         position: absolute;
