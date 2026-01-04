@@ -34,28 +34,46 @@ export default function initTracksStore(Alpine) {
         })
     }
 
-    async function reloadTracks(store) {
-        if (store.lat == null || store.lon == null) return
+	function getUsernameFromUrl() {
+		const seg = window.location.pathname.split('/').filter(Boolean)
+		return seg.length === 1 ? seg[0] : null
+	}
 
-        store.loadingTracks = true
+	async function reloadTracks(store) {
+		if (store.lat == null || store.lon == null) return
 
-        try {
-            const { tracks, radiusKm, count } =
-                await getTracksByLoc(store.lat, store.lon, 200)
+		store.loadingTracks = true
 
-            tracks.sort((a, b) =>
-                a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
-            )
+		try {
+			const username = getUsernameFromUrl()
 
-            store.all = tracks
-            store.radiusKm = radiusKm
-            store.count = count
+			const { tracks, radiusKm, count } =
+				await getTracksByLoc({
+					lat: store.lat,
+					lon: store.lon,
+					maxTracksTarget: 200,
+					username
+				})
 
-            await map.setTracks(tracks)
-        } finally {
-            store.loadingTracks = false
-        }
-    }
+			// If user filter exists but no tracks found → reset URL and reload
+			if (username && tracks.length === 0) {
+				history.replaceState(null, '', '/')
+				return reloadTracks(store)
+			}
+
+			tracks.sort((a, b) =>
+				a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
+			)
+
+			store.all = tracks
+			store.radiusKm = radiusKm
+			store.count = count
+
+			await map.setTracks(tracks)
+		} finally {
+			store.loadingTracks = false
+		}
+	}
 
     //
     // -----------------------------
