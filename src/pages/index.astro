@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import SidePanel from '../components/SidePanel.astro'
 import MapPanel from '../components/MapPanel.astro'
+import BottomPanel from '../components/BottomPanel.astro'
 import { Icon } from 'astro-icon/components'
 import '../styles/map-frame.css'
 ---
@@ -31,22 +32,15 @@ import '../styles/map-frame.css'
             <div class="map-frame-main">
 
                 <div class="map-grid">
+					<!-- MAP PANEL -->
                     <div class="map-grid-map map-touch-wrapper">
                         <MapPanel />
                         <div class="map-touch-overlay"></div>
                         <div class="map-interact-hint">Tap to interact</div>
                     </div>
 
-                    <!-- BOTTOM PANEL -->
-                    <div class="bottom-panel isopen">
-                        <button class="bottom-panel-close-button" title="Close info panel">
-                            <Icon name="fa7-solid:xmark" class="icon" />
-                        </button>
-
-                        <div class="bottom-panel-content">
-                            HEY
-                        </div>
-                    </div>
+					 <!-- BOTTOM PANEL -->
+					<BottomPanel />	
 
                     <!-- BOTTOM PANEL OPEN BUTTON -->
                     <button id="toggleBottomPanel" class="bottom-panel-open-button" title="Open info panel">
@@ -62,8 +56,6 @@ import '../styles/map-frame.css'
 <script>
     import * as mapFrame from '../scripts/ui/mapFrame.js'
     import * as map from '../scripts/mapper/map.js'
-    import { getTrackInfo } from '../scripts/data/getTrackInfo'
-    import { getTracksByLoc } from '../scripts/data/getTracksByLoc'
 	import { getApproxLocation } from '../scripts/utils/geoUtils.js'
 	import initTracksStore from '../scripts/stores/tracks.js'
 
