@@ -9,17 +9,18 @@ export default function initTracksStore(Alpine) {
     // -----------------------------
     //
 
-    function buildHaystack(track) {
-        return [
-            track.trackName,
-            track.username,
-            track.trackType,
-            track.trackLevel,
-            ...(track.trackRegionTags || [])
-        ]
-        .join(' ')
-        .toLowerCase()
-    }
+	function buildHaystack(track) {
+		return [
+			track.trackName,
+			track.username,
+			track.trackType,
+			track.trackLevel,
+			...(track.trackRegionTags || []),
+			track.trackFav ? 'favorite fav' : ''
+		]
+		.join(' ')
+		.toLowerCase()
+	}
 
     function filterTracks(all, filter) {
         const q = filter.toLowerCase().trim()

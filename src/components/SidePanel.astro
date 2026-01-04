@@ -42,7 +42,8 @@ import { Icon } from 'astro-icon/components'
 
                 <header class="card-header">
                     <p class="card-header-title has-text-weight-medium track-title"
-                       x-text="t.trackName"></p>
+   						x-html="t.trackFav ? `${t.trackName} ✭` : t.trackName">
+					</p>
 
                     <button class="card-header-icon"
                             @click="open = !open">
