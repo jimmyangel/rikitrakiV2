@@ -3,7 +3,8 @@
 
 @use "bulma/sass" with (
 	$panel-radius: 0px,
-	$panel-heading-radius: 0px
+	$panel-heading-radius: 0px,
+	$card-radius: 0px
 );
 
 :root {
