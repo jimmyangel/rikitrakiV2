@@ -142,6 +142,14 @@ export function setSearchCenter(lat, lon) {
     })
 }
 
+export function applyFilter(filteredIds) {
+    const entities = trackDataSource.entities.values
+
+    for (const entity of entities) {
+        entity.show = filteredIds.has(entity.id)
+    }
+}
+
 export async function setTracks(tracks) {
     if (!viewer) {
         console.warn('setTracks called before initMap()')

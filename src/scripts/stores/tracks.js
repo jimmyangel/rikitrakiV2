@@ -70,14 +70,19 @@ export default function initTracksStore(Alpine) {
             store.radiusKm = radiusKm
             store.count = count
 
-            await map.setTracks(tracks)
+			await map.setTracks(tracks)
+
+			// Re-apply filter after rebuilding entities
+			const filteredIds = new Set(store.filtered.map(t => t.trackId))
+			map.applyFilter(filteredIds)
+
         } finally {
             store.loadingTracks = false
         }
     }
 
     //
-    // NEW: MOTD helper
+    // MOTD helper
     //
     async function loadMotd(store) {
         const { motdTracks } = await getMotd()
@@ -140,14 +145,14 @@ export default function initTracksStore(Alpine) {
                 : this.radiusKm
         },
 
-		get headingReady() {
-			return (
-				this.count != null &&
-				this.radiusDisplay != null &&
-				this.lat != null &&
-				this.lon != null
-			)
-		},
+        get headingReady() {
+            return (
+                this.count != null &&
+                this.radiusDisplay != null &&
+                this.lat != null &&
+                this.lon != null
+            )
+        },
 
         //
         // Actions
@@ -165,7 +170,7 @@ export default function initTracksStore(Alpine) {
         },
 
         //
-        // MOTD actions (delegates to helper)
+        // MOTD actions
         //
         async loadMotd() {
             await loadMotd(this)
@@ -175,4 +180,14 @@ export default function initTracksStore(Alpine) {
             return `${constants.APIV2_BASE_URL}/tracks/${trackId}/thumbnail/0`
         }
     })
+
+	Alpine.watch(() => Alpine.store('tracks').filter, () => {
+		const store = Alpine.store('tracks')
+
+		if (!store.all.length) return
+
+		const ids = new Set(store.filtered.map(t => t.trackId))
+		map.applyFilter(ids)
+	})
+
 }
