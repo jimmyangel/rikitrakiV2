@@ -8,6 +8,72 @@ import { Icon } from 'astro-icon/components'
 	</button>
 
 	<div class="bottom-panel-content">
-		HEY
+		<div class="is-size-6 has-text-weight-bold has-text-centered has-background-light py-2">Title 6</div>
+
+		<div class="card-container">
+			<div class="motd-card">Cell 1</div>
+			<div class="motd-card">Cell 2</div>
+			<div class="motd-card">Cell 3</div>
+			<div class="motd-card">Cell 4</div>
+			<div class="motd-card">Cell 5</div>
+		</div>
 	</div>
+
+
 </div>
+<style>
+/* Bottom panel content must allow children to stretch */
+.bottom-panel-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Desktop: horizontal scroll strip, full-height cards, auto-center when no overflow */
+.card-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 1rem;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 1rem;
+    height: 100%;
+    align-items: stretch;
+
+    justify-content: center;
+    min-width: max-content;
+    margin-inline: auto;
+}
+
+.motd-card {
+    flex: 0 0 auto;
+    min-width: 12rem;
+    height: 100%;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mobile: stack vertically, scroll vertically inside panel */
+@media (max-width: 768px) {
+    .card-container {
+        display: block;
+        overflow-x: hidden;
+        overflow-y: auto;   /* vertical scroll */
+        height: 100%;       /* constrained by panel */
+        scroll-snap-type: none;
+
+        min-width: auto;
+        margin-inline: 0;
+    }
+
+    .motd-card {
+        height: auto;
+        min-width: auto;
+        margin-bottom: 1rem;
+    }
+}
+
+
+</style>

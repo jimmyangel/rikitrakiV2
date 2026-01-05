@@ -295,7 +295,8 @@
 
 .bottom-panel {
     background: #f5f5f5;
-    overflow: hidden;
+    overflow-x: visible;
+    overflow-y: hidden;
     height: 10rem;
     max-height: 10rem;
     transition: max-height .3s ease;
