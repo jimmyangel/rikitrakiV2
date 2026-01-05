@@ -10,18 +10,30 @@ import { Icon } from 'astro-icon/components'
         </div>
 
         <div class="panel-block">
-			<div>
-				<span x-text="`${$store.tracks.count ?? '…'} tracks within a ${$store.tracks.radiusDisplay ?? '…'} ${$store.tracks.distanceUnit} radius,`"></span>
+			<div class="heading-wrapper">
+			<div class="fade-in" :class="{ 'ready': $store.tracks.headingReady }">
+				<span
+					x-text="
+						$store.tracks.count != null && $store.tracks.radiusDisplay != null
+							? `${$store.tracks.count} tracks within a ${$store.tracks.radiusDisplay} ${$store.tracks.distanceUnit} radius,`
+							: '…'
+					"
+				></span>
 
 				<span> centered at </span>
 
 				<span class="cesium-marker"></span>
 
 				<span
-					x-text="`${$store.tracks.lat?.toFixed(3) ?? '…'}° N, ${Math.abs($store.tracks.lon)?.toFixed(3) ?? '…'}° W.`">
-				</span>
+					x-text="
+						$store.tracks.lat != null && $store.tracks.lon != null
+							? `${$store.tracks.lat.toFixed(3)}° N, ${Math.abs($store.tracks.lon).toFixed(3)}° W.`
+							: '…'
+					"
+				></span>
 			</div>
 
+			</div>
         </div>
 
         <div class="panel-block is-size-7">
@@ -138,6 +150,23 @@ import { Icon } from 'astro-icon/components'
 		display: inline-block;
 		flex-shrink: 0;
 	}
+
+	.heading-wrapper {
+		min-height: 4.6rem; /* adjust to match your line-height */
+		display: flex;
+		align-items: center;
+	}
+
+	.fade-in {
+		opacity: 0;
+		transition: opacity 0.35s ease;
+	}
+
+	.fade-in.ready {
+		opacity: 1;
+	}
+
+
 </style>
 
 

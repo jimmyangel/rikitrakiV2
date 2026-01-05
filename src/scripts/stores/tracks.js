@@ -140,6 +140,15 @@ export default function initTracksStore(Alpine) {
                 : this.radiusKm
         },
 
+		get headingReady() {
+			return (
+				this.count != null &&
+				this.radiusDisplay != null &&
+				this.lat != null &&
+				this.lon != null
+			)
+		},
+
         //
         // Actions
         //
