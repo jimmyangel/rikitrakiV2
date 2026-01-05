@@ -1,5 +1,7 @@
 import * as map from '../mapper/map.js'
 import { getTracksByLoc } from '../data/getTracksByLoc'
+import { getMotd } from '../data/getMotd'
+import { constants } from '../config.js'
 
 export default function initTracksStore(Alpine) {
 
@@ -9,18 +11,18 @@ export default function initTracksStore(Alpine) {
     // -----------------------------
     //
 
-	function buildHaystack(track) {
-		return [
-			track.trackName,
-			track.username,
-			track.trackType,
-			track.trackLevel,
-			...(track.trackRegionTags || []),
-			track.trackFav ? 'favorite fav' : ''
-		]
-		.join(' ')
-		.toLowerCase()
-	}
+    function buildHaystack(track) {
+        return [
+            track.trackName,
+            track.username,
+            track.trackType,
+            track.trackLevel,
+            ...(track.trackRegionTags || []),
+            track.trackFav ? 'favorite fav' : ''
+        ]
+        .join(' ')
+        .toLowerCase()
+    }
 
     function filterTracks(all, filter) {
         const q = filter.toLowerCase().trim()
@@ -34,46 +36,58 @@ export default function initTracksStore(Alpine) {
         })
     }
 
-	function getUsernameFromUrl() {
-		const seg = window.location.pathname.split('/').filter(Boolean)
-		return seg.length === 1 ? seg[0] : null
-	}
+    function getUsernameFromUrl() {
+        const seg = window.location.pathname.split('/').filter(Boolean)
+        return seg.length === 1 ? seg[0] : null
+    }
 
-	async function reloadTracks(store) {
-		if (store.lat == null || store.lon == null) return
+    async function reloadTracks(store) {
+        if (store.lat == null || store.lon == null) return
 
-		store.loadingTracks = true
+        store.loadingTracks = true
 
-		try {
-			const username = getUsernameFromUrl()
+        try {
+            const username = getUsernameFromUrl()
 
-			const { tracks, radiusKm, count } =
-				await getTracksByLoc({
-					lat: store.lat,
-					lon: store.lon,
-					maxTracksTarget: 200,
-					username
-				})
+            const { tracks, radiusKm, count } =
+                await getTracksByLoc({
+                    lat: store.lat,
+                    lon: store.lon,
+                    maxTracksTarget: 200,
+                    username
+                })
 
-			// If user filter exists but no tracks found → reset URL and reload
-			if (username && tracks.length === 0) {
-				history.replaceState(null, '', '/')
-				return reloadTracks(store)
-			}
+            if (username && tracks.length === 0) {
+                history.replaceState(null, '', '/')
+                return reloadTracks(store)
+            }
 
-			tracks.sort((a, b) =>
-				a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
-			)
+            tracks.sort((a, b) =>
+                a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
+            )
 
-			store.all = tracks
-			store.radiusKm = radiusKm
-			store.count = count
+            store.all = tracks
+            store.radiusKm = radiusKm
+            store.count = count
 
-			await map.setTracks(tracks)
-		} finally {
-			store.loadingTracks = false
-		}
-	}
+            await map.setTracks(tracks)
+        } finally {
+            store.loadingTracks = false
+        }
+    }
+
+    //
+    // NEW: MOTD helper
+    //
+    async function loadMotd(store) {
+        const { motdTracks } = await getMotd()
+
+        store.motdTracks = motdTracks.map(([trackId, index, title]) => ({
+            trackId,
+            index,
+            title
+        }))
+    }
 
     //
     // -----------------------------
@@ -82,6 +96,9 @@ export default function initTracksStore(Alpine) {
     //
 
     Alpine.store('tracks', {
+        //
+        // Track list state
+        //
         all: [],
         filter: '',
         selected: null,
@@ -95,6 +112,11 @@ export default function initTracksStore(Alpine) {
 
         radiusKm: null,
         count: null,
+
+        //
+        // MOTD state
+        //
+        motdTracks: [],
 
         //
         // Derived state
@@ -131,6 +153,17 @@ export default function initTracksStore(Alpine) {
 
         clear() {
             this.selected = null
+        },
+
+        //
+        // MOTD actions (delegates to helper)
+        //
+        async loadMotd() {
+            await loadMotd(this)
+        },
+
+        thumbnailUrl(trackId) {
+            return `${constants.APIV2_BASE_URL}/tracks/${trackId}/thumbnail/0`
         }
     })
 }
