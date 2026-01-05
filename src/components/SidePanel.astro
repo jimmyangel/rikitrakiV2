@@ -10,9 +10,18 @@ import { Icon } from 'astro-icon/components'
         </div>
 
         <div class="panel-block">
-            <div
-                x-text="`${$store.tracks.count ?? '…'} tracks within a ${$store.tracks.radiusDisplay ?? '…'} ${$store.tracks.distanceUnit} radius, centered at ${$store.tracks.lat?.toFixed(3) ?? '…'}° N, ${Math.abs($store.tracks.lon)?.toFixed(3) ?? '…'}° W.`">
-            </div>
+			<div>
+				<span x-text="`${$store.tracks.count ?? '…'} tracks within a ${$store.tracks.radiusDisplay ?? '…'} ${$store.tracks.distanceUnit} radius,`"></span>
+
+				<span> centered at </span>
+
+				<span class="cesium-marker"></span>
+
+				<span
+					x-text="`${$store.tracks.lat?.toFixed(3) ?? '…'}° N, ${Math.abs($store.tracks.lon)?.toFixed(3) ?? '…'}° W.`">
+				</span>
+			</div>
+
         </div>
 
         <div class="panel-block is-size-7">
@@ -119,6 +128,16 @@ import { Icon } from 'astro-icon/components'
 		word-break: break-word;
 	}
 
+	.cesium-marker {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background-color: rgba(227, 139, 44, 0.9);
+		border: 2px solid #000;
+
+		display: inline-block;
+		flex-shrink: 0;
+	}
 </style>
 
 
