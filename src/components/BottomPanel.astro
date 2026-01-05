@@ -22,15 +22,48 @@ import { Icon } from 'astro-icon/components'
 
 </div>
 <style>
-/* Bottom panel content must allow children to stretch */
+
+/* ----------------------------------------------------------
+    BOTTOM PANEL (shell)
+---------------------------------------------------------- */
+
+.bottom-panel {
+    background: #f5f5f5;
+    overflow: hidden;          /* panel itself must NEVER scroll */
+    height: 10rem;
+    max-height: 10rem;
+    transition: max-height .3s ease;
+    position: relative;        /* anchor for close button */
+    z-index: var(--z-panels);
+}
+
+.bottom-panel:not(.isopen) {
+    max-height: 0;
+}
+
+/* ----------------------------------------------------------
+    CONTENT AREA (flex column, no scroll on desktop)
+---------------------------------------------------------- */
+
 .bottom-panel-content {
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;          /* desktop: no vertical scroll */
 }
 
-/* Desktop: horizontal scroll strip, full-height cards, auto-center when no overflow */
+/* Title row: natural height */
+.bottom-panel-content > .is-size-6 {
+    flex: 0 0 auto;
+}
+
+/* ----------------------------------------------------------
+    CARD STRIP (fills remaining height, scrolls horizontally)
+---------------------------------------------------------- */
+
 .card-container {
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -38,12 +71,13 @@ import { Icon } from 'astro-icon/components'
     gap: 1rem;
     scroll-snap-type: x mandatory;
     scroll-padding-left: 1rem;
-    height: 100%;
-    align-items: stretch;
 
-    justify-content: center;
-    min-width: max-content;
-    margin-inline: auto;
+    padding-left: var(--side-panel-width);
+    padding-right: var(--ui-space);
+    box-sizing: border-box;
+
+    justify-content: flex-start;  /* no horizontal centering */
+    align-items: stretch;
 }
 
 .motd-card {
@@ -55,17 +89,22 @@ import { Icon } from 'astro-icon/components'
     flex-direction: column;
 }
 
-/* Mobile: stack vertically, scroll vertically inside panel */
+/* ----------------------------------------------------------
+    MOBILE (vertical stack + vertical scroll)
+---------------------------------------------------------- */
+
 @media (max-width: 768px) {
+    .bottom-panel-content {
+        overflow-y: auto;      /* mobile: vertical scroll */
+        overflow-x: hidden;
+    }
+
     .card-container {
         display: block;
         overflow-x: hidden;
-        overflow-y: auto;   /* vertical scroll */
-        height: 100%;       /* constrained by panel */
+        overflow-y: visible;
+        height: auto;
         scroll-snap-type: none;
-
-        min-width: auto;
-        margin-inline: 0;
     }
 
     .motd-card {
@@ -74,6 +113,5 @@ import { Icon } from 'astro-icon/components'
         margin-bottom: 1rem;
     }
 }
-
 
 </style>

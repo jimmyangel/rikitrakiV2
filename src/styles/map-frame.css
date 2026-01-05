@@ -293,28 +293,8 @@
     position: relative;
 }
 
-.bottom-panel {
-    background: #f5f5f5;
-    overflow-x: visible;
-    overflow-y: hidden;
-    height: 10rem;
-    max-height: 10rem;
-    transition: max-height .3s ease;
-    position: relative;
-    z-index: var(--z-panels);
-}
-
-.bottom-panel:not(.isopen) {
-    max-height: 0;
-}
-
-.bottom-panel-content {
-    height: 100%;
-    overflow-y: auto;
-}
-
 /* ----------------------------------------------------------
-    BOTTOM PANEL ICONS
+    BOTTOM PANEL BUTTONS
 ---------------------------------------------------------- */
 
 .bottom-panel-open-button,
@@ -335,10 +315,8 @@
 }
 
 .bottom-panel-open-button {
-	position: absolute;
     bottom: var(--ui-space);
     right: var(--ui-space);
-	z-index: var(--z-panels);
 }
 
 .bottom-panel-close-button {
@@ -351,9 +329,11 @@
     font-size: var(--ui-icon-size);
 }
 
+/* hide open button when panel is open */
 .bottom-panel.isopen + .bottom-panel-open-button {
     display: none;
 }
+
 
 /* ----------------------------------------------------------
     MAP GRID MAP
