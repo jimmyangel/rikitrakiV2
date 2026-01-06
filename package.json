@@ -3,9 +3,9 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "http-server dist -p 8080 -P http://localhost:8080?",
     "astro": "astro"
   },
   "dependencies": {
