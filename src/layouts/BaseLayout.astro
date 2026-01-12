@@ -11,6 +11,35 @@ import { Icon } from 'astro-icon/components'
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="generator" content={Astro.generator} />
         <title>RikiTraki</title>
+
+        <script>
+            function isChromeOniPad() {
+                const ua = navigator.userAgent
+                return ua.includes('CriOS') && navigator.maxTouchPoints > 1
+            }
+
+            // Fix 1: Two‑frame nudge to reset Chrome's phantom scroll after keyboard close
+            if (isChromeOniPad() && window.visualViewport) {
+                let last = window.visualViewport.height
+
+                window.visualViewport.addEventListener('resize', () => {
+                    const now = window.visualViewport.height
+
+                    // Keyboard closing → height increases
+                    if (now > last) {
+                        requestAnimationFrame(() => {
+                            document.documentElement.scrollTop = 1
+
+                            requestAnimationFrame(() => {
+                                document.documentElement.scrollTop = 0
+                            })
+                        })
+                    }
+
+                    last = now
+                })
+            }
+        </script>
     </head>
 
     <body class="has-navbar-fixed-top">
