@@ -8,7 +8,7 @@
    id="svg9824"
    version="1.1"
    sodipodi:docname="rikitrakilogo.svg"
-   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -27,14 +27,14 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="1.1304606"
-     inkscape:cx="467.06624"
-     inkscape:cy="263.16706"
+     inkscape:cx="450.70125"
+     inkscape:cy="382.58742"
      inkscape:window-width="1200"
-     inkscape:window-height="1158"
+     inkscape:window-height="698"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="34"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg9824" />
+     inkscape:current-layer="layer1" />
   <defs
      id="defs9826">
     <linearGradient
@@ -77,12 +77,14 @@
        d="M 574.91072,14.14792 C 557.91974,41.70115 521.04793,29.01283 495.29909,39.64112 447.28172,52.21857 401.85433,72.66643 355.41959,89.68127 338.95407,94.21329 329.05114,77.34661 339.91041,64.86182"
        id="path13320" />
     <text
-       transform="scale(0.94425879,1.0590317)"
-       id="text1"><tspan
+       transform="scale(1.035236,0.9659633)"
+       id="text1"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.1562px;font-family:Arial;-inkscape-font-specification:'Arial Bold';stroke-width:1.09548;stroke-dasharray:none"
+       x="-2.2168601"><tspan
          id="tspan10492"
-         x="-2.0445929"
-         y="467.92813"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:192.209px;line-height:120%;font-family:'Arial Hebrew';-inkscape-font-specification:'Arial Hebrew, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.791041px;stroke-opacity:1">RikiTraki</tspan></text>
+         x="-4.4584451"
+         y="513.01196"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:210.728px;line-height:120%;font-family:Arial;-inkscape-font-specification:'Arial Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.09548;stroke-dasharray:none;stroke-opacity:1">RikiTraki</tspan></text>
     <rect
        style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect13419"
