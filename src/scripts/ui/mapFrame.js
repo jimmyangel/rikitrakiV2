@@ -42,6 +42,16 @@ export const initUI = () => {
 		bottomPanel.classList.remove('isopen')
 	})
 
+	document.addEventListener('click', e => {
+		const link = e.target.closest('.popup-track-link')
+		if (!link) return
+
+		e.preventDefault()
+
+		const trackId = link.dataset.trackId
+		Alpine.store('tracks').openTrack(trackId)
+	})
+
 	// Fix: Two‑frame nudge to reset Chrome's phantom scroll on iPad after keyboard close
 	if (isChromeOniPad() && window.visualViewport) {
 		let last = window.visualViewport.height

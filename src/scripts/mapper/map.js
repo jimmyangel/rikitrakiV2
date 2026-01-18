@@ -285,9 +285,12 @@ export async function setTracks(tracks) {
 
         for (const entity of pickedTracks) {
             const track = entity.properties.track.getValue()
-            const div = document.createElement('div')
-            div.textContent = track.trackName
-            linkContainer.appendChild(div)
+            const a = document.createElement('a')
+            a.href = '#'
+            a.className = 'popup-track-link'
+            a.dataset.trackId = track.trackId
+            a.textContent = track.trackName
+            linkContainer.appendChild(a)
         }
 
         Alpine.store('tracks').selected = { multi: true }
