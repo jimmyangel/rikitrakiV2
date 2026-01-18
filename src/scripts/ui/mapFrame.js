@@ -41,4 +41,31 @@ export const initUI = () => {
 	closeBottom?.addEventListener('click', () => {
 		bottomPanel.classList.remove('isopen')
 	})
+
+	// Fix: Two‑frame nudge to reset Chrome's phantom scroll on iPad after keyboard close
+	if (isChromeOniPad() && window.visualViewport) {
+		let last = window.visualViewport.height
+
+		window.visualViewport.addEventListener('resize', () => {
+			const now = window.visualViewport.height
+
+			// Keyboard closing → height increases
+			if (now > last) {
+				requestAnimationFrame(() => {
+					document.documentElement.scrollTop = 1
+
+					requestAnimationFrame(() => {
+						document.documentElement.scrollTop = 0
+					})
+				})
+			}
+
+			last = now
+		})
+	}
+}
+
+function isChromeOniPad() {
+	const ua = navigator.userAgent
+	return ua.includes('CriOS') && navigator.maxTouchPoints > 1
 }
