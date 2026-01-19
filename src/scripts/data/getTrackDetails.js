@@ -7,7 +7,7 @@ export async function getTrackDetails(trackId) {
   const gpxUrl     = `${base}/tracks/${trackId}/GPX`
   const geotagsUrl = `${base}/tracks/${trackId}/geotags`
 
-  const [details, gpxBlob, geotags] = await Promise.all([
+  const [details, gpxBlob] = await Promise.all([
     fetch(detailsUrl).then(res => {
       if (!res.ok) {
         throw new Error(`getTrackDetails details failed: ${res.status} ${res.statusText}`)
@@ -19,17 +19,18 @@ export async function getTrackDetails(trackId) {
         throw new Error(`getTrackDetails gpx failed: ${res.status} ${res.statusText}`)
       }
       return res.blob()
-    }),
-    fetch(geotagsUrl).then(res => {
-      if (!res.ok) {
-        throw new Error(`getTrackDetails geotags failed: ${res.status} ${res.statusText}`)
-      }
-      return res.json()
     })
   ])
 
+  let geotags = []
+  if (details.hasPhotos) {
+    const res = await fetch(geotagsUrl)
+    if (res.ok) {
+      geotags = await res.json()
+    } else if (res.status !== 404) {
+      throw new Error(`getTrackDetails geotags failed: ${res.status} ${res.statusText}`)
+    }
+  }
+
   return { details, gpxBlob, geotags }
 }
-
-
-
