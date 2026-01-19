@@ -3,6 +3,8 @@ import { getTracksByLoc } from '../data/getTracksByLoc'
 import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
+import { parseGPXtoGeoJSON, computeBounds } from '../utils/geoUtils.js'
+import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 
 export default function initTracksStore(Alpine) {
 
@@ -20,18 +22,15 @@ export default function initTracksStore(Alpine) {
 
         if (!track) {
             const { details, gpxBlob, geotags } = await getTrackDetails(trackId)
-            track = { details, gpxBlob, geotags }
+            const geojson = await parseGPXtoGeoJSON(gpxBlob)
+            const bounds = computeBounds(geojson)
+            const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
+            track = { details, gpxBlob, geojson, geotags, bounds, czmlOriginal }
+            console.log(track)
             store.setTrack(trackId, track)
-
-            // optional: add GPX to map here
-            // map.addTrack(trackId, gpxBlob)
         }
 
-        // activate track
         store.activate(trackId)
-
-        // optional: highlight active track on map
-        // map.setActiveTrack(trackId)
     }
 
     //

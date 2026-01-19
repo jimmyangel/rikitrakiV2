@@ -1,3 +1,5 @@
+import { gpx } from '@tmcw/togeojson'
+
 export function haversineKm(lat1, lon1, lat2, lon2) {
     const R = 6371 // km
     const dLat = (lat2 - lat1) * Math.PI / 180
@@ -54,5 +56,33 @@ export async function getApproxLocation() {
         countryCode: 'US'
     }
 }
+
+export async function parseGPXtoGeoJSON(gpxBlob) {
+    const text = await gpxBlob.text()
+    const xml = new DOMParser().parseFromString(text, 'application/xml')
+    return gpx(xml)
+}
+
+export function computeBounds(geojson) {
+    let west = Infinity
+    let south = Infinity
+    let east = -Infinity
+    let north = -Infinity
+
+    for (const feature of geojson.features) {
+        if (feature.geometry.type !== 'LineString') continue
+
+        for (const [lon, lat] of feature.geometry.coordinates) {
+            if (lon < west) west = lon
+            if (lon > east) east = lon
+            if (lat < south) south = lat
+            if (lat > north) north = lat
+        }
+    }
+
+    return { west, south, east, north }
+}
+
+
 
 
