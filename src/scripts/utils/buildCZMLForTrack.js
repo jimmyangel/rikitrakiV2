@@ -12,6 +12,12 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
         f.geometry.coordinates[0].length >= 3
     )
 
+	for (const feature of fc.features) {
+    feature.geometry.coordinates =
+		smoothElevation5(feature.geometry.coordinates)
+	}
+
+
     const start = new Date(2015, 0, 1)
     for (const feature of fc.features) {
         feature.properties.coordTimes = []
@@ -156,3 +162,23 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
 
     return czml
 }
+
+function smoothElevation5(coords) {
+    if (coords.length < 5) return coords
+
+    const out = coords.map(c => [...c])
+
+    for (let i = 2; i < coords.length - 2; i++) {
+        const z =
+            coords[i - 2][2] * 0.125 +
+            coords[i - 1][2] * 0.125 +
+            coords[i][2]     * 0.25  +
+            coords[i + 1][2] * 0.125 +
+            coords[i + 2][2] * 0.125
+
+        out[i][2] = z
+    }
+
+    return out
+}
+
