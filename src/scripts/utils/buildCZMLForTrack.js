@@ -41,8 +41,18 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
             path: {
                 material: {
                     polylineOutline: {
-                        color: Cesium.Color.fromCssColorString(constants.TRACK_COLOR).toBytes(),
-                        outlineColor: Cesium.Color.BLACK.toBytes(),
+                        color: {
+                            rgba: Cesium.Color
+                                .fromCssColorString(constants.INSIDE_TRACK_COLOR)
+                                .withAlpha(1.0)
+                                .toBytes()
+                        },
+                        outlineColor: {
+                            rgba: Cesium.Color
+                                .fromCssColorString(constants.TRACK_COLOR)
+                                .withAlpha(1.0)
+                                .toBytes()
+                        },
                         outlineWidth: 5
                     }
                 },
@@ -70,7 +80,7 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
         },
         {
             id: 'nw',
-            description: 'invisible nw for camery fly',
+            description: 'invisible nw for camera fly',
             point: {
                 color: { rgba: [0, 0, 0, 0] }
             },
@@ -84,7 +94,7 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
         },
         {
             id: 'se',
-            description: 'invisible se for camery fly',
+            description: 'invisible se for camera fly',
             point: {
                 color: { rgba: [0, 0, 0, 0] }
             },
@@ -138,7 +148,7 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
     const lastTime = lastFeature.properties.coordTimes[lastIndex]
 
     czml[0].clock.interval = `${first}/${lastTime}`
-    czml[0].clock.currentTime = lastTime
+    czml[0].clock.currentTime = first
     czml[1].availability = `${first}/${lastTime}`
 
     const firstCoord = fc.features[0].geometry.coordinates[0]

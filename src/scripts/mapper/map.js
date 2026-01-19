@@ -1,5 +1,6 @@
 import { createViewer } from '../mapper/viewer.js'
 import * as Cesium from 'cesium'
+import { constants } from '../config.js'
 
 let viewer = null
 let searchCenterEntity = null
@@ -8,32 +9,28 @@ let trackDataSource = null
 
 let savedEntity = null
 
-// Entity screen position at click time
 let anchorEntityScreenPos = null
-
-// Popup screen position at click time
 let anchorPopupPos = null
+
+// Only one animated CZML track at a time (legacy behavior)
+let activeTrackDataSource = null
 
 export function initMap() {
 
-    // Start spinner
     Alpine.store('tracks').loadingCesium = true
     viewer = createViewer()
 
     const wrapper = document.querySelector('.map-touch-wrapper')
 
-    // Handle mobile scrolling through map
     if (window.matchMedia('(max-width: 768px)').matches) {
         const wrapper = document.querySelector('.map-touch-wrapper')
         const hint = wrapper.querySelector('.map-interact-hint')
 
-        // Tap the hint → activate map
         hint.addEventListener('touchstart', (e) => {
             e.stopPropagation()
             wrapper.classList.add('map-active')
         })
 
-        // Tap outside → deactivate map
         document.addEventListener('touchstart', (e) => {
             if (!wrapper.contains(e.target)) {
                 wrapper.classList.remove('map-active')
@@ -41,17 +38,12 @@ export function initMap() {
         })
     }
 
-    //
-    // Long press to set search center
-    // Includes movement threshold and camera-movement cancellation
-    //
     let pressTimer = null
     let startPos = null
     let cameraMoved = false
     let lastCameraPos = null
     const MOVE_THRESHOLD = 8
 
-    // Track camera movement each frame
     viewer.scene.postRender.addEventListener(() => {
         const cam = viewer.camera.positionWC
         if (lastCameraPos) {
@@ -88,9 +80,6 @@ export function initMap() {
         }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
-    //
-    // POST-RENDER: move popup by screen-space delta of entity position
-    //
     viewer.scene.postRender.addEventListener(() => {
         if (!savedEntity || !anchorEntityScreenPos || !anchorPopupPos) return
 
@@ -114,7 +103,6 @@ export function initMap() {
         popup.style.top  = `${anchorPopupPos.y + dy}px`
     })
 
-    // Stop spinner when ready
     viewer.scene.globe.tileLoadProgressEvent.addEventListener((pending) => {
         if (pending === 0) {
             Alpine.store('tracks').loadingCesium = false
@@ -156,24 +144,12 @@ export async function setTracks(tracks) {
         return
     }
 
-    //
-    // Ensure terrain provider exists AND is ready
-    //
-    // Phase 1: wait until Cesium attaches the terrain provider
-    //
     while (!viewer.terrainProvider) {
         await new Promise(r => setTimeout(r, 10))
     }
 
-    //
-    // Phase 2: wait until the provider is fully ready
-    //
     await viewer.terrainProvider.readyPromise
 
-
-    //
-    // Reset data source
-    //
     if (trackDataSource) {
         viewer.dataSources.remove(trackDataSource)
     }
@@ -183,9 +159,6 @@ export async function setTracks(tracks) {
     const entities = []
     const cartographics = []
 
-    //
-    // Build entities + cartographics
-    //
     for (const track of tracks) {
         if (!track.trackLatLng[1] || !track.trackLatLng[0]) continue
 
@@ -214,10 +187,6 @@ export async function setTracks(tracks) {
         )
     }
 
-
-    //
-    // Sample terrain safely (terrain is guaranteed ready)
-    //
     if (cartographics.length > 0) {
         const updated = await Cesium.sampleTerrain(
             viewer.terrainProvider,
@@ -239,10 +208,6 @@ export async function setTracks(tracks) {
         }
     }
 
-
-    //
-    // Pointer cursor logic
-    //
     let isPointer = false
 
     viewer.screenSpaceEventHandler.setInputAction((movement) => {
@@ -263,10 +228,6 @@ export async function setTracks(tracks) {
         }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
-
-    //
-    // Click handler
-    //
     viewer.screenSpaceEventHandler.setInputAction((movement) => {
         const pickedArray = viewer.scene.drillPick(movement.position)
 
@@ -319,17 +280,11 @@ export async function setTracks(tracks) {
         popup.style.top  = `${anchorPopupPos.y}px`
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
-
-    //
-    // Add + fly
-    //
     viewer.dataSources.add(trackDataSource)
     viewer.flyTo(trackDataSource)
 
     console.log(`Added ${tracks.length} markers`)
 }
-
-
 
 function handleLongPress(position) {
     if (!viewer) return
@@ -352,4 +307,63 @@ function handleLongPress(position) {
     setSearchCenter(lat, lon)
 
     store.reload()
+}
+
+/*
+    Legacy behavior: only one CZML track at a time.
+*/
+export async function loadTrackCZML(czml) {
+    if (!viewer) return null
+
+    if (activeTrackDataSource) {
+        viewer.dataSources.remove(activeTrackDataSource)
+        activeTrackDataSource = null
+    }
+
+    const ds = await Cesium.CzmlDataSource.load(czml)
+    viewer.dataSources.add(ds)
+    activeTrackDataSource = ds
+
+    return ds
+}
+
+export function flyToActiveTrack() {
+    if (!viewer || !activeTrackDataSource) return
+
+    viewer.flyTo(activeTrackDataSource, {
+        duration: constants.FLY_TIME,
+        offset: new Cesium.HeadingPitchRange(
+            0,
+            -0.5,
+            constants.CAMERA_OFFSET
+        )
+    })
+}
+
+export function setClockToEnd(ds) {
+    if (!viewer || !ds || !ds.clock) return
+
+    const clock = ds.clock
+
+    viewer.clock.startTime = clock.startTime
+    viewer.clock.stopTime = clock.stopTime
+
+    // Move to the end so the full track is visible
+    viewer.clock.currentTime = clock.stopTime
+
+    viewer.clock.multiplier = 0
+    viewer.clock.shouldAnimate = false
+}
+
+
+export function syncClockToCZML(ds) {
+    if (!viewer || !ds || !ds.clock) return
+
+    const clock = ds.clock
+
+    viewer.clock.startTime = clock.startTime
+    viewer.clock.stopTime = clock.stopTime
+    viewer.clock.currentTime = clock.currentTime
+    viewer.clock.multiplier = clock.multiplier
+    viewer.clock.shouldAnimate = true
 }

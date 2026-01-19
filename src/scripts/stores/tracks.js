@@ -31,6 +31,10 @@ export default function initTracksStore(Alpine) {
         }
 
         store.activate(trackId)
+
+        const ds = await map.loadTrackCZML(track.czmlOriginal)
+        map.setClockToEnd(ds)
+        map.flyToActiveTrack()
     }
 
     //
