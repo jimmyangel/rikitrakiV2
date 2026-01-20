@@ -14,6 +14,11 @@ export default function initTracksStore(Alpine) {
     async function openTrack(trackId) {
         const store = Alpine.store('tracks')
 
+        // re-show previous track's search marker (if any)
+        if (store.activeTrackId) {
+            map.showSearchMarker(store.activeTrackId)
+        }
+
         store.clear()
 
         let track = store.items[trackId]
@@ -27,7 +32,7 @@ export default function initTracksStore(Alpine) {
             // 2. Merge + normalize + timestamp repair
             const single = extractSingleLineString(rawGeoJSON)
 
-            // 3. Apply elevation smoothing 
+            // 3. Apply elevation smoothing
             single.geometry.coordinates =
                 smoothElevation3(single.geometry.coordinates)
 
@@ -52,9 +57,17 @@ export default function initTracksStore(Alpine) {
 
         const ds = await map.loadTrackCZML(track.czmlOriginal)
         await ds.readyPromise
+
+        // hide the search marker for the active track
+        map.hideSearchMarker(trackId)
+
+        // remember active track so we can re-show its marker later
+        store.activeTrackId = trackId
+
         map.setClockToEnd(ds)
         map.flyToActiveTrack()
     }
+
 
     //
     // Helpers

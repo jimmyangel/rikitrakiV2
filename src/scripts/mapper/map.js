@@ -360,3 +360,16 @@ export function syncClockToCZML(ds) {
     viewer.clock.multiplier = clock.multiplier
     viewer.clock.shouldAnimate = true
 }
+
+export function hideSearchMarker(trackId) {
+    if (!trackDataSource) return
+    const e = trackDataSource.entities.getById(trackId)
+    if (e && e.billboard) e.billboard.show = false
+}
+
+export function showSearchMarker(trackId) {
+    if (!trackDataSource) return
+    const e = trackDataSource.entities.getById(trackId)
+    if (e && e.billboard) e.billboard.show = true
+}
+
