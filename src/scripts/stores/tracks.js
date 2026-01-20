@@ -3,7 +3,7 @@ import { getTracksByLoc } from '../data/getTracksByLoc'
 import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
-import { parseGPXtoGeoJSON, computeBounds, extractSingleLineString } from '../utils/geoUtils.js'
+import { parseGPXtoGeoJSON, computeBounds, extractSingleLineString, smoothElevation3 } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 
 export default function initTracksStore(Alpine) {
@@ -14,10 +14,8 @@ export default function initTracksStore(Alpine) {
     async function openTrack(trackId) {
         const store = Alpine.store('tracks')
 
-        // always close popup first
         store.clear()
 
-        // check cache
         let track = store.items[trackId]
 
         if (!track) {
@@ -26,19 +24,23 @@ export default function initTracksStore(Alpine) {
             // 1. Parse GPX → raw GeoJSON
             const rawGeoJSON = await parseGPXtoGeoJSON(gpxBlob)
 
-            // 2. Normalize into a single LineString (legacy behavior)
+            // 2. Merge + normalize + timestamp repair
             const single = extractSingleLineString(rawGeoJSON)
 
-            // 3. Wrap into a FeatureCollection (what CZML builder expects)
+            // 3. Apply elevation smoothing 
+            single.geometry.coordinates =
+                smoothElevation3(single.geometry.coordinates)
+
+            // 4. Wrap into FeatureCollection
             const geojson = {
                 type: 'FeatureCollection',
                 features: [single]
             }
 
-            // 4. Compute bounds on the normalized GeoJSON
+            // 5. Compute bounds on the smoothed, normalized geometry
             const bounds = computeBounds(geojson)
 
-            // 5. Build CZML from the normalized GeoJSON
+            // 6. Build CZML from the clean, smoothed GeoJSON
             const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
 
             track = { details, gpxBlob, geojson, geotags, bounds, czmlOriginal }
@@ -53,7 +55,6 @@ export default function initTracksStore(Alpine) {
         map.setClockToEnd(ds)
         map.flyToActiveTrack()
     }
-
 
     //
     // Helpers

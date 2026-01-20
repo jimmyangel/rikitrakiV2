@@ -161,6 +161,23 @@ export function extractSingleLineString(fc) {
     return out
 }
 
+export function smoothElevation3(coords) {
+    if (!Array.isArray(coords) || coords.length < 3) return coords
+
+    const out = coords.map(c => [...c])
+
+    for (let i = 1; i < coords.length - 1; i++) {
+        out[i][2] = (
+            coords[i - 1][2] +
+            coords[i][2] +
+            coords[i + 1][2]
+        ) / 3
+    }
+
+    return out
+}
+
+
 
 
 
