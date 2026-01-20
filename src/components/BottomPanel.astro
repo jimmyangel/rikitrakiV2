@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components'
+import MOTDContent from '../components/MOTDContent.astro'
 ---
 
 <div class="bottom-panel isopen">
@@ -7,22 +8,18 @@ import { Icon } from 'astro-icon/components'
 		<Icon name="fa7-solid:xmark" class="icon" />
 	</button>
 
-	<div x-data x-init="$store.tracks.loadMotd()"class="bottom-panel-content">
-		<div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light p-2">
-			What's new...
-		</div>
-		<div class="card-container">
-			<div class="card-row">
-				<template x-for="item in $store.tracks.motdTracks" :key="item.trackId">
-					<div class="motd-card has-text-centered">
-						<img class="motdThumbs" :src="$store.tracks.thumbnailUrl(item.trackId)">
-						<div class="is-size-7 p-2" x-text="item.title"></div>
-					</div>
-				</template>
-			</div>
-		</div>
-	</div>
+    <div class="bottom-panel-content">
+        <div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light p-2">
+            What's new...
+        </div>
+        <div class="card-container">
+            <div class="card-row">
+                <MOTDContent  />
+            </div>
+        </div>
+    </div>
 </div>
+
 <style>
 
 /* ----------------------------------------------------------
@@ -94,25 +91,6 @@ import { Icon } from 'astro-icon/components'
     margin: 0 auto; 
 }
 
-/* cards */
-.motd-card {
-    flex: 0 0 auto;
-    width: 12rem;
-    height: 100%;
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;
-	align-items: center;
-}
-
-.motdThumbs {
-    border: 2px solid #fff;
-    width: 10rem;
-	height: 7.5rem;
-}
-
-
-
 /* ----------------------------------------------------------
     MOBILE (vertical stack + vertical scroll)
 ---------------------------------------------------------- */
@@ -142,37 +120,5 @@ import { Icon } from 'astro-icon/components'
         width: 100%;
         margin: 0;
     }
-
-    .motd-card {
-        height: auto;
-        min-width: 0;
-        margin-bottom: 0;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        flex: 0 0 calc(33.333% - 1rem);
-        max-width: calc(33.333% - 1rem);
-    }
-
-    @media (max-width: 600px) {
-        .motd-card {
-            flex: 0 0 calc(50% - 1rem);
-            max-width: calc(50% - 1rem);
-        }
-    }
-
-    @media (max-width: 400px) {
-        .motd-card {
-            flex: 0 0 100%;
-            max-width: 100%;
-        }
-    }
 }
-
-
-
-
-
 </style>
