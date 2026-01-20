@@ -10,6 +10,7 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
     const feature = fc.features[0]
     const coords = feature.geometry.coordinates
     const times = feature.properties.coordTimes
+	const trailheadHeight = coords[0][2]
 
     const czml = [
         {
@@ -67,22 +68,30 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
             },
             position: { cartographicDegrees: [] }
         },
-        {
-            id: 'nw',
-            description: 'invisible nw for camera fly',
-            point: { color: { rgba: [0, 0, 0, 0] } },
-            position: {
-                cartographicDegrees: [bounds.west, bounds.north, 0]
-            }
-        },
-        {
-            id: 'se',
-            description: 'invisible se for camera fly',
-            point: { color: { rgba: [0, 0, 0, 0] } },
-            position: {
-                cartographicDegrees: [bounds.east, bounds.south, 0]
-            }
-        }
+		{
+			id: 'nw',
+			description: 'invisible nw for camera fly',
+			point: { color: { rgba: [0, 0, 0, 0] } },
+			position: {
+				cartographicDegrees: [
+					bounds.west,
+					bounds.north,
+					trailheadHeight
+				]
+			}
+		},
+		{
+			id: 'se',
+			description: 'invisible se for camera fly',
+			point: { color: { rgba: [0, 0, 0, 0] } },
+			position: {
+				cartographicDegrees: [
+					bounds.east,
+					bounds.south,
+					trailheadHeight
+				]
+			}
+		}
     ]
 
     function keepSample(i) {
