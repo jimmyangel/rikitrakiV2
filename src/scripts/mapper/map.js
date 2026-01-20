@@ -330,14 +330,7 @@ export async function loadTrackCZML(czml) {
 export function flyToActiveTrack() {
     if (!viewer || !activeTrackDataSource) return
 
-    viewer.flyTo(activeTrackDataSource, {
-        duration: constants.FLY_TIME,
-        offset: new Cesium.HeadingPitchRange(
-            0,
-            -0.5,
-            constants.CAMERA_OFFSET
-        )
-    })
+    viewer.flyTo(activeTrackDataSource)
 }
 
 export function setClockToEnd(ds) {

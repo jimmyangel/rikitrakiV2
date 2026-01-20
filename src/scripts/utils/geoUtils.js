@@ -83,6 +83,86 @@ export function computeBounds(geojson) {
     return { west, south, east, north }
 }
 
+export function extractSingleLineString(fc) {
+    const out = {
+        type: 'Feature',
+        geometry: {
+            type: 'LineString',
+            coordinates: []
+        },
+        properties: {
+            coordTimes: []
+        }
+    }
+
+    // synthetic timestamp generator (10s increments)
+    let synthetic = new Date(2015, 0, 1)
+
+    function nextSynthetic() {
+        const t = synthetic.toISOString()
+        synthetic.setSeconds(synthetic.getSeconds() + 10)
+        return t
+    }
+
+    function normalizeCoord(c) {
+        if (c.length === 2) return [c[0], c[1], 0]
+        if (c.length === 3 && (c[2] == null || isNaN(c[2]))) return [c[0], c[1], 0]
+        return c
+    }
+
+    function isValidISO(t) {
+        if (typeof t !== 'string') return false
+        const d = new Date(t)
+        return !isNaN(d.getTime())
+    }
+
+    function mergeSegment(coords, times) {
+        for (let i = 0; i < coords.length; i++) {
+            const c = normalizeCoord(coords[i])
+            out.geometry.coordinates.push(c)
+
+            const t = times && times[i]
+            if (isValidISO(t)) {
+                out.properties.coordTimes.push(t)
+            } else {
+                out.properties.coordTimes.push(nextSynthetic())
+            }
+        }
+    }
+
+    for (const f of fc.features) {
+        if (!out.properties.time && f.properties && f.properties.time) {
+            out.properties.time = f.properties.time
+        }
+
+        if (!f.geometry) continue
+
+        if (f.geometry.type === 'LineString') {
+            const coords = f.geometry.coordinates
+            if (coords.length >= 2) {
+                mergeSegment(coords, f.properties && f.properties.coordTimes)
+            }
+        }
+
+        if (f.geometry.type === 'MultiLineString') {
+            const segments = f.geometry.coordinates
+            for (let i = 0; i < segments.length; i++) {
+                const seg = segments[i]
+                if (seg.length >= 2) {
+                    const times = f.properties &&
+                                  Array.isArray(f.properties.coordTimes) &&
+                                  f.properties.coordTimes[i]
+                    mergeSegment(seg, times)
+                }
+            }
+        }
+    }
+
+    return out
+}
+
+
+
 
 
 

@@ -6,27 +6,10 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
 
     const fc = JSON.parse(JSON.stringify(geojson))
 
-    fc.features = fc.features.filter(f =>
-        f.geometry.type === 'LineString' &&
-        Array.isArray(f.geometry.coordinates) &&
-        f.geometry.coordinates[0].length >= 3
-    )
-
-	for (const feature of fc.features) {
-    feature.geometry.coordinates =
-		smoothElevation5(feature.geometry.coordinates)
-	}
-
-
-    const start = new Date(2015, 0, 1)
-    for (const feature of fc.features) {
-        feature.properties.coordTimes = []
-        let d = new Date(start)
-        for (let i = 0; i < feature.geometry.coordinates.length; i++) {
-            feature.properties.coordTimes.push(d.toISOString())
-            d.setSeconds(d.getSeconds() + 10)
-        }
-    }
+    // Assume exactly one valid LineString feature (legacy behavior)
+    const feature = fc.features[0]
+    const coords = feature.geometry.coordinates
+    const times = feature.properties.coordTimes
 
     const czml = [
         {
@@ -87,98 +70,52 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
         {
             id: 'nw',
             description: 'invisible nw for camera fly',
-            point: {
-                color: { rgba: [0, 0, 0, 0] }
-            },
+            point: { color: { rgba: [0, 0, 0, 0] } },
             position: {
-                cartographicDegrees: [
-                    bounds.west,
-                    bounds.north,
-                    0
-                ]
+                cartographicDegrees: [bounds.west, bounds.north, 0]
             }
         },
         {
             id: 'se',
             description: 'invisible se for camera fly',
-            point: {
-                color: { rgba: [0, 0, 0, 0] }
-            },
+            point: { color: { rgba: [0, 0, 0, 0] } },
             position: {
-                cartographicDegrees: [
-                    bounds.east,
-                    bounds.south,
-                    0
-                ]
+                cartographicDegrees: [bounds.east, bounds.south, 0]
             }
         }
     ]
 
-    function keepSample(featureIndex, coordIndex) {
-        const f = fc.features[featureIndex]
-        const t = f.properties.coordTimes[coordIndex]
-        const c = f.geometry.coordinates[coordIndex]
-
-        czml[1].position.cartographicDegrees.push(
-            t,
-            c[0],
-            c[1],
-            c[2]
-        )
+    function keepSample(i) {
+        const t = times[i]
+        const c = coords[i]
+        czml[1].position.cartographicDegrees.push(t, c[0], c[1], c[2])
     }
 
-    for (let j = 0; j < fc.features.length; j++) {
-        const coords = fc.features[j].geometry.coordinates
-        let last = 0
+    let last = 0
+    keepSample(0)
 
-        keepSample(j, 0)
+    for (let i = 1; i < coords.length; i++) {
+        const prev = Cesium.Cartesian3.fromDegrees(
+            coords[last][0], coords[last][1], coords[last][2]
+        )
+        const curr = Cesium.Cartesian3.fromDegrees(
+            coords[i][0], coords[i][1], coords[i][2]
+        )
 
-        for (let i = 1; i < coords.length; i++) {
-            const prev = Cesium.Cartesian3.fromDegrees(
-                coords[last][0], coords[last][1], coords[last][2]
-            )
-            const curr = Cesium.Cartesian3.fromDegrees(
-                coords[i][0], coords[i][1], coords[i][2]
-            )
-
-            if (Cesium.Cartesian3.distance(curr, prev) > minSampleDistance) {
-                keepSample(j, i)
-                last = i
-            }
+        if (Cesium.Cartesian3.distance(curr, prev) > minSampleDistance) {
+            keepSample(i)
+            last = i
         }
     }
 
-    const first = fc.features[0].properties.coordTimes[0]
-    const lastFeature = fc.features[fc.features.length - 1]
-    const lastIndex = lastFeature.properties.coordTimes.length - 1
-    const lastTime = lastFeature.properties.coordTimes[lastIndex]
+    const firstTime = times[0]
+    const lastTime = times[times.length - 1]
 
-    czml[0].clock.interval = `${first}/${lastTime}`
-    czml[0].clock.currentTime = first
-    czml[1].availability = `${first}/${lastTime}`
+    czml[0].clock.interval = `${firstTime}/${lastTime}`
+    czml[0].clock.currentTime = firstTime
+    czml[1].availability = `${firstTime}/${lastTime}`
 
-    const firstCoord = fc.features[0].geometry.coordinates[0]
-    czml[2].position.cartographicDegrees = firstCoord
+    czml[2].position.cartographicDegrees = coords[0]
 
     return czml
 }
-
-function smoothElevation5(coords) {
-    if (coords.length < 5) return coords
-
-    const out = coords.map(c => [...c])
-
-    for (let i = 2; i < coords.length - 2; i++) {
-        const z =
-            coords[i - 2][2] * 0.125 +
-            coords[i - 1][2] * 0.125 +
-            coords[i][2]     * 0.25  +
-            coords[i + 1][2] * 0.125 +
-            coords[i + 2][2] * 0.125
-
-        out[i][2] = z
-    }
-
-    return out
-}
-
