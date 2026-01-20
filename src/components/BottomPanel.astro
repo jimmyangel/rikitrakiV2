@@ -1,24 +1,47 @@
 ---
 import { Icon } from 'astro-icon/components'
 import MOTDContent from '../components/MOTDContent.astro'
+import ActiveTrackContent from '../components/ActiveTrackContent.astro'
 ---
 
-<div class="bottom-panel isopen">
-	<button class="bottom-panel-close-button" title="Close info panel">
-		<Icon name="fa7-solid:xmark" class="icon" />
-	</button>
+<div class="bottom-panel isopen" x-data>
+    <button class="bottom-panel-close-button" title="Close info panel">
+        <Icon name="fa7-solid:xmark" class="icon" />
+    </button>
 
     <div class="bottom-panel-content">
-        <div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light p-2">
-            What's new...
-        </div>
-        <div class="card-container">
-            <div class="card-row">
-                <MOTDContent  />
+
+        <!-- MOTD MODE -->
+        <template x-if="!$store.tracks.active">
+            <div>
+                <div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light p-2">
+                    What's new...
+                </div>
+
+                <div class="card-container">
+                    <div class="card-row">
+                        <MOTDContent />
+                    </div>
+                </div>
             </div>
-        </div>
+        </template>
+
+        <!-- ACTIVE TRACK MODE -->
+        <template x-if="$store.tracks.active">
+            <div>
+                <div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5" x-text="$store.tracks.items[$store.tracks.active].details.trackName">
+                </div>
+                <div class="card-container">
+                    <div class="card-row"> 
+                        <ActiveTrackContent /> 
+                    </div>
+                </div>
+            </div>
+        </template>
+
     </div>
 </div>
+
 
 <style>
 
@@ -39,6 +62,15 @@ import MOTDContent from '../components/MOTDContent.astro'
 .bottom-panel:not(.isopen) {
     max-height: 0;
 }
+
+@media (min-width: 768px) {
+    .bottom-panel-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
 
 /* ----------------------------------------------------------
     CONTENT AREA (flex column, no scroll on desktop)

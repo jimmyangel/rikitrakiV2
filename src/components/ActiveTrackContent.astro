@@ -1,0 +1,54 @@
+---
+
+---
+<div>
+	HOLA
+</div>
+
+<style>
+	.track-card {
+		flex: 0 0 auto;
+		width: 12rem;
+		height: 100%;
+		scroll-snap-align: start;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.trackThumbs {
+		border: 2px solid #fff;
+		width: 10rem;
+		height: 7.5rem;
+	}
+
+	@media (max-width: 768px) {
+
+		.track-card {
+			height: auto;
+			min-width: 0;
+			margin-bottom: 0;
+
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+			flex: 0 0 calc(33.333% - 1rem);
+			max-width: calc(33.333% - 1rem);
+		}
+
+		@media (max-width: 600px) {
+			.track-card {
+				flex: 0 0 calc(50% - 1rem);
+				max-width: calc(50% - 1rem);
+			}
+		}
+
+		@media (max-width: 400px) {
+			.track-card {
+				flex: 0 0 100%;
+				max-width: 100%;
+			}
+		}
+	}
+</style>
