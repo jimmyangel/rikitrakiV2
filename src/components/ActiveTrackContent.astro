@@ -1,32 +1,68 @@
 ---
 ---
 <div class="track-card p-3">
-    <div class="is-size-6 has-text-weight-bold mb-2">Metrics</div>
 
+    <!-- trackType -->
+    <div class="metric-line">
+		<span class="metric-label">Activity</span>
+        <span class="metric-value"
+            x-text="$store.tracks.items[$store.tracks.active].details.trackType">
+        </span>
+    </div>
+
+    <!-- trackLevel -->
+    <div class="metric-line">
+		<span class="metric-label">Level</span>
+        <span class="metric-value"
+            x-text="$store.tracks.items[$store.tracks.active].details.trackLevel">
+        </span>
+    </div>
+
+    <!-- date recorded -->
+	<div class="metric-line">
+		<span class="metric-label">Date recorded</span>
+		<span class="metric-value"
+			x-text="$store.tracks.items[$store.tracks.active].details.trackDate
+				? new Date($store.tracks.items[$store.tracks.active].details.trackDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+				: 'Not Available'">
+		</span>
+	</div>
+
+
+    <!-- Distance -->
     <div class="metric-line">
         <span class="metric-label">Distance</span>
         <span class="metric-value"
-            x-text="$store.tracks.items[$store.tracks.active].metrics.lengthKm.toFixed(2) + ' km'"></span>
+            x-text="$store.tracks.items[$store.tracks.active].metrics.lengthKm.toFixed(2) + ' km'">
+        </span>
     </div>
 
+    <!-- Elevation Gain -->
     <div class="metric-line">
         <span class="metric-label">Elevation Gain</span>
         <span class="metric-value"
-            x-text="Math.round($store.tracks.items[$store.tracks.active].metrics.elevationGain) + ' m'"></span>
+            x-text="Math.round($store.tracks.items[$store.tracks.active].metrics.elevationGain) + ' m'">
+        </span>
     </div>
 
+    <!-- Max Elevation -->
     <div class="metric-line">
         <span class="metric-label">Max Elevation</span>
         <span class="metric-value"
-            x-text="Math.round($store.tracks.items[$store.tracks.active].metrics.maxElevation) + ' m'"></span>
+            x-text="Math.round($store.tracks.items[$store.tracks.active].metrics.maxElevation) + ' m'">
+        </span>
     </div>
 
+    <!-- Min Elevation -->
     <div class="metric-line">
         <span class="metric-label">Min Elevation</span>
         <span class="metric-value"
-            x-text="Math.round($store.tracks.items[$store.tracks.active].metrics.minElevation) + ' m'"></span>
+            x-text="Math.round($store.tracks.items[$store.tracks.active].metrics.minElevation) + ' m'">
+        </span>
     </div>
+
 </div>
+
 
 <div class="track-card track-card-description p-3">
     <div class="description-scroll is-size-7"

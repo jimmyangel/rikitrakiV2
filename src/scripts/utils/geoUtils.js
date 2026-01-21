@@ -252,6 +252,35 @@ export function computeTrackMetrics(input) {
     }
 }
 
+export function extractTrackDate(trackGeoJSON) {
+    let trackDate = null
+
+    // Prefer LineString timestamps (track segments)
+    for (const feature of trackGeoJSON.features) {
+        if (feature.geometry.type === 'LineString') {
+            if (feature.properties?.time) {
+                trackDate = new Date(feature.properties.time)
+                break
+            }
+        }
+    }
+
+    // Fallback: waypoint timestamps
+    if (!trackDate) {
+        for (const feature of trackGeoJSON.features) {
+            if (feature.geometry.type === 'Point') {
+                if (feature.properties?.time) {
+                    trackDate = new Date(feature.properties.time)
+                    break
+                }
+            }
+        }
+    }
+
+    return trackDate
+}
+
+
 
 
 

@@ -30,8 +30,10 @@ import ActiveTrackContent from '../components/ActiveTrackContent.astro'
         <template x-if="$store.tracks.active">
             <div class="panel-mode-wrapper">
                 <div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5"
-                     x-text="$store.tracks.items[$store.tracks.active].details.trackName">
+                    x-text="$store.tracks.items[$store.tracks.active].details.trackName 
+                        + ($store.tracks.items[$store.tracks.active].details.trackFav ? ' ✭' : '')">
                 </div>
+
 
                 <div class="card-container">
                     <div class="card-row">

@@ -3,7 +3,7 @@ import { getTracksByLoc } from '../data/getTracksByLoc'
 import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
-import { parseGPXtoGeoJSON, computeBounds, extractSingleLineString, smoothElevation3, computeTrackMetrics } from '../utils/geoUtils.js'
+import { parseGPXtoGeoJSON, computeBounds, extractSingleLineString, smoothElevation3, computeTrackMetrics, extractTrackDate } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 
 export default function initTracksStore(Alpine) {
@@ -28,6 +28,8 @@ export default function initTracksStore(Alpine) {
 
             // Parse GPX → raw GeoJSON
             const rawGeoJSON = await parseGPXtoGeoJSON(gpxBlob)
+            details.trackDate = extractTrackDate(rawGeoJSON)
+            console.log(rawGeoJSON)
 
             // Merge + normalize + timestamp repair
             const single = extractSingleLineString(rawGeoJSON)
