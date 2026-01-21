@@ -1,8 +1,13 @@
 ---
+const descWidthThresholds = {
+  short: 120,
+  medium: 240
+}
 ---
+
+<!-- METRICS CARD -->
 <div class="track-card p-3">
 
-    <!-- trackType -->
     <div class="metric-line">
         <span class="metric-label">Activity</span>
         <span class="metric-value"
@@ -10,7 +15,6 @@
         </span>
     </div>
 
-    <!-- trackLevel -->
     <div class="metric-line">
         <span class="metric-label">Level</span>
         <span class="metric-value"
@@ -18,7 +22,6 @@
         </span>
     </div>
 
-    <!-- date recorded -->
     <div class="metric-line">
         <span class="metric-label">Date recorded</span>
         <span class="metric-value"
@@ -28,7 +31,6 @@
         </span>
     </div>
 
-    <!-- Distance -->
     <div class="metric-line">
         <span class="metric-label">Distance</span>
         <span class="metric-value"
@@ -36,7 +38,6 @@
         </span>
     </div>
 
-    <!-- Elevation Gain -->
     <div class="metric-line">
         <span class="metric-label">Elevation Gain</span>
         <span class="metric-value"
@@ -44,7 +45,6 @@
         </span>
     </div>
 
-    <!-- Max Elevation -->
     <div class="metric-line">
         <span class="metric-label">Max Elevation</span>
         <span class="metric-value"
@@ -52,7 +52,6 @@
         </span>
     </div>
 
-    <!-- Min Elevation -->
     <div class="metric-line">
         <span class="metric-label">Min Elevation</span>
         <span class="metric-value"
@@ -62,87 +61,94 @@
 
 </div>
 
-<!-- DESCRIPTION CARD WITH ADAPTIVE WIDTH -->
-	<div class="track-card track-card-description p-3"
-     :style="`width: ${(() => { const d = $store.tracks.items[$store.tracks.active].details.trackDescription.length; return d < 120 ? '12rem' : d < 240 ? '18rem' : '24rem'; })()}`">
-
+<!-- DESCRIPTION CARD -->
+<div
+    class="track-card track-card-description p-3"
+	x-data={`descWidthController(${descWidthThresholds.short}, ${descWidthThresholds.medium})`}
+    :class="descWidthClass($store.tracks.items[$store.tracks.active].details.trackDescription)"
+>
     <div class="description-scroll is-size-7"
          x-html="$store.tracks.items[$store.tracks.active].details.trackDescription">
     </div>
 </div>
 
 <style>
-.track-card {
-    flex: 0 0 auto;
-    width: 12rem;
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.15);
-    min-height: 0;
-}
-
-.metric-line {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    font-size: .8rem;
-    padding: 2px 0;
-}
-
-.metric-label {
-    opacity: .7;
-}
-
-.metric-value {
-    font-weight: 600;
-}
-
-/* DESCRIPTION CARD: width controlled by Alpine */
-.track-card-description {
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 auto;
-    min-height: 0;
-}
-
-/* SCROLL + WRAPPING */
-.description-scroll {
-    flex: 1 1 auto;
-    min-height: 0;
-    width: 100%;
-    overflow-y: auto;
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-@media (max-width: 768px) {
     .track-card {
-        height: auto;
-        min-width: 0;
-        margin-bottom: 0;
-        flex: 0 0 calc(33.333% - 1rem);
-        max-width: calc(33.333% - 1rem);
+        flex: 0 0 auto;
+        width: 12rem;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.15);
+        min-height: 0;
     }
 
+    .metric-line {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: .8rem;
+        padding: 2px 0;
+    }
+
+    .metric-label {
+        opacity: .7;
+    }
+
+    .metric-value {
+        font-weight: 600;
+    }
+
+    /* WIDTH CLASSES */
+    .desc-w-short { width: 12rem }
+    .desc-w-medium { width: 18rem }
+    .desc-w-long { width: 24rem }
+
+    /* DESCRIPTION CARD */
     .track-card-description {
-        width: 100% !important;
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 auto;
+        min-height: 0;
     }
 
-    @media (max-width: 600px) {
-        .track-card {
-            flex: 0 0 calc(50% - 1rem);
-            max-width: calc(50% - 1rem);
-        }
+    /* SCROLL + WRAPPING */
+    .description-scroll {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        overflow-y: auto;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 768px) {
         .track-card {
-            flex: 0 0 100%;
-            max-width: 100%;
+            height: auto;
+            min-width: 0;
+            margin-bottom: 0;
+            flex: 0 0 calc(33.333% - 1rem);
+            max-width: calc(33.333% - 1rem);
+        }
+
+        .track-card-description {
+            width: 100% !important;
+        }
+
+        @media (max-width: 600px) {
+            .track-card {
+                flex: 0 0 calc(50% - 1rem);
+                max-width: calc(50% - 1rem);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .track-card {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
         }
     }
-}
 </style>

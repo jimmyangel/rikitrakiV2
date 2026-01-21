@@ -56,26 +56,30 @@ import '../styles/map-frame.css'
 <script>
     import * as mapFrame from '../scripts/ui/mapFrame.js'
     import * as map from '../scripts/mapper/map.js'
-	import { getApproxLocation } from '../scripts/utils/geoUtils.js'
-	import initTracksStore from '../scripts/stores/tracks.js'
+    import { getApproxLocation } from '../scripts/utils/geoUtils.js'
+    import initTracksStore from '../scripts/stores/tracks.js'
+    import descWidth from '../scripts/alpine-plugins/descWidth.js'
 
-	document.addEventListener('alpine:init', () => {
-		initTracksStore(Alpine)
-	})
+    document.addEventListener('alpine:init', () => {
+        Alpine.plugin(descWidth)
+        initTracksStore(Alpine)
+    })
 
-	document.addEventListener('DOMContentLoaded', async () => {
-		mapFrame.initUI()
-		map.initMap()
+    document.addEventListener('DOMContentLoaded', async () => {
+        mapFrame.initUI()
+        map.initMap()
 
-		const { lat, lon } = await getApproxLocation()
+        const { lat, lon } = await getApproxLocation()
 
-		map.setSearchCenter(lat, lon)
+        map.setSearchCenter(lat, lon)
 
-		Alpine.store('tracks').lat = lat
-		Alpine.store('tracks').lon = lon
+        // Option B: cast once, use everywhere
+        const tracks = Alpine.store('tracks') as any
 
-		Alpine.store('tracks').reload()
-	})
-
+        tracks.lat = lat
+        tracks.lon = lon
+        tracks.reload()
+    })
 </script>
+
 
