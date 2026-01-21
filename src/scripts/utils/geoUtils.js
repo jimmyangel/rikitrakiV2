@@ -177,6 +177,82 @@ export function smoothElevation3(coords) {
     return out
 }
 
+export function computeTrackMetrics(input) {
+    // Accept FeatureCollection or Feature
+    const feature = input.type === 'FeatureCollection'
+        ? input.features[0]
+        : input
+
+    const coords = feature.geometry.coordinates
+
+    // Guard: no coords or too few points
+    if (!coords || coords.length < 2) {
+        return {
+            lengthKm: 0,
+            elevationGain: 0,
+            maxElevation: 0,
+            minElevation: 0
+        }
+    }
+
+    // Ensure elevation exists
+    for (let i = 0; i < coords.length; i++) {
+        if (coords[i].length < 3 || coords[i][2] == null) {
+            coords[i][2] = 0
+        }
+    }
+
+    // --- Legacy trailing moving average smoother ---
+    const smoothElevation = new Array(coords.length)
+    const WINDOW = 5
+
+    for (let i = 0; i < coords.length; i++) {
+        const w = i < WINDOW ? i + 1 : WINDOW
+        let sum = 0
+        for (let j = i - w + 1; j <= i; j++) {
+            sum += coords[j][2]
+        }
+        smoothElevation[i] = sum / w
+    }
+
+    // --- Metrics ---
+    let lengthKm = 0
+    let elevationGain = 0
+
+    let maxElevation = coords[0][2]
+    let minElevation = coords[0][2]
+
+    for (let i = 0; i < coords.length - 1; i++) {
+        const [lon1, lat1] = coords[i]
+        const [lon2, lat2] = coords[i + 1]
+
+        // Distance in km 
+        lengthKm += haversineKm(lat1, lon1, lat2, lon2)
+
+        // Gain rule: positive delta only, using smoothed elevations
+        const delta = smoothElevation[i + 1] - smoothElevation[i]
+        if (delta > 0) elevationGain += delta
+
+        // Min/max from RAW elevations
+        const rawEle = coords[i][2]
+        if (rawEle > maxElevation) maxElevation = rawEle
+        if (rawEle < minElevation) minElevation = rawEle
+    }
+
+    // Include last point in min/max
+    const lastEle = coords[coords.length - 1][2]
+    if (lastEle > maxElevation) maxElevation = lastEle
+    if (lastEle < minElevation) minElevation = lastEle
+
+    return {
+        lengthKm,
+        elevationGain,
+        maxElevation,
+        minElevation
+    }
+}
+
+
 
 
 
