@@ -33,8 +33,6 @@ import ActiveTrackContent from '../components/ActiveTrackContent.astro'
                     x-text="$store.tracks.items[$store.tracks.active].details.trackName 
                         + ($store.tracks.items[$store.tracks.active].details.trackFav ? ' ✭' : '')">
                 </div>
-
-
                 <div class="card-container">
                     <div class="card-row">
                         <ActiveTrackContent />
