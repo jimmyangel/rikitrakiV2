@@ -314,11 +314,18 @@
     transition: background var(--ui-transition);
 }
 
+/* open button position */
 .bottom-panel-open-button {
     bottom: var(--ui-space);
     right: var(--ui-space);
+
+    /* new: hidden by default */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
 }
 
+/* close button position */
 .bottom-panel-close-button {
     top: var(--ui-space);
     right: var(--ui-space);
@@ -329,10 +336,13 @@
     font-size: var(--ui-icon-size);
 }
 
-/* hide open button when panel is open */
-.bottom-panel.isopen + .bottom-panel-open-button {
-    display: none;
+/* show open button only when panel is fully closed */
+.bottom-panel:not(.isopen) + .bottom-panel-open-button {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: .25s; /* match your panel collapse duration */
 }
+
 
 
 /* ----------------------------------------------------------
