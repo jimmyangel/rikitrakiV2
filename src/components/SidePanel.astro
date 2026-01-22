@@ -14,8 +14,8 @@ import { Icon } from 'astro-icon/components'
 			<div class="fade-in" :class="{ 'ready': $store.tracks.headingReady }">
 				<span
 					x-text="
-						$store.tracks.count != null && $store.tracks.radiusDisplay != null
-							? `${$store.tracks.count} tracks within a ${$store.tracks.radiusDisplay} ${$store.tracks.distanceUnit} radius,`
+						$store.tracks.count != null && $store.tracks.radiusKm != null
+							? `${$store.tracks.count} tracks within a ${$formatDistance($store.tracks.radiusKm)} radius,`
 							: '…'
 					"
 				></span>

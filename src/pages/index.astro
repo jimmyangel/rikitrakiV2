@@ -58,7 +58,7 @@ import '../styles/map-frame.css'
     import * as map from '../scripts/mapper/map.js'
     import { getApproxLocation } from '../scripts/utils/geoUtils.js'
     import initTracksStore from '../scripts/stores/tracks.js'
-    import descWidth from '../scripts/alpine-plugins/descWidth.js'
+    import descWidth from '../scripts/alpine-plugins/formatting.js'
 
     document.addEventListener('alpine:init', () => {
         Alpine.plugin(descWidth)
@@ -69,7 +69,7 @@ import '../styles/map-frame.css'
         mapFrame.initUI()
         map.initMap()
 
-        const { lat, lon } = await getApproxLocation()
+        const { lat, lon, countryCode } = await getApproxLocation()
 
         map.setSearchCenter(lat, lon)
 
@@ -78,6 +78,7 @@ import '../styles/map-frame.css'
 
         tracks.lat = lat
         tracks.lon = lon
+        tracks.countryCode = countryCode
         tracks.reload()
     })
 </script>
