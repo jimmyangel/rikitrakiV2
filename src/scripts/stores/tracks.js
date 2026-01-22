@@ -13,6 +13,7 @@ export default function initTracksStore(Alpine) {
     //
     async function openTrack(trackId) {
         const store = Alpine.store('tracks')
+        store.loadingTracks = true
 
         // re-show previous track's search marker (if any)
         if (store.activeTrackId) {
@@ -71,6 +72,7 @@ export default function initTracksStore(Alpine) {
 
         map.setClockToEnd(ds)
         map.flyToActiveTrack()
+        store.loadingTracks = false
     }
 
     //
