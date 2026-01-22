@@ -1,0 +1,116 @@
+/* -------------------------------------------------------
+   BASE CARD
+------------------------------------------------------- */
+.track-card {
+    flex: 0 0 auto;
+    width: 12rem;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+    min-height: 0;
+}
+
+/* -------------------------------------------------------
+   METRICS
+------------------------------------------------------- */
+.metric-line {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: .8rem;
+    padding: 1px 0;
+}
+
+.metric-label {
+    opacity: .7;
+}
+
+.metric-value {
+    font-weight: 600;
+    text-align: right;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.metrics-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* -------------------------------------------------------
+   WIDTH UTILITY CLASSES
+------------------------------------------------------- */
+.desc-w-short  { width: 12rem }
+.desc-w-medium { width: 18rem }
+.desc-w-long   { width: 24rem }
+
+/* -------------------------------------------------------
+   DESCRIPTION CARD
+------------------------------------------------------- */
+.track-card-description {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
+.description-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    overflow-y: auto;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* -------------------------------------------------------
+   ELEVATION PROFILE CARD
+------------------------------------------------------- */
+.track-card-profile {
+    width: 24rem;
+    min-width: 24rem;
+}
+
+/* -------------------------------------------------------
+   RESPONSIVE BREAKPOINTS (FLAT, CONSISTENT)
+------------------------------------------------------- */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .track-card {
+        height: auto;
+        min-width: 0;
+        margin-bottom: 0;
+        flex: 0 0 calc(33.333% - 1rem);
+        max-width: calc(33.333% - 1rem);
+    }
+
+    .track-card-description {
+        width: 100% !important;
+    }
+}
+
+/* Large phones */
+@media (max-width: 600px) {
+    .track-card {
+        flex: 0 0 calc(50% - 1rem);
+        max-width: calc(50% - 1rem);
+    }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
+    .track-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .track-card.track-card-profile {
+        width: 100%;
+        min-width: 100%;
+    }
+}

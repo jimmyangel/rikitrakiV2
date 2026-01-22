@@ -1,0 +1,184 @@
+<div class="track-card track-card-profile p-3" x-data="elevationProfileController()">
+    <h3 class="elevation-title">Elevation Profile</h3>
+    <div x-html="svg"></div>
+
+    <script is:inline>
+        function elevationProfileController() {
+            return {
+                width: 600,
+                height: 220,
+
+                paddingTop: 20,
+                paddingBottom: 40,
+                paddingLeft: 40,
+                paddingRight: 20,
+
+                distancesKm: [],
+                elevationsM: [],
+
+                svg: '',
+
+                init() {
+                    // Temporary sample data
+                    this.distancesKm = [0, 1, 2, 3, 4, 5]
+                    this.elevationsM = [100, 120, 115, 140, 130, 150]
+
+                    this.render()
+                },
+
+                render() {
+                    const usableWidth =
+                        this.width - this.paddingLeft - this.paddingRight
+
+                    const usableHeight =
+                        this.height - this.paddingTop - this.paddingBottom
+
+                    const pts = this.buildPoints(usableWidth, usableHeight)
+                    const xTicks = this.buildXTicks(usableWidth)
+                    const yTicks = this.buildYTicks(usableHeight)
+
+                    const xAxisY = this.height - this.paddingBottom
+                    const yAxisX = this.paddingLeft
+
+                    const axes = `
+                        <line class="axis"
+                            x1="${yAxisX}" y1="${xAxisY}"
+                            x2="${this.width - this.paddingRight}" y2="${xAxisY}" />
+
+                        <line class="axis"
+                            x1="${yAxisX}" y1="${this.paddingTop}"
+                            x2="${yAxisX}" y2="${xAxisY}" />
+                    `
+
+                    const xTickMarkup = xTicks.map(t => `
+                        <g>
+                            <line class="tick"
+                                x1="${t.x}" y1="${xAxisY}"
+                                x2="${t.x}" y2="${xAxisY + 4}" />
+
+                            <text class="tick-label"
+                                x="${t.x}" y="${xAxisY + 18}"
+                                text-anchor="middle">${t.label}</text>
+                        </g>
+                    `).join('')
+
+                    const yTickMarkup = yTicks.map(t => `
+                        <g>
+                            <line class="tick"
+                                x1="${yAxisX - 4}" y1="${t.y}"
+                                x2="${yAxisX}" y2="${t.y}" />
+
+                            <text class="tick-label"
+                                x="${yAxisX - 8}" y="${t.y + 4}"
+                                text-anchor="end">${t.label}</text>
+                        </g>
+                    `).join('')
+
+                    this.svg = `
+                        <svg viewBox="0 0 ${this.width} ${this.height}" class="elevation-svg">
+                            ${axes}
+                            ${xTickMarkup}
+                            ${yTickMarkup}
+                            <polyline class="profile-line" points="${pts}" />
+                        </svg>
+                    `
+                },
+
+                buildPoints(usableWidth, usableHeight) {
+                    const maxElev = Math.max(...this.elevationsM)
+                    const minElev = Math.min(...this.elevationsM)
+                    const elevRange = maxElev - minElev || 1
+
+                    const maxDist = Math.max(...this.distancesKm) || 1
+
+                    return this.distancesKm.map((d, i) => {
+                        const x =
+                            this.paddingLeft +
+                            (d / maxDist) * usableWidth
+
+                        const y =
+                            this.height -
+                            this.paddingBottom -
+                            ((this.elevationsM[i] - minElev) / elevRange) *
+                                usableHeight
+
+                        return `${x},${y}`
+                    }).join(' ')
+                },
+
+                buildXTicks(usableWidth) {
+                    const maxDist = Math.max(...this.distancesKm) || 1
+                    const step = maxDist / 5
+
+                    return Array.from({ length: 6 }, (_, i) => {
+                        const d = i * step
+                        const x =
+                            this.paddingLeft +
+                            (d / maxDist) * usableWidth
+
+                        return { x, label: d.toFixed(1) }
+                    })
+                },
+
+                buildYTicks(usableHeight) {
+                    const maxElev = Math.max(...this.elevationsM)
+                    const minElev = Math.min(...this.elevationsM)
+                    const range = maxElev - minElev || 1
+                    const step = range / 5
+
+                    return Array.from({ length: 6 }, (_, i) => {
+                        const e = minElev + i * step
+
+                        const y =
+                            this.height -
+                            this.paddingBottom -
+                            ((e - minElev) / range) * usableHeight
+
+                        return { y, label: Math.round(e) }
+                    })
+                }
+            }
+        }
+    </script>
+</div>
+
+<style is:global>
+    .track-card-profile {
+        width: 28rem;
+        min-width: 28rem;
+    }
+
+    .elevation-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+        text-align: center;
+    }
+
+    .elevation-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .axis {
+        stroke: #333;
+        stroke-width: 1;
+    }
+
+    .tick {
+        stroke: #666;
+        stroke-width: 1;
+    }
+
+    .tick-label {
+        font-size: 12px;
+        fill: #444;
+    }
+
+    .profile-line {
+        fill: none;
+        stroke: #0074d9;
+        stroke-width: 2;
+    }
+</style>
