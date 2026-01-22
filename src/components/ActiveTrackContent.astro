@@ -1,12 +1,12 @@
 ---
 const descWidthThresholds = {
-  short: 120,
-  medium: 240
+  short: 300,
+  medium: 400
 }
 ---
 
 <!-- METRICS CARD -->
-<div class="track-card p-3">
+<div class="track-card p-3 metrics-scroll">
 
     <div class="metric-line">
         <span class="metric-label">Activity</span>
@@ -33,7 +33,9 @@ const descWidthThresholds = {
 
     <div class="metric-line">
         <span class="metric-label">Distance</span>
-        <span class="metric-value" x-text="$formatDistance($store.tracks.items[$store.tracks.active].metrics.lengthKm)"></span>
+        <span class="metric-value"
+            x-text="$formatDistance($store.tracks.items[$store.tracks.active].metrics.lengthKm)">
+        </span>
     </div>
 
     <div class="metric-line">
@@ -57,7 +59,16 @@ const descWidthThresholds = {
         </span>
     </div>
 
+    <!-- REGION TAGS -->
+    <div class="metric-line">
+        <span class="metric-label">Region</span>
+        <span class="metric-value"
+            x-text="$store.tracks.items[$store.tracks.active].details.trackRegionTags?.join(', ') || '—'">
+        </span>
+    </div>
+
 </div>
+
 
 <!-- DESCRIPTION CARD -->
 <div
@@ -88,7 +99,7 @@ const descWidthThresholds = {
         justify-content: space-between;
         width: 100%;
         font-size: .8rem;
-        padding: 2px 0;
+        padding: 1px 0;
     }
 
     .metric-label {
@@ -97,7 +108,16 @@ const descWidthThresholds = {
 
     .metric-value {
         font-weight: 600;
+		text-align: right; 
+		white-space: normal; 
+		word-break: break-word;
     }
+
+	.metrics-scroll {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+	}
 
     /* WIDTH CLASSES */
     .desc-w-short { width: 12rem }
