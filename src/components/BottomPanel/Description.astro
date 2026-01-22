@@ -1,0 +1,16 @@
+---
+const descWidthThresholds = {
+  short: 300,
+  medium: 400
+}
+---
+<!-- DESCRIPTION CARD -->
+<div
+    class="track-card track-card-description p-3"
+	x-data={`descWidthController(${descWidthThresholds.short}, ${descWidthThresholds.medium})`}
+    :class="descWidthClass($store.tracks.items[$store.tracks.active].details.trackDescription)"
+>
+    <div class="description-scroll is-size-7"
+         x-html="$store.tracks.items[$store.tracks.active].details.trackDescription">
+    </div>
+</div>
