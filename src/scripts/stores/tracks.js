@@ -256,6 +256,13 @@ export default function initTracksStore(Alpine) {
 
         thumbnailUrl(trackId) {
             return `${constants.APIV2_BASE_URL}/tracks/${trackId}/thumbnail/0`
+        },
+        animate(isPlaying, speed) {
+            // Cesium animation logic goes here
+        },
+
+        resetAnimation() {
+            // reset logic goes here
         }
     })
 
