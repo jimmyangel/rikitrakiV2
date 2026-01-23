@@ -230,9 +230,18 @@ export default function initTracksStore(Alpine) {
             )
         },
 
+        animationFinished: false,
+
         //
         // Actions
         //
+
+        init() {
+            map.setOnAnimationFinished(() => {
+                this.animationFinished = true
+            })
+        },
+
         async reload() {
             await reloadTracks(this)
         },
@@ -260,13 +269,41 @@ export default function initTracksStore(Alpine) {
         thumbnailUrl(trackId) {
             return `${constants.APIV2_BASE_URL}/tracks/${trackId}/thumbnail/0`
         },
-        animate(isPlaying, speed) {
-            // Cesium animation logic goes here
+
+        animate(isPlaying) {
+            const trackId = this.active
+            if (!trackId) return
+
+            const track = this.items[trackId]
+            if (!track || !track.dataSource) return
+
+            if (isPlaying) {
+                if (map.isAtEnd()) {
+                    // First play
+                    map.syncClockToCZML(track.dataSource)
+                } else {
+                    // Resume
+                    map.resumeClock()
+                }
+            } else {
+                map.pauseClock()
+            }
         },
 
+        increaseSpeed() { map.increaseSpeed() },
+        
+        decreaseSpeed() { map.decreaseSpeed() },
+
         resetAnimation() {
-            // reset logic goes here
+            const trackId = this.active
+            if (!trackId) return
+
+            const track = this.items[trackId]
+            if (!track || !track.dataSource) return
+
+            map.setClockToEnd(track.dataSource)
         },
+
 
         exitActiveTrack() {
             if (!this.active) return

@@ -22,11 +22,12 @@ import { Icon } from 'astro-icon/components'
                 <Icon name="fa7-solid:backward" />
             </button>
 
-            <button
-                class="anim-btn"
-                x-bind:class="{ blink: isPlaying }"
-                @click="togglePlay()"
-            >
+			<button
+				class="anim-btn"
+				x-bind:class="{ blink: isActive }"
+				@click="togglePlay()"
+			>
+
                 <template x-if="isPlaying">
                     <Icon name="fa7-solid:pause" />
                 </template>
@@ -54,39 +55,54 @@ import { Icon } from 'astro-icon/components'
 </div>
 
 <script is:inline>
-    function trackAnimationControls() {
-        return {
-            isPlaying: false,
-            speed: 1.0,
+	function trackAnimationControls() {
+		return {
+			isPlaying: false,
+			isActive: false,
 
-            togglePlay() {
-                this.isPlaying = !this.isPlaying
-                this.$store.tracks.animate(this.isPlaying, this.speed)
-            },
+			init() {
+				this.$watch('$store.tracks.animationFinished', value => {
+					if (value) {
+						this.isPlaying = false
+						this.isActive = false
+						this.$store.tracks.animationFinished = false
+					}
+				})
+			},
 
-            faster() {
-                this.speed = Math.min(this.speed + 0.25, 5)
-                if (this.isPlaying) this.$store.tracks.animate(true, this.speed)
-            },
+			togglePlay() {
+				if (!this.isActive) {
+					this.isActive = true
+				}
 
-            slower() {
-                this.speed = Math.max(this.speed - 0.25, 0.25)
-                if (this.isPlaying) this.$store.tracks.animate(true, this.speed)
-            },
+				this.isPlaying = !this.isPlaying
+				this.$store.tracks.animate(this.isPlaying)
+			},
 
-            reset() {
-                this.isPlaying = false
-                this.speed = 1.0
-                this.$store.tracks.resetAnimation()
-            },
+
+			faster() {
+				if (this.isPlaying) this.$store.tracks.increaseSpeed()
+			},
+
+			slower() {
+				if (this.isPlaying) this.$store.tracks.decreaseSpeed()
+			},
+
+			reset() {
+				this.isPlaying = false
+				this.isActive = false
+				this.$store.tracks.resetAnimation()
+			},
 
 			exitTrack() {
-				this.isPlaying = false 
-				this.speed = 1.0 
+				this.isPlaying = false
+				this.isActive = false
 				this.$store.tracks.exitActiveTrack()
 			}
-        }
-    }
+
+		}
+	}
+
 </script>
 
 <style>

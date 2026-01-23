@@ -15,6 +15,8 @@ let anchorPopupPos = null
 // Only one animated CZML track at a time (legacy behavior)
 let activeTrackDataSource = null
 
+let onAnimationFinished = null
+
 export function initMap() {
 
     Alpine.store('tracks').loadingCesium = true
@@ -106,6 +108,18 @@ export function initMap() {
     viewer.scene.globe.tileLoadProgressEvent.addEventListener((pending) => {
         if (pending === 0) {
             Alpine.store('tracks').loadingCesium = false
+        }
+    })
+
+    viewer.clock.onTick.addEventListener(() => {
+        if (!viewer.clock.shouldAnimate) return
+
+        const t = viewer.clock.currentTime
+        const stop = viewer.clock.stopTime
+
+        if (Cesium.JulianDate.greaterThanOrEquals(t, stop)) {
+            viewer.clock.shouldAnimate = false
+            if (onAnimationFinished) onAnimationFinished()
         }
     })
 }
@@ -395,6 +409,28 @@ export function syncClockToCZML(ds) {
     viewer.clock.shouldAnimate = true
 }
 
+export function pauseClock() {
+    viewer.clock.shouldAnimate = false
+}
+
+export function isAtEnd() {
+    const clock = viewer.clock
+    return Cesium.JulianDate.equals(clock.currentTime, clock.stopTime)
+}
+
+export function resumeClock() {
+    const clock = viewer.clock
+    clock.shouldAnimate = true
+}
+
+export function increaseSpeed() {
+    viewer.clock.multiplier = viewer.clock.multiplier * 2 
+}
+
+export function decreaseSpeed() {
+    viewer.clock.multiplier = viewer.clock.multiplier / 2 
+}
+
 export function hideSearchMarker(trackId) {
     if (!trackDataSource) return
     const e = trackDataSource.entities.getById(trackId)
@@ -407,3 +443,6 @@ export function showSearchMarker(trackId) {
     if (e && e.billboard) e.billboard.show = true
 }
 
+export function setOnAnimationFinished(callback) {
+    onAnimationFinished = callback
+}
