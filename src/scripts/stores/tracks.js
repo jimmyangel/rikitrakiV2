@@ -263,6 +263,10 @@ export default function initTracksStore(Alpine) {
 
         resetAnimation() {
             // reset logic goes here
+        },
+
+        exitActiveTrack() {
+            // exit track logic goes here
         }
     })
 

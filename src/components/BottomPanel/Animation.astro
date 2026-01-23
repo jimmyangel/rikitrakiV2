@@ -3,119 +3,146 @@ import { Icon } from 'astro-icon/components'
 ---
 <div class="track-card track-card-animation p-3" x-data="trackAnimationControls()">
 
-	<div class="title-row has-text-centered mb-2"> 
-		<div class="animation-title">Track playback</div> 
-	</div>
+    <div class="animation-title mb-3">Track playback</div>
 
-    <div class="reset-row mb-2">
-        <button class="anim-btn" @click="reset()">
-            <Icon name="fa7-solid:arrows-rotate" />
-        </button>
-    </div>
+    <div class="control-grid">
 
-    <div class="control-row is-flex is-justify-content-center is-align-items-center">
+        <!-- Row 1: Reset -->
+        <div></div>
+        <div class="center">
+            <button class="anim-btn" @click="reset()">
+                <Icon name="fa7-solid:arrows-rotate" />
+            </button>
+        </div>
+        <div></div>
 
-        <button class="anim-btn" @click="slower()">
-            <Icon name="fa7-solid:backward" />
-        </button>
+        <!-- Row 2: Slower / Play / Faster -->
+        <div class="control-row">
+            <button class="anim-btn" @click="slower()">
+                <Icon name="fa7-solid:backward" />
+            </button>
 
-		<button
-			class="anim-btn mx-2"
-			x-bind:class="{ blink: isPlaying }"
-			@click="togglePlay()"
-		>
-			<template x-if="isPlaying">
-				<Icon name="fa7-solid:pause" />
-			</template>
-			<template x-if="!isPlaying">
-				<Icon name="fa7-solid:play" />
-			</template>
-		</button>
+            <button
+                class="anim-btn"
+                x-bind:class="{ blink: isPlaying }"
+                @click="togglePlay()"
+            >
+                <template x-if="isPlaying">
+                    <Icon name="fa7-solid:pause" />
+                </template>
+                <template x-if="!isPlaying">
+                    <Icon name="fa7-solid:play" />
+                </template>
+            </button>
 
+            <button class="anim-btn" @click="faster()">
+                <Icon name="fa7-solid:forward" />
+            </button>
+        </div>
 
-        <button class="anim-btn" @click="faster()">
-            <Icon name="fa7-solid:forward" />
-        </button>
+        <!-- Row 3: Exit -->
+        <div></div>
+        <div class="center">
+            <button class="exit-btn" @click="$store.tracks.exitActiveTrack()">
+                Exit track
+            </button>
+        </div>
+        <div></div>
 
     </div>
 
 </div>
 
-
-
 <script is:inline>
-	function trackAnimationControls() {
-		return {
-			isPlaying: false,
-			speed: 1.0,
+    function trackAnimationControls() {
+        return {
+            isPlaying: false,
+            speed: 1.0,
 
-			togglePlay() {
-				this.isPlaying = !this.isPlaying
-				this.$store.tracks.animate(this.isPlaying, this.speed)
-			},
+            togglePlay() {
+                this.isPlaying = !this.isPlaying
+                this.$store.tracks.animate(this.isPlaying, this.speed)
+            },
 
-			faster() {
-				this.speed = Math.min(this.speed + 0.25, 5)
-				if (this.isPlaying) this.$store.tracks.animate(true, this.speed)
-			},
+            faster() {
+                this.speed = Math.min(this.speed + 0.25, 5)
+                if (this.isPlaying) this.$store.tracks.animate(true, this.speed)
+            },
 
-			slower() {
-				this.speed = Math.max(this.speed - 0.25, 0.25)
-				if (this.isPlaying) this.$store.tracks.animate(true, this.speed)
-			},
+            slower() {
+                this.speed = Math.max(this.speed - 0.25, 0.25)
+                if (this.isPlaying) this.$store.tracks.animate(true, this.speed)
+            },
 
-			reset() {
-				this.isPlaying = false
-				this.speed = 1.0
-				this.$store.tracks.resetAnimation()
-			}
-		}
-	}
+            reset() {
+                this.isPlaying = false
+                this.speed = 1.0
+                this.$store.tracks.resetAnimation()
+            }
+        }
+    }
 </script>
 
-
 <style>
-	.animation-title {
-		font-size: 0.8rem;
-		font-weight: 600;
-		margin-bottom: 0.2rem;
-		text-align: center;
-	}
+    .animation-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+        text-align: center;
+    }
 
-	.reset-row {
-		display: flex;
-		justify-content: center;
-	}
+    .control-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        row-gap: 0.75rem;
+        justify-items: center;
+    }
 
+    .control-row {
+        grid-column: 1 / 4;
+        display: flex;
+        justify-content: center;
+        gap: 0.4rem;
+    }
 
-	.anim-btn {
-		width: 26px;
-		height: 26px;
-		padding: 0;
-		border: none;
-		background: #fff;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
-		border-radius: 4px;
-	}
+    .anim-btn {
+        width: 26px;
+        height: 26px;
+        padding: 0;
+        border: none;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+        border-radius: 4px;
+    }
 
-	.anim-btn svg {
-		width: 16px;
-		height: 16px;
-	}
+    .anim-btn svg {
+        width: 16px;
+        height: 16px;
+    }
 
-	.blink {
-		animation: blinker 1.5s linear infinite;
-	}
+    .exit-btn {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 4px 10px;
+        border: none;
+        background: #fff;
+        cursor: pointer;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+        border-radius: 4px;
+        white-space: nowrap;
+    }
 
-	@keyframes blinker {
-		50% {
-			opacity: 0.4;
-		}
-	}
+    .blink {
+        animation: blinker 1.5s linear infinite;
+    }
 
-
+    @keyframes blinker {
+        50% {
+            opacity: 0.4;
+        }
+    }
 </style>
