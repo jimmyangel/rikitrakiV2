@@ -3,7 +3,7 @@ import { getTracksByLoc } from '../data/getTracksByLoc'
 import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
-import { parseGPXtoGeoJSON, computeBounds, extractSingleLineString, smoothElevation3, computeTrackMetrics, extractTrackDate } from '../utils/geoUtils.js'
+import { parseGPXtoGeoJSON, computeBounds, extractSingleLineString, smoothElevation3, computeTrackMetrics, extractTrackDate, computeProfileArrays } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 
 export default function initTracksStore(Alpine) {
@@ -54,7 +54,10 @@ export default function initTracksStore(Alpine) {
             // Build CZML from the clean, smoothed GeoJSON
             const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
 
-            track = { details, metrics, gpxBlob, geojson, geotags, bounds, czmlOriginal }
+            // Compute items for the elevation profile
+            const { distancesKm, elevationsM } = computeProfileArrays(geojson)
+
+            track = { details, metrics, gpxBlob, geojson, geotags, bounds, czmlOriginal, distancesKm, elevationsM }
             console.log(track)
             store.setTrack(trackId, track)
         }

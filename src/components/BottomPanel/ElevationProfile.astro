@@ -1,146 +1,158 @@
-<div class="track-card track-card-profile p-3" x-data="elevationProfileController()">
+---
+
+---
+<div class="track-card track-card-profile p-3" x-data="elevationProfile()">
     <h3 class="elevation-title">Elevation Profile</h3>
     <div x-html="svg"></div>
+</div>
 
-    <script is:inline>
-        function elevationProfileController() {
-            return {
-                width: 600,
-                height: 220,
+<script is:inline>
+    function elevationProfile() {
+        return {
+            width: 600,
+            height: 220,
 
-                paddingTop: 20,
-                paddingBottom: 40,
-                paddingLeft: 40,
-                paddingRight: 20,
+            paddingTop: 20,
+            paddingBottom: 40,
+            paddingLeft: 40,
+            paddingRight: 20,
 
-                distancesKm: [],
-                elevationsM: [],
+            distancesKm: [],
+            elevationsM: [],
 
-                svg: '',
+            svg: '',
 
-                init() {
-                    // Temporary sample data
-                    this.distancesKm = [0, 1, 2, 3, 4, 5]
-                    this.elevationsM = [100, 120, 115, 140, 130, 150]
+            init() {
+                this.$watch('$store.tracks.active', () => this.loadTrack())
+                this.$nextTick(() => this.loadTrack())
+            },
 
-                    this.render()
-                },
+            loadTrack() {
+                const t = this.$store.tracks.items[this.$store.tracks.active]
+                if (!t) return
+                if (!Array.isArray(t.distancesKm) || !Array.isArray(t.elevationsM)) return
 
-                render() {
-                    const usableWidth =
-                        this.width - this.paddingLeft - this.paddingRight
+                this.distancesKm = t.distancesKm
+                this.elevationsM = t.elevationsM
+                this.render()
+            },
 
-                    const usableHeight =
-                        this.height - this.paddingTop - this.paddingBottom
+            render() {
+                if (!this.distancesKm.length || !this.elevationsM.length) return
 
-                    const pts = this.buildPoints(usableWidth, usableHeight)
-                    const xTicks = this.buildXTicks(usableWidth)
-                    const yTicks = this.buildYTicks(usableHeight)
+                const usableWidth =
+                    this.width - this.paddingLeft - this.paddingRight
 
-                    const xAxisY = this.height - this.paddingBottom
-                    const yAxisX = this.paddingLeft
+                const usableHeight =
+                    this.height - this.paddingTop - this.paddingBottom
 
-                    const axes = `
-                        <line class="axis"
-                            x1="${yAxisX}" y1="${xAxisY}"
-                            x2="${this.width - this.paddingRight}" y2="${xAxisY}" />
+                const pts = this.buildPoints(usableWidth, usableHeight)
+                const xTicks = this.buildXTicks(usableWidth)
+                const yTicks = this.buildYTicks(usableHeight)
 
-                        <line class="axis"
-                            x1="${yAxisX}" y1="${this.paddingTop}"
-                            x2="${yAxisX}" y2="${xAxisY}" />
-                    `
+                const xAxisY = this.height - this.paddingBottom
+                const yAxisX = this.paddingLeft
 
-                    const xTickMarkup = xTicks.map(t => `
-                        <g>
-                            <line class="tick"
-                                x1="${t.x}" y1="${xAxisY}"
-                                x2="${t.x}" y2="${xAxisY + 4}" />
+                const axes = `
+                    <line class="axis"
+                        x1="${yAxisX}" y1="${xAxisY}"
+                        x2="${this.width - this.paddingRight}" y2="${xAxisY}" />
 
-                            <text class="tick-label"
-                                x="${t.x}" y="${xAxisY + 18}"
-                                text-anchor="middle">${t.label}</text>
-                        </g>
-                    `).join('')
+                    <line class="axis"
+                        x1="${yAxisX}" y1="${this.paddingTop}"
+                        x2="${yAxisX}" y2="${xAxisY}" />
+                `
 
-                    const yTickMarkup = yTicks.map(t => `
-                        <g>
-                            <line class="tick"
-                                x1="${yAxisX - 4}" y1="${t.y}"
-                                x2="${yAxisX}" y2="${t.y}" />
+                const xTickMarkup = xTicks.map(t => `
+                    <g>
+                        <line class="tick"
+                            x1="${t.x}" y1="${xAxisY}"
+                            x2="${t.x}" y2="${xAxisY + 4}" />
 
-                            <text class="tick-label"
-                                x="${yAxisX - 8}" y="${t.y + 4}"
-                                text-anchor="end">${t.label}</text>
-                        </g>
-                    `).join('')
+                        <text class="tick-label"
+                            x="${t.x}" y="${xAxisY + 18}"
+                            text-anchor="middle">${t.label}</text>
+                    </g>
+                `).join('')
 
-                    this.svg = `
-                        <svg viewBox="0 0 ${this.width} ${this.height}" class="elevation-svg">
-                            ${axes}
-                            ${xTickMarkup}
-                            ${yTickMarkup}
-                            <polyline class="profile-line" points="${pts}" />
-                        </svg>
-                    `
-                },
+                const yTickMarkup = yTicks.map(t => `
+                    <g>
+                        <line class="tick"
+                            x1="${yAxisX - 4}" y1="${t.y}"
+                            x2="${yAxisX}" y2="${t.y}" />
 
-                buildPoints(usableWidth, usableHeight) {
-                    const maxElev = Math.max(...this.elevationsM)
-                    const minElev = Math.min(...this.elevationsM)
-                    const elevRange = maxElev - minElev || 1
+                        <text class="tick-label"
+                            x="${yAxisX - 8}" y="${t.y + 4}"
+                            text-anchor="end">${t.label}</text>
+                    </g>
+                `).join('')
 
-                    const maxDist = Math.max(...this.distancesKm) || 1
+                this.svg = `
+                    <svg viewBox="0 0 ${this.width} ${this.height}" class="elevation-svg">
+                        ${axes}
+                        ${xTickMarkup}
+                        ${yTickMarkup}
+                        <polyline class="profile-line" points="${pts}" />
+                    </svg>
+                `
+            },
 
-                    return this.distancesKm.map((d, i) => {
-                        const x =
-                            this.paddingLeft +
-                            (d / maxDist) * usableWidth
+            buildPoints(usableWidth, usableHeight) {
+                const maxElev = Math.max(...this.elevationsM)
+                const minElev = Math.min(...this.elevationsM)
+                const elevRange = maxElev - minElev || 1
 
-                        const y =
-                            this.height -
-                            this.paddingBottom -
-                            ((this.elevationsM[i] - minElev) / elevRange) *
-                                usableHeight
+                const maxDist = Math.max(...this.distancesKm) || 1
 
-                        return `${x},${y}`
-                    }).join(' ')
-                },
+                return this.distancesKm.map((d, i) => {
+                    const x =
+                        this.paddingLeft +
+                        (d / maxDist) * usableWidth
 
-                buildXTicks(usableWidth) {
-                    const maxDist = Math.max(...this.distancesKm) || 1
-                    const step = maxDist / 5
+                    const y =
+                        this.height -
+                        this.paddingBottom -
+                        ((this.elevationsM[i] - minElev) / elevRange) *
+                            usableHeight
 
-                    return Array.from({ length: 6 }, (_, i) => {
-                        const d = i * step
-                        const x =
-                            this.paddingLeft +
-                            (d / maxDist) * usableWidth
+                    return `${x},${y}`
+                }).join(' ')
+            },
 
-                        return { x, label: d.toFixed(1) }
-                    })
-                },
+            buildXTicks(usableWidth) {
+                const maxDist = Math.max(...this.distancesKm) || 1
+                const step = maxDist / 5
 
-                buildYTicks(usableHeight) {
-                    const maxElev = Math.max(...this.elevationsM)
-                    const minElev = Math.min(...this.elevationsM)
-                    const range = maxElev - minElev || 1
-                    const step = range / 5
+                return Array.from({ length: 6 }, (_, i) => {
+                    const d = i * step
+                    const x =
+                        this.paddingLeft +
+                        (d / maxDist) * usableWidth
 
-                    return Array.from({ length: 6 }, (_, i) => {
-                        const e = minElev + i * step
+                    return { x, label: d.toFixed(1) }
+                })
+            },
 
-                        const y =
-                            this.height -
-                            this.paddingBottom -
-                            ((e - minElev) / range) * usableHeight
+            buildYTicks(usableHeight) {
+                const maxElev = Math.max(...this.elevationsM)
+                const minElev = Math.min(...this.elevationsM)
+                const range = maxElev - minElev || 1
+                const step = range / 5
 
-                        return { y, label: Math.round(e) }
-                    })
-                }
+                return Array.from({ length: 6 }, (_, i) => {
+                    const e = minElev + i * step
+
+                    const y =
+                        this.height -
+                        this.paddingBottom -
+                        ((e - minElev) / range) * usableHeight
+
+                    return { y, label: Math.round(e) }
+                })
             }
         }
-    </script>
-</div>
+    }
+</script>
 
 <style is:global>
     .track-card-profile {

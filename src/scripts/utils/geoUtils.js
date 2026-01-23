@@ -280,6 +280,27 @@ export function extractTrackDate(trackGeoJSON) {
     return trackDate
 }
 
+export function computeProfileArrays(geojson) {
+    const coords = geojson.features[0].geometry.coordinates
+
+    const elevationsM = coords.map(c => c[2])
+
+    const distancesKm = []
+    for (let i = 0; i < coords.length; i++) {
+        if (i === 0) {
+            distancesKm.push(0)
+            continue
+        }
+
+        const [lon1, lat1] = coords[i - 1]
+        const [lon2, lat2] = coords[i]
+
+        const dKm = haversineKm(lat1, lon1, lat2, lon2)
+        distancesKm.push(distancesKm[i - 1] + dKm)
+    }
+
+    return { distancesKm, elevationsM }
+}
 
 
 
