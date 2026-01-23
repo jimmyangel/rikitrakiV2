@@ -161,13 +161,13 @@
 @media (min-width: 769px) {
     .side-panel {
         height: 100%;
-        width: 20rem !important;
+        width: 18rem !important;
         margin-left: 0 !important;
         transition: margin-left .3s ease;
     }
 
     .side-panel:not(.isopen) {
-        margin-left: -20rem !important;
+        margin-left: -18rem !important;
     }
 
     .side-panel-content {

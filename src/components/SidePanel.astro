@@ -11,27 +11,27 @@ import { Icon } from 'astro-icon/components'
 
         <div class="panel-block">
 			<div class="heading-wrapper">
-			<div class="fade-in" :class="{ 'ready': $store.tracks.headingReady }">
-				<span
-					x-text="
-						$store.tracks.count != null && $store.tracks.radiusKm != null
-							? `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
-							: '…'
-					"
-				></span>
+				<div class="fade-in" :class="{ 'ready': $store.tracks.headingReady }">
+					<span
+						x-text="
+							$store.tracks.count != null && $store.tracks.radiusKm != null
+								? `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
+								: '…'
+						"
+					></span>
 
-				<span> centered at </span>
+					<span> centered at </span>
 
-				<span class="cesium-marker"></span>
+					<span class="cesium-marker"></span>
 
-				<span
-					x-text="
-						$store.tracks.lat != null && $store.tracks.lon != null
-							? `${$store.tracks.lat.toFixed(3)}° N, ${Math.abs($store.tracks.lon).toFixed(3)}° W.`
-							: '…'
-					"
-				></span>
-			</div>
+					<span
+						x-text="
+							$store.tracks.lat != null && $store.tracks.lon != null
+								? `${$store.tracks.lat.toFixed(3)}° N, ${Math.abs($store.tracks.lon).toFixed(3)}° W.`
+								: '…'
+						"
+					></span>
+				</div>
 
 			</div>
         </div>
@@ -79,7 +79,7 @@ import { Icon } from 'astro-icon/components'
                     </button>
                 </header>
 
-                <div class="card-content"
+                <div class="card-content is-size-7"
                      x-show="open"
                      x-transition.duration.200ms>
                     <div class="fixed-grid">
