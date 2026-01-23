@@ -15,7 +15,7 @@ import { Icon } from 'astro-icon/components'
 				<span
 					x-text="
 						$store.tracks.count != null && $store.tracks.radiusKm != null
-							? `${$store.tracks.count} tracks within a ${$formatDistance($store.tracks.radiusKm)} radius,`
+							? `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
 							: '…'
 					"
 				></span>

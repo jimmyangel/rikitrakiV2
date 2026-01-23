@@ -1,8 +1,7 @@
 ---
-
 ---
 <div class="track-card track-card-profile p-3" x-data="elevationProfile()">
-    <h3 class="elevation-title">Elevation Profile</h3>
+    <h3 class="elevation-title" x-text="`Elevation Profile (${elevationUnit()})`"></h3>
     <div x-html="svg"></div>
 </div>
 
@@ -13,7 +12,7 @@
             height: 220,
 
             paddingTop: 20,
-            paddingBottom: 40,
+            paddingBottom: 50,
             paddingLeft: 40,
             paddingRight: 20,
 
@@ -21,6 +20,15 @@
             elevationsM: [],
 
             svg: '',
+
+            // UNIT HELPERS
+            distanceUnit() {
+                return this.$store.tracks.countryCode === 'US' ? 'mi' : 'km'
+            },
+
+            elevationUnit() {
+                return this.$store.tracks.countryCode === 'US' ? 'ft' : 'm'
+            },
 
             init() {
                 this.$watch('$store.tracks.active', () => this.loadTrack())
@@ -92,6 +100,13 @@
                         ${axes}
                         ${xTickMarkup}
                         ${yTickMarkup}
+
+                        <!-- X‑axis unit -->
+                        <text class="axis-unit"
+                            x="${this.width / 2}"
+                            y="${xAxisY + 34}"
+                            text-anchor="middle">${this.distanceUnit()}</text>
+
                         <polyline class="profile-line" points="${pts}" />
                     </svg>
                 `
@@ -129,7 +144,10 @@
                         this.paddingLeft +
                         (d / maxDist) * usableWidth
 
-                    return { x, label: d.toFixed(1) }
+                    return {
+                        x,
+                        label: this.$formatDistanceNumber(d)
+                    }
                 })
             },
 
@@ -147,7 +165,10 @@
                         this.paddingBottom -
                         ((e - minElev) / range) * usableHeight
 
-                    return { y, label: Math.round(e) }
+                    return {
+                        y,
+                        label: this.$formatElevationNumber(e)
+                    }
                 })
             }
         }
@@ -186,6 +207,12 @@
     .tick-label {
         font-size: 12px;
         fill: #444;
+    }
+
+    .axis-unit {
+        font-size: 12px;
+        fill: #444;
+        font-weight: 600;
     }
 
     .profile-line {

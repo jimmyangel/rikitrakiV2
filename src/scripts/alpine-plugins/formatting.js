@@ -11,29 +11,37 @@ export default function (Alpine) {
         }
     }))
 
-    // DISTANCE FORMATTER
-    Alpine.magic('formatDistance', () => value => {
-        const store = Alpine.store('tracks')
-        const isUS = store.countryCode === 'US'
+    function convertDistance(km, isUS) {
+        return isUS ? km * 0.621371 : km
+    }
 
-        if (isUS) {
-            const miles = value * 0.621371
-            return miles.toFixed(2) + ' mi'
-        }
+    function convertElevation(m, isUS) {
+        return isUS ? m * 3.28084 : m
+    }
 
-        return value.toFixed(2) + ' km'
+    Alpine.magic('formatDistanceNumber', () => value => {
+        const isUS = Alpine.store('tracks').countryCode === 'US'
+        const local = convertDistance(value, isUS)
+        return local.toFixed(2)
     })
 
-    // ELEVATION FORMATTER
-    Alpine.magic('formatElevation', () => value => {
-        const store = Alpine.store('tracks')
-        const isUS = store.countryCode === 'US'
-
-        if (isUS) {
-            const feet = value * 3.28084
-            return Math.round(feet) + ' ft'
-        }
-
-        return Math.round(value) + ' m'
+    Alpine.magic('formatElevationNumber', () => value => {
+        const isUS = Alpine.store('tracks').countryCode === 'US'
+        const local = convertElevation(value, isUS)
+        return Math.round(local)
     })
+
+    Alpine.magic('formatDistanceLabel', () => value => {
+        const isUS = Alpine.store('tracks').countryCode === 'US'
+        const local = convertDistance(value, isUS)
+        return isUS ? `${local.toFixed(2)} mi` : `${local.toFixed(2)} km`
+    })
+
+    Alpine.magic('formatElevationLabel', () => value => {
+        const isUS = Alpine.store('tracks').countryCode === 'US'
+        const local = convertElevation(value, isUS)
+        return isUS ? `${Math.round(local)} ft` : `${Math.round(local)} m`
+    })
+
+
 }

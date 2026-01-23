@@ -30,28 +30,28 @@
     <div class="metric-line">
         <span class="metric-label">Distance</span>
         <span class="metric-value"
-            x-text="$formatDistance($store.tracks.items[$store.tracks.active].metrics.lengthKm)">
+            x-text="$formatDistanceLabel($store.tracks.items[$store.tracks.active].metrics.lengthKm)">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Elevation Gain</span>
         <span class="metric-value"
-            x-text="$formatElevation($store.tracks.items[$store.tracks.active].metrics.elevationGain)">
+            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.active].metrics.elevationGain)">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Max Elevation</span>
         <span class="metric-value"
-            x-text="$formatElevation($store.tracks.items[$store.tracks.active].metrics.maxElevation)">
+            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.active].metrics.maxElevation)">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Min Elevation</span>
         <span class="metric-value"
-            x-text="$formatElevation($store.tracks.items[$store.tracks.active].metrics.minElevation)">
+            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.active].metrics.minElevation)">
         </span>
     </div>
 
