@@ -43,7 +43,7 @@ import { Icon } from 'astro-icon/components'
         <!-- Row 3: Exit -->
         <div></div>
         <div class="center">
-            <button class="exit-btn" @click="$store.tracks.exitActiveTrack()">
+            <button class="exit-btn" @click="exitTrack()">
                 Exit track
             </button>
         </div>
@@ -78,7 +78,13 @@ import { Icon } from 'astro-icon/components'
                 this.isPlaying = false
                 this.speed = 1.0
                 this.$store.tracks.resetAnimation()
-            }
+            },
+
+			exitTrack() {
+				this.isPlaying = false 
+				this.speed = 1.0 
+				this.$store.tracks.exitActiveTrack()
+			}
         }
     }
 </script>

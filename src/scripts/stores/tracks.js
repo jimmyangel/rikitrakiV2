@@ -67,6 +67,8 @@ export default function initTracksStore(Alpine) {
         const ds = await map.loadTrackCZML(track.czmlOriginal)
         await ds.readyPromise
 
+        track.dataSource = ds
+
         // hide the search marker for the active track
         map.hideSearchMarker(trackId)
 
@@ -74,6 +76,7 @@ export default function initTracksStore(Alpine) {
         store.activeTrackId = trackId
 
         map.setClockToEnd(ds)
+        map.showTrailheadMarker(ds)
         map.flyToActiveTrack()
         store.loadingTracks = false
     }
@@ -266,8 +269,39 @@ export default function initTracksStore(Alpine) {
         },
 
         exitActiveTrack() {
-            // exit track logic goes here
+            if (!this.active) return
+
+            const trackId = this.active
+            const track = this.items[trackId]
+
+            // 1. Reset clock to beginning (if CZML clock exists)
+            if (track && track.dataSource) {
+                map.setClockToBeginning(track.dataSource)
+                map.hideTrailheadMarker(track.dataSource)
+            }
+
+            // 2. Remove animation entities
+            if (track) {
+                if (track.animationEntity) {
+                    this.viewer.entities.remove(track.animationEntity)
+                    track.animationEntity = null
+                }
+                if (track.animationMarker) {
+                    this.viewer.entities.remove(track.animationMarker)
+                    track.animationMarker = null
+                }
+            }
+
+            // 3. Restore search marker
+            map.showSearchMarker(trackId)
+
+            // 4. Clear active track
+            this.active = null
+
+            // 5. Go back to all tracks view
+            map.flyToTrackDataSource()
         }
+
     })
 
     //

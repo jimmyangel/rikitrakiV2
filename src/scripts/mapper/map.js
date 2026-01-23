@@ -281,10 +281,16 @@ export async function setTracks(tracks) {
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
     viewer.dataSources.add(trackDataSource)
-    viewer.flyTo(trackDataSource)
+    flyToTrackDataSource()
 
     console.log(`Added ${tracks.length} markers`)
 }
+
+export function flyToTrackDataSource() {
+    if (!viewer || !trackDataSource) return
+    viewer.flyTo(trackDataSource)
+}
+
 
 function handleLongPress(position) {
     if (!viewer) return
@@ -331,6 +337,34 @@ export function flyToActiveTrack() {
     if (!viewer || !activeTrackDataSource) return
 
     viewer.flyTo(activeTrackDataSource)
+}
+
+export function hideTrailheadMarker(ds) {
+    if (!ds) return
+    const e = ds.entities.getById('trailhead')
+    if (e && e.billboard) e.billboard.show = false
+}
+
+export function showTrailheadMarker(ds) {
+    if (!ds) return
+    const e = ds.entities.getById('trailhead')
+    if (e && e.billboard) e.billboard.show = true
+}
+
+export function setClockToBeginning(ds) {
+    console.log('set clock to beginning')
+    if (!viewer || !ds || !ds.clock) return
+
+    const clock = ds.clock
+
+    viewer.clock.startTime = clock.startTime
+    viewer.clock.stopTime = clock.stopTime
+
+    // Move to the beginning so animation starts cleanly
+    viewer.clock.currentTime = clock.startTime
+
+    viewer.clock.multiplier = 0
+    viewer.clock.shouldAnimate = false
 }
 
 export function setClockToEnd(ds) {
