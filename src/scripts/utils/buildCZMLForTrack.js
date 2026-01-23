@@ -59,15 +59,19 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
             },
             viewFrom: { cartesian: [0, -1000, 300] }
         },
-        {
-            id: 'trailhead',
-            description: 'trailhead marker',
-            billboard: {
-                image: `images/${trackType ? trackType.toLowerCase() : 'hiking'}.png`,
-                verticalOrigin: 'BOTTOM'
-            },
-            position: { cartographicDegrees: [] }
-        },
+		{
+			id: 'trailhead',
+			description: 'trailhead marker',
+			billboard: {
+				image: `images/${trackType ? trackType.toLowerCase() : 'hiking'}.png`,
+				verticalOrigin: 'BOTTOM',
+				heightReference: 'RELATIVE_TO_GROUND',
+				disableDepthTestDistance: 1000000000
+			},
+			position: {
+				cartographicDegrees: []
+			}
+		},
 		{
 			id: 'nw',
 			description: 'invisible nw for camera fly',
@@ -124,7 +128,8 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
     czml[0].clock.currentTime = firstTime
     czml[1].availability = `${firstTime}/${lastTime}`
 
-    czml[2].position.cartographicDegrees = coords[0]
+	const [lon, lat] = coords[0]
+	czml[2].position.cartographicDegrees = [lon, lat, 2]
 
     return czml
 }
