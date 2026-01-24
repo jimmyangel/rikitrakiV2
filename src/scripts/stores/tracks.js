@@ -3,7 +3,15 @@ import { getTracksByLoc } from '../data/getTracksByLoc'
 import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
-import { parseGPXtoGeoJSON, computeBounds, extractSingleLineString, smoothElevation3, computeTrackMetrics, extractTrackDate, computeProfileArrays } from '../utils/geoUtils.js'
+import {
+    parseGPXtoGeoJSON,
+    computeBounds,
+    extractSingleLineString,
+    smoothElevation3,
+    computeTrackMetrics,
+    extractTrackDate,
+    computeProfileArrays
+} from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 
 export default function initTracksStore(Alpine) {
@@ -27,38 +35,36 @@ export default function initTracksStore(Alpine) {
         if (!track) {
             const { details, gpxBlob, geotags } = await getTrackDetails(trackId)
 
-            // Parse GPX → raw GeoJSON
             const rawGeoJSON = await parseGPXtoGeoJSON(gpxBlob)
             details.trackDate = extractTrackDate(rawGeoJSON)
-            console.log(rawGeoJSON)
 
-            // Merge + normalize + timestamp repair
             const single = extractSingleLineString(rawGeoJSON)
-
-            // Compute metrics
             const metrics = computeTrackMetrics(single)
 
-            // Apply elevation smoothing
             single.geometry.coordinates =
                 smoothElevation3(single.geometry.coordinates)
 
-            // Wrap into FeatureCollection
             const geojson = {
                 type: 'FeatureCollection',
                 features: [single]
             }
 
-            // Compute bounds on the smoothed, normalized geometry
             const bounds = computeBounds(geojson)
-
-            // Build CZML from the clean, smoothed GeoJSON
             const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
-
-            // Compute items for the elevation profile
             const { distancesKm, elevationsM } = computeProfileArrays(geojson)
 
-            track = { details, metrics, gpxBlob, geojson, geotags, bounds, czmlOriginal, distancesKm, elevationsM }
-            console.log(track)
+            track = {
+                details,
+                metrics,
+                gpxBlob,
+                geojson,
+                geotags,
+                bounds,
+                czmlOriginal,
+                distancesKm,
+                elevationsM
+            }
+
             store.setTrack(trackId, track)
         }
 
@@ -183,6 +189,7 @@ export default function initTracksStore(Alpine) {
         // Active trackId
         //
         active: null,
+        activeTrackId: null,
 
         loadingTracks: false,
         loadingCesium: false,
@@ -288,10 +295,8 @@ export default function initTracksStore(Alpine) {
 
             if (isPlaying) {
                 if (map.isAtEnd()) {
-                    // First play
                     map.syncClockToCZML(track.dataSource)
                 } else {
-                    // Resume
                     map.resumeClock()
                 }
                 map.showAnimatedMarker(track.dataSource)
@@ -302,7 +307,6 @@ export default function initTracksStore(Alpine) {
         },
 
         increaseSpeed() { map.increaseSpeed() },
-        
         decreaseSpeed() { map.decreaseSpeed() },
 
         resetAnimation() {
@@ -316,8 +320,10 @@ export default function initTracksStore(Alpine) {
             map.stopTrackingEntity()
             map.setClockToEnd(track.dataSource)
             map.flyToActiveTrack()
-        },
 
+            // restore all search markers except active
+            this.showMarkers()
+        },
 
         exitActiveTrack() {
             if (!this.active) return
@@ -325,36 +331,20 @@ export default function initTracksStore(Alpine) {
             const trackId = this.active
             const track = this.items[trackId]
 
-            // 1. Reset clock to beginning (if CZML clock exists)
             if (track && track.dataSource) {
                 map.setClockToBeginning(track.dataSource)
                 map.hideTrailheadMarker(track.dataSource)
+                map.hideAnimatedMarker(track.dataSource)
+                map.stopTrackingEntity()
             }
 
-            // 2. Remove animation entities
-            if (track) {
-                if (track.animationEntity) {
-                    this.viewer.entities.remove(track.animationEntity)
-                    track.animationEntity = null
-                }
-                if (track.animationMarker) {
-                    this.viewer.entities.remove(track.animationMarker)
-                    track.animationMarker = null
-                }
-            }
+            // restore all search markers except active
+            this.showMarkers()
 
-            if (track && track.dataSource) {
-                 map.hideAnimatedMarker(track.dataSource)
-                 map.stopTrackingEntity()
-            }
-
-            // 3. Restore search marker
+            // then show the active one again
             map.showSearchMarker(trackId)
 
-            // 4. Clear active track
             this.active = null
-
-            // 5. Go back to all tracks view
             map.flyToTrackDataSource()
         },
 
@@ -369,14 +359,8 @@ export default function initTracksStore(Alpine) {
 
     })
 
-    //
-    // Attach openTrack to the store so UI can call it
-    //
     Alpine.store('tracks').openTrack = openTrack
 
-    //
-    // Filter watcher
-    //
     Alpine.watch(() => Alpine.store('tracks').filter, () => {
         const store = Alpine.store('tracks')
 

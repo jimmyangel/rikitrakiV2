@@ -22,12 +22,11 @@ import { Icon } from 'astro-icon/components'
                 <Icon name="fa7-solid:backward" />
             </button>
 
-			<button
-				class="anim-btn"
-				x-bind:class="{ blink: isActive }"
-				@click="togglePlay()"
-			>
-
+            <button
+                class="anim-btn"
+                x-bind:class="{ blink: isActive }"
+                @click="togglePlay()"
+            >
                 <template x-if="isPlaying">
                     <Icon name="fa7-solid:pause" />
                 </template>
@@ -92,15 +91,13 @@ import { Icon } from 'astro-icon/components'
             reset() {
                 this.isPlaying = false
                 this.isActive = false
-				this.$store.tracks.showMarkers()
                 this.$store.tracks.resetAnimation()
             },
 
             exitTrack() {
                 this.isPlaying = false
                 this.isActive = false
-            	this.$store.tracks.showMarkers()
-				this.$store.tracks.exitActiveTrack()
+                this.$store.tracks.exitActiveTrack()
             }
         }
     }

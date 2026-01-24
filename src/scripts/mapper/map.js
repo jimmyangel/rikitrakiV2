@@ -452,16 +452,14 @@ export function showAnimatedMarker(ds) {
     const trackEntity = ds.entities.getById('track')
     if (!trackEntity) return
 
-    // Remove previous marker if any
     if (animatedMarker) {
         viewer.entities.remove(animatedMarker)
         animatedMarker = null
     }
 
-    // Create a standalone entity that Cesium will treat as the primary visualizer
     animatedMarker = viewer.entities.add({
         id: 'animatedMarker',
-        position: trackEntity.position,   // time-dynamic sampled position
+        position: trackEntity.position,
         billboard: {
             image: 'images/marker.png',
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM
@@ -469,7 +467,6 @@ export function showAnimatedMarker(ds) {
     })
 
     animatedMarker.viewFrom = new Cesium.Cartesian3(0, -1000, 300)
-
 }
 
 export function hideAnimatedMarker() {
@@ -479,7 +476,7 @@ export function hideAnimatedMarker() {
     }
 }
 
-export function startTrackingEntity(ds) {
+export function startTrackingEntity() {
     const entity = viewer.entities.getById('animatedMarker')
     if (entity) {
         viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY)
@@ -492,6 +489,7 @@ export function stopTrackingEntity() {
 }
 
 export function hideAllSearchMarkers() {
+    if (!trackDataSource) return
     trackDataSource.entities.values.forEach(e => {
         if (e.billboard) {
             e.billboard.show = false
@@ -500,11 +498,10 @@ export function hideAllSearchMarkers() {
 }
 
 export function showAllSearchMarkersExcept(activeTrackId) {
+    if (!trackDataSource) return
     trackDataSource.entities.values.forEach(e => {
         if (e.billboard && e.id !== activeTrackId) {
             e.billboard.show = true
         }
     })
 }
-
-
