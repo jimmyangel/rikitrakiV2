@@ -295,16 +295,9 @@ export default function initTracksStore(Alpine) {
 
             if (isPlaying) {
                 if (map.isAtEnd()) {
-                    // 1. Jump clock to beginning (no animation yet)
-                    map.setClockToBeginning(track.dataSource)
-
-                    // 2. Delay tracking a little bit just for the visual effect
-                    setTimeout(() => {
-                        map.syncClockToCZML(track.dataSource)
-                        map.showAnimatedMarker(track.dataSource)
-                        map.startTrackingEntity(track.dataSource)
-                    }, 500)
-                    return
+                    map.syncClockToCZML(track.dataSource)
+                } else {
+                    map.resumeClock()
                 }
                 map.showAnimatedMarker(track.dataSource)
                 map.startTrackingEntity(track.dataSource)

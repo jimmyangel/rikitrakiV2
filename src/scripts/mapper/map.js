@@ -457,13 +457,6 @@ export function showAnimatedMarker(ds) {
         animatedMarker = null
     }
 
-    const startPos = trackEntity.position.getValue(ds.clock.startTime)
-    const carto = Cesium.Cartographic.fromCartesian(startPos)
-    const alt = carto.height
-
-    //const scale = Math.min(3, 1 + (alt / 2000))
-    const scale = 1 + Math.pow(alt / 1200, 1.6)
-
     animatedMarker = viewer.entities.add({
         id: 'animatedMarker',
         position: trackEntity.position,
@@ -473,11 +466,7 @@ export function showAnimatedMarker(ds) {
         }
     })
 
-    animatedMarker.viewFrom = new Cesium.Cartesian3(
-        0,
-        -1000 * scale,
-        300 * scale
-    )
+    animatedMarker.viewFrom = new Cesium.Cartesian3(0, -1000, 300)
 }
 
 export function hideAnimatedMarker() {
