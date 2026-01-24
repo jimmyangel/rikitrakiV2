@@ -315,6 +315,7 @@ export default function initTracksStore(Alpine) {
             map.hideAnimatedMarker(track.dataSource)
             map.stopTrackingEntity()
             map.setClockToEnd(track.dataSource)
+            map.flyToActiveTrack()
         },
 
 

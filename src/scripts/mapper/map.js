@@ -446,21 +446,48 @@ export function setOnAnimationFinished(callback) {
     onAnimationFinished = callback
 }
 
+let animatedMarker = null
+
 export function showAnimatedMarker(ds) {
-    const entity = ds.entities.getById('track')
-    if (entity) entity.billboard.show = true
+    const trackEntity = ds.entities.getById('track')
+    if (!trackEntity) return
+
+    // Remove previous marker if any
+    if (animatedMarker) {
+        viewer.entities.remove(animatedMarker)
+        animatedMarker = null
+    }
+
+    // Create a standalone entity that Cesium will treat as the primary visualizer
+    animatedMarker = viewer.entities.add({
+        id: 'animatedMarker',
+        position: trackEntity.position,   // time-dynamic sampled position
+        billboard: {
+            image: 'images/marker.png',
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+        }
+    })
+
+    animatedMarker.viewFrom = new Cesium.Cartesian3(0, -1000, 300)
+
 }
 
-export function hideAnimatedMarker(ds) {
-    const entity = ds.entities.getById('track')
-    if (entity) entity.billboard.show = false
+export function hideAnimatedMarker() {
+    if (animatedMarker) {
+        viewer.entities.remove(animatedMarker)
+        animatedMarker = null
+    }
 }
 
 export function startTrackingEntity(ds) {
-    //const entity = ds.entities.getById('track')
-    //if (entity) viewer.trackedEntity = entity
+    const entity = viewer.entities.getById('animatedMarker')
+    if (entity) {
+        viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY)
+        console.log('TRACKING ENTITY:', viewer.entities.getById('animatedMarker') || ds.entities.getById('track'))
+        viewer.trackedEntity = entity
+    }
 }
 
 export function stopTrackingEntity() {
-    //viewer.trackedEntity = undefined
+    viewer.trackedEntity = undefined
 }
