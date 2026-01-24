@@ -55,54 +55,55 @@ import { Icon } from 'astro-icon/components'
 </div>
 
 <script is:inline>
-	function trackAnimationControls() {
-		return {
-			isPlaying: false,
-			isActive: false,
+    function trackAnimationControls() {
+        return {
+            isPlaying: false,
+            isActive: false,
 
-			init() {
-				this.$watch('$store.tracks.animationFinished', value => {
-					if (value) {
-						this.isPlaying = false
-						this.isActive = false
-						this.$store.tracks.animationFinished = false
-					}
-				})
-			},
+            init() {
+                this.$watch('$store.tracks.animationFinished', value => {
+                    if (value) {
+                        this.isPlaying = false
+                        this.isActive = false
+                        this.$store.tracks.showMarkers()
+                        this.$store.tracks.animationFinished = false
+                    }
+                })
+            },
 
-			togglePlay() {
-				if (!this.isActive) {
-					this.isActive = true
-				}
+            togglePlay() {
+                if (!this.isActive) {
+                    this.isActive = true
+                    this.$store.tracks.hideMarkers()
+                }
 
-				this.isPlaying = !this.isPlaying
-				this.$store.tracks.animate(this.isPlaying)
-			},
+                this.isPlaying = !this.isPlaying
+                this.$store.tracks.animate(this.isPlaying)
+            },
 
+            faster() {
+                if (this.isPlaying) this.$store.tracks.increaseSpeed()
+            },
 
-			faster() {
-				if (this.isPlaying) this.$store.tracks.increaseSpeed()
-			},
+            slower() {
+                if (this.isPlaying) this.$store.tracks.decreaseSpeed()
+            },
 
-			slower() {
-				if (this.isPlaying) this.$store.tracks.decreaseSpeed()
-			},
+            reset() {
+                this.isPlaying = false
+                this.isActive = false
+				this.$store.tracks.showMarkers()
+                this.$store.tracks.resetAnimation()
+            },
 
-			reset() {
-				this.isPlaying = false
-				this.isActive = false
-				this.$store.tracks.resetAnimation()
-			},
-
-			exitTrack() {
-				this.isPlaying = false
-				this.isActive = false
+            exitTrack() {
+                this.isPlaying = false
+                this.isActive = false
+            	this.$store.tracks.showMarkers()
 				this.$store.tracks.exitActiveTrack()
-			}
-
-		}
-	}
-
+            }
+        }
+    }
 </script>
 
 <style>

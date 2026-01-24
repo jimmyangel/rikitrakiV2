@@ -483,7 +483,6 @@ export function startTrackingEntity(ds) {
     const entity = viewer.entities.getById('animatedMarker')
     if (entity) {
         viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY)
-        console.log('TRACKING ENTITY:', viewer.entities.getById('animatedMarker') || ds.entities.getById('track'))
         viewer.trackedEntity = entity
     }
 }
@@ -491,3 +490,21 @@ export function startTrackingEntity(ds) {
 export function stopTrackingEntity() {
     viewer.trackedEntity = undefined
 }
+
+export function hideAllSearchMarkers() {
+    trackDataSource.entities.values.forEach(e => {
+        if (e.billboard) {
+            e.billboard.show = false
+        }
+    })
+}
+
+export function showAllSearchMarkersExcept(activeTrackId) {
+    trackDataSource.entities.values.forEach(e => {
+        if (e.billboard && e.id !== activeTrackId) {
+            e.billboard.show = true
+        }
+    })
+}
+
+

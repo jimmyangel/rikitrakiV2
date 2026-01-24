@@ -356,6 +356,15 @@ export default function initTracksStore(Alpine) {
 
             // 5. Go back to all tracks view
             map.flyToTrackDataSource()
+        },
+
+        hideMarkers() {
+            map.hideAllSearchMarkers()
+        },
+
+        showMarkers() {
+            const active = this.active
+            map.showAllSearchMarkersExcept(active)
         }
 
     })

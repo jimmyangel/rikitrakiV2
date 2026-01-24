@@ -10,7 +10,7 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
     const feature = fc.features[0]
     const coords = feature.geometry.coordinates
     const times = feature.properties.coordTimes
-	const trailheadHeight = coords[0][2]
+    const trailheadHeight = coords[0][2]
 
     const czml = [
         {
@@ -28,6 +28,10 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
         {
             id: 'track',
             availability: '',
+            position: {
+                // absolute times, no epoch: Cesium will accept ISO8601 stamps
+                cartographicDegrees: []
+            },
             path: {
                 material: {
                     polylineOutline: {
@@ -48,59 +52,56 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
                 },
                 width: 7,
                 leadTime: 0
-            },
+            }
+        },
+        {
+            id: 'trailhead',
+            description: 'trailhead marker',
             billboard: {
-                image: 'images/marker.png',
+                image: `images/${trackType ? trackType.toLowerCase() : 'hiking'}.png`,
                 verticalOrigin: 'BOTTOM',
-                show: false
+                heightReference: 'RELATIVE_TO_GROUND',
+                disableDepthTestDistance: Number.POSITIVE_INFINITY
             },
             position: {
                 cartographicDegrees: []
             }
         },
-		{
-			id: 'trailhead',
-			description: 'trailhead marker',
-			billboard: {
-				image: `images/${trackType ? trackType.toLowerCase() : 'hiking'}.png`,
-				verticalOrigin: 'BOTTOM',
-				heightReference: 'RELATIVE_TO_GROUND',
-				disableDepthTestDistance: Number.POSITIVE_INFINITY
-			},
-			position: {
-				cartographicDegrees: []
-			}
-		},
-		{
-			id: 'nw',
-			description: 'invisible nw for camera fly',
-			point: { color: { rgba: [0, 0, 0, 0] } },
-			position: {
-				cartographicDegrees: [
-					bounds.west,
-					bounds.north,
-					trailheadHeight
-				]
-			}
-		},
-		{
-			id: 'se',
-			description: 'invisible se for camera fly',
-			point: { color: { rgba: [0, 0, 0, 0] } },
-			position: {
-				cartographicDegrees: [
-					bounds.east,
-					bounds.south,
-					trailheadHeight
-				]
-			}
-		}
+        {
+            id: 'nw',
+            description: 'invisible nw for camera fly',
+            point: { color: { rgba: [0, 0, 0, 0] } },
+            position: {
+                cartographicDegrees: [
+                    bounds.west,
+                    bounds.north,
+                    trailheadHeight
+                ]
+            }
+        },
+        {
+            id: 'se',
+            description: 'invisible se for camera fly',
+            point: { color: { rgba: [0, 0, 0, 0] } },
+            position: {
+                cartographicDegrees: [
+                    bounds.east,
+                    bounds.south,
+                    trailheadHeight
+                ]
+            }
+        }
     ]
+
+    // explicit references, no index guessing
+    const doc = czml[0]
+    const trackEntity = czml.find(e => e.id === 'track')
+    const trailheadEntity = czml.find(e => e.id === 'trailhead')
 
     function keepSample(i) {
         const t = times[i]
         const c = coords[i]
-        czml[1].position.cartographicDegrees.push(t, c[0], c[1], c[2])
+        trackEntity.position.cartographicDegrees.push(t, c[0], c[1], c[2])
     }
 
     let last = 0
@@ -123,12 +124,12 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
     const firstTime = times[0]
     const lastTime = times[times.length - 1]
 
-    czml[0].clock.interval = `${firstTime}/${lastTime}`
-    czml[0].clock.currentTime = firstTime
-    czml[1].availability = `${firstTime}/${lastTime}`
+    doc.clock.interval = `${firstTime}/${lastTime}`
+    doc.clock.currentTime = firstTime
+    trackEntity.availability = `${firstTime}/${lastTime}`
 
-	const [lon, lat] = coords[0]
-	czml[2].position.cartographicDegrees = [lon, lat, 2]
+    const [lon, lat] = coords[0]
+    trailheadEntity.position.cartographicDegrees = [lon, lat, 2]
 
     return czml
 }
