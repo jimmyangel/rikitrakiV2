@@ -239,6 +239,15 @@ export default function initTracksStore(Alpine) {
         init() {
             map.setOnAnimationFinished(() => {
                 this.animationFinished = true
+
+                const trackId = this.active
+                if (!trackId) return
+
+                const track = this.items[trackId]
+                if (track && track.dataSource) {
+                    map.hideAnimatedMarker(track.dataSource)
+                    map.stopTrackingEntity()
+                }
             })
         },
 
@@ -285,6 +294,8 @@ export default function initTracksStore(Alpine) {
                     // Resume
                     map.resumeClock()
                 }
+                map.showAnimatedMarker(track.dataSource)
+                map.startTrackingEntity(track.dataSource)
             } else {
                 map.pauseClock()
             }
@@ -301,6 +312,8 @@ export default function initTracksStore(Alpine) {
             const track = this.items[trackId]
             if (!track || !track.dataSource) return
 
+            map.hideAnimatedMarker(track.dataSource)
+            map.stopTrackingEntity()
             map.setClockToEnd(track.dataSource)
         },
 
@@ -327,6 +340,11 @@ export default function initTracksStore(Alpine) {
                     this.viewer.entities.remove(track.animationMarker)
                     track.animationMarker = null
                 }
+            }
+
+            if (track && track.dataSource) {
+                 map.hideAnimatedMarker(track.dataSource)
+                 map.stopTrackingEntity()
             }
 
             // 3. Restore search marker

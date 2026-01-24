@@ -56,8 +56,7 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
             },
             position: {
                 cartographicDegrees: []
-            },
-            viewFrom: { cartesian: [0, -1000, 300] }
+            }
         },
 		{
 			id: 'trailhead',
@@ -66,7 +65,7 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
 				image: `images/${trackType ? trackType.toLowerCase() : 'hiking'}.png`,
 				verticalOrigin: 'BOTTOM',
 				heightReference: 'RELATIVE_TO_GROUND',
-				disableDepthTestDistance: 1000000000
+				disableDepthTestDistance: Number.POSITIVE_INFINITY
 			},
 			position: {
 				cartographicDegrees: []

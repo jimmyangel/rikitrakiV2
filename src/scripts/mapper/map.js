@@ -12,7 +12,6 @@ let savedEntity = null
 let anchorEntityScreenPos = null
 let anchorPopupPos = null
 
-// Only one animated CZML track at a time (legacy behavior)
 let activeTrackDataSource = null
 
 let onAnimationFinished = null
@@ -445,4 +444,23 @@ export function showSearchMarker(trackId) {
 
 export function setOnAnimationFinished(callback) {
     onAnimationFinished = callback
+}
+
+export function showAnimatedMarker(ds) {
+    const entity = ds.entities.getById('track')
+    if (entity) entity.billboard.show = true
+}
+
+export function hideAnimatedMarker(ds) {
+    const entity = ds.entities.getById('track')
+    if (entity) entity.billboard.show = false
+}
+
+export function startTrackingEntity(ds) {
+    //const entity = ds.entities.getById('track')
+    //if (entity) viewer.trackedEntity = entity
+}
+
+export function stopTrackingEntity() {
+    //viewer.trackedEntity = undefined
 }
