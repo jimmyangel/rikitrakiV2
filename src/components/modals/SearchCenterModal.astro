@@ -63,15 +63,15 @@ import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 }
 </style>
 
-<script is:inline type="module">
-document.addEventListener('alpine:init', () => {
-    Alpine.data('worldMapModal', () => ({
+<script>
+	document.addEventListener('alpine:init', () => {
+		Alpine.data('worldMapModal', () => ({
 
-        pick(lat, lon) {
-            this.$store.tracks.setSearchCenter(lat, lon)
-            this.$store.ui.showSearchCenterModal = false
-        }
+			pick(lat, lon) {
+				this.$store.tracks.setSearchCenter(lat, lon)
+				this.$store.ui.showSearchCenterModal = false
+			}
 
-    }))
-})
+		}))
+	})
 </script>
