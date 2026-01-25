@@ -1,6 +1,5 @@
 ---
 import { Icon } from 'astro-icon/components'
-import WorldMapPicker from './WorldMapPicker.astro'
 ---
 
 <div class="side-panel-inner" x-data>
@@ -123,63 +122,6 @@ import WorldMapPicker from './WorldMapPicker.astro'
     </div>
 
 </div>
-
-<!-- SEARCH CENTER MODAL -->
-<div x-data>
-    <div :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }">
-
-        <div class="modal-background"
-             @click="$store.ui.showSearchCenterModal = false"></div>
-
-        <div class="modal-card" x-data="worldMapModal()">
-
-            <header class="modal-card-head">
-                <p class="modal-card-title">Choose Search Center</p>
-                <button class="delete"
-                        @click="$store.ui.showSearchCenterModal = false"></button>
-            </header>
-
-            <section class="modal-card-body"
-                     @picked="lat = $event.detail.lat; lon = $event.detail.lon">
-
-                <WorldMapPicker />
-
-            </section>
-
-            <footer class="modal-card-foot">
-                <button class="button is-primary"
-                        @click="confirm()">
-                    Use This Location
-                </button>
-                <button class="button"
-                        @click="$store.ui.showSearchCenterModal = false">
-                    Cancel
-                </button>
-            </footer>
-
-        </div>
-    </div>
-</div>
-
-
-<script is:inline type="module">
-	document.addEventListener('alpine:init', () => {
-		// Modal controller
-		Alpine.data('worldMapModal', () => ({
-			open: false,
-			lat: null,
-			lon: null,
-
-			confirm() {
-				if (this.lat != null && this.lon != null) {
-					this.$store.tracks.setSearchCenter(this.lat, this.lon)
-				}
-				this.$store.ui.showSearchCenterModal = false
-			}
-
-		}))
-	})
-</script>
 
 <style>
     .box {
