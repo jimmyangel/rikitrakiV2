@@ -63,7 +63,12 @@ import '../styles/map-frame.css'
     document.addEventListener('alpine:init', () => {
         Alpine.plugin(descWidth)
         initTracksStore(Alpine)
+
+        Alpine.store('ui', {
+            showSearchCenterModal: false
+        })
     })
+
 
     document.addEventListener('DOMContentLoaded', async () => {
         mapFrame.initUI()

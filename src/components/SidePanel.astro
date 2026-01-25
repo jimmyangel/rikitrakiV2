@@ -120,51 +120,48 @@ import WorldMapPicker from './WorldMapPicker.astro'
         </template>
     </div>
 
-	<!-- SEARCH CENTER MODAL -->
-	<div :class="{'modal': true, 'is-active': $store.ui.showSearchCenterModal}">
-
-		<div class="modal-background"
-			@click="$store.ui.showSearchCenterModal = false"></div>
-
-		<div class="modal-card" x-data="worldMapModal()">
-
-			<header class="modal-card-head">
-				<p class="modal-card-title">Choose Search Center</p>
-				<button class="delete"
-						@click="$store.ui.showSearchCenterModal = false"></button>
-			</header>
-
-			<section class="modal-card-body"
-					@picked="lat = $event.detail.lat; lon = $event.detail.lon">
-
-				<WorldMapPicker />
-
-			</section>
-
-			<footer class="modal-card-foot">
-				<button class="button is-primary"
-						@click="confirm()">
-					Use This Location
-				</button>
-				<button class="button"
-						@click="$store.ui.showSearchCenterModal = false">
-					Cancel
-				</button>
-			</footer>
-
-		</div>
-	</div>
-	<!-- END MODAL -->
-
 </div>
+
+<!-- SEARCH CENTER MODAL -->
+<div x-data>
+    <div :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }">
+
+        <div class="modal-background"
+             @click="$store.ui.showSearchCenterModal = false"></div>
+
+        <div class="modal-card" x-data="worldMapModal()">
+
+            <header class="modal-card-head">
+                <p class="modal-card-title">Choose Search Center</p>
+                <button class="delete"
+                        @click="$store.ui.showSearchCenterModal = false"></button>
+            </header>
+
+            <section class="modal-card-body"
+                     @picked="lat = $event.detail.lat; lon = $event.detail.lon">
+
+                <WorldMapPicker />
+				
+            </section>
+
+            <footer class="modal-card-foot">
+                <button class="button is-primary"
+                        @click="confirm()">
+                    Use This Location
+                </button>
+                <button class="button"
+                        @click="$store.ui.showSearchCenterModal = false">
+                    Cancel
+                </button>
+            </footer>
+
+        </div>
+    </div>
+</div>
+
 
 <script is:inline type="module">
 	document.addEventListener('alpine:init', () => {
-		// UI store for modal visibility
-		Alpine.store('ui', {
-			showSearchCenterModal: false
-		})
-
 		// Modal controller
 		Alpine.data('worldMapModal', () => ({
 			open: false,
