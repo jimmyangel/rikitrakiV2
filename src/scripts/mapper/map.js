@@ -123,27 +123,30 @@ export function initMap() {
     })
 }
 
-export function setSearchCenter(lat, lon) {
+export function updateSearchCenterMarker(lat, lon) {
     if (!viewer) return
 
-    if (searchCenterEntity) {
-        viewer.entities.remove(searchCenterEntity)
+    if (!searchCenterEntity) {
+        searchCenterEntity = viewer.entities.add({
+            id: 'search-center',
+            position: Cesium.Cartesian3.fromDegrees(lon, lat),
+            point: {
+                pixelSize: 12,
+                translucent: true,
+                color: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.9),
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                disableDepthTestDistance: Number.POSITIVE_INFINITY
+            }
+        })
+        return
     }
 
-    searchCenterEntity = viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(lon, lat),
-        point: {
-            pixelSize: 12,
-            translucent: true,
-            color: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.9),
-            outlineColor: Cesium.Color.BLACK,
-            outlineWidth: 2,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY
-        }
-    })
+    searchCenterEntity.position = Cesium.Cartesian3.fromDegrees(lon, lat)
 }
 
 export function applyFilter(filteredIds) {
+    if (!trackDataSource) return
     const entities = trackDataSource.entities.values
 
     for (const entity of entities) {
@@ -304,7 +307,6 @@ export function flyToTrackDataSource() {
     viewer.flyTo(trackDataSource)
 }
 
-
 function handleLongPress(position) {
     if (!viewer) return
 
@@ -319,13 +321,7 @@ function handleLongPress(position) {
     const lat = Cesium.Math.toDegrees(cartographic.latitude)
     const lon = Cesium.Math.toDegrees(cartographic.longitude)
 
-    const store = Alpine.store('tracks')
-    store.lat = lat
-    store.lon = lon
-
-    setSearchCenter(lat, lon)
-
-    store.reload()
+    Alpine.store('tracks').setSearchCenter(lat, lon)
 }
 
 /*
@@ -373,7 +369,6 @@ export function setClockToBeginning(ds) {
     viewer.clock.startTime = clock.startTime
     viewer.clock.stopTime = clock.stopTime
 
-    // Move to the beginning so animation starts cleanly
     viewer.clock.currentTime = clock.startTime
 
     viewer.clock.multiplier = 0
@@ -388,13 +383,11 @@ export function setClockToEnd(ds) {
     viewer.clock.startTime = clock.startTime
     viewer.clock.stopTime = clock.stopTime
 
-    // Move to the end so the full track is visible
     viewer.clock.currentTime = clock.stopTime
 
     viewer.clock.multiplier = 0
     viewer.clock.shouldAnimate = false
 }
-
 
 export function syncClockToCZML(ds) {
     if (!viewer || !ds || !ds.clock) return
@@ -423,11 +416,11 @@ export function resumeClock() {
 }
 
 export function increaseSpeed() {
-    viewer.clock.multiplier = viewer.clock.multiplier * 2 
+    viewer.clock.multiplier = viewer.clock.multiplier * 2
 }
 
 export function decreaseSpeed() {
-    viewer.clock.multiplier = viewer.clock.multiplier / 2 
+    viewer.clock.multiplier = viewer.clock.multiplier / 2
 }
 
 export function hideSearchMarker(trackId) {

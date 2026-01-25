@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components'
+import WorldMapPicker from './WorldMapPicker.astro'
 ---
 
 <div class="side-panel-inner" x-data>
@@ -10,35 +11,43 @@ import { Icon } from 'astro-icon/components'
         </div>
 
         <div class="panel-block">
-			<div class="heading-wrapper">
-				<div class="fade-in" :class="{ 'ready': $store.tracks.headingReady }">
-					<span
-						x-text="
-							$store.tracks.count != null && $store.tracks.radiusKm != null
-								? `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
-								: '…'
-						"
-					></span>
+            <div class="heading-wrapper">
+                <div class="fade-in" :class="{ 'ready': $store.tracks.headingReady }">
+                    <span
+                        x-text="
+                            $store.tracks.count != null && $store.tracks.radiusKm != null
+                                ? `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
+                                : '…'
+                        "
+                    ></span>
 
-					<span> centered at </span>
+                    <span> centered at </span>
 
-					<span class="cesium-marker"></span>
+                    <span class="cesium-marker"></span>
 
-					<span
-						x-text="
-							$store.tracks.lat != null && $store.tracks.lon != null
-								? `${$store.tracks.lat.toFixed(3)}° N, ${Math.abs($store.tracks.lon).toFixed(3)}° W.`
-								: '…'
-						"
-					></span>
-				</div>
-
-			</div>
+                    <span
+                        x-text="
+                            $store.tracks.lat != null && $store.tracks.lon != null
+                                ? `${$store.tracks.lat.toFixed(3)}° N, ${Math.abs($store.tracks.lon).toFixed(3)}° W.`
+                                : '…'
+                        "
+                    ></span>
+                </div>
+            </div>
         </div>
 
         <div class="panel-block is-size-7">
             Change search center by long tap/click on the map
         </div>
+
+        <!-- NEW BUTTON -->
+        <div class="panel-block">
+            <button class="button is-small is-link is-light is-fullwidth"
+                    @click="$store.ui.showSearchCenterModal = true">
+                Choose Search Center…
+            </button>
+        </div>
+        <!-- END NEW BUTTON -->
 
         <div class="panel-block">
             <div class="control has-icons-left">
@@ -63,8 +72,8 @@ import { Icon } from 'astro-icon/components'
 
                 <header class="card-header">
                     <p class="card-header-title has-text-weight-medium track-title"
-   						x-html="t.trackFav ? `${t.trackName} ✭` : t.trackName">
-					</p>
+                        x-html="t.trackFav ? `${t.trackName} ✭` : t.trackName">
+                    </p>
 
                     <button class="card-header-icon"
                             @click="open = !open">
@@ -110,63 +119,119 @@ import { Icon } from 'astro-icon/components'
             </div>
         </template>
     </div>
+
+	<!-- SEARCH CENTER MODAL -->
+	<div :class="{'modal': true, 'is-active': $store.ui.showSearchCenterModal}">
+
+		<div class="modal-background"
+			@click="$store.ui.showSearchCenterModal = false"></div>
+
+		<div class="modal-card" x-data="worldMapModal()">
+
+			<header class="modal-card-head">
+				<p class="modal-card-title">Choose Search Center</p>
+				<button class="delete"
+						@click="$store.ui.showSearchCenterModal = false"></button>
+			</header>
+
+			<section class="modal-card-body"
+					@picked="lat = $event.detail.lat; lon = $event.detail.lon">
+
+				<WorldMapPicker />
+
+			</section>
+
+			<footer class="modal-card-foot">
+				<button class="button is-primary"
+						@click="confirm()">
+					Use This Location
+				</button>
+				<button class="button"
+						@click="$store.ui.showSearchCenterModal = false">
+					Cancel
+				</button>
+			</footer>
+
+		</div>
+	</div>
+	<!-- END MODAL -->
+
 </div>
 
+<script is:inline type="module">
+	document.addEventListener('alpine:init', () => {
+		// UI store for modal visibility
+		Alpine.store('ui', {
+			showSearchCenterModal: false
+		})
+
+		// Modal controller
+		Alpine.data('worldMapModal', () => ({
+			open: false,
+			lat: null,
+			lon: null,
+
+			confirm() {
+				if (this.lat != null && this.lon != null) {
+					this.$store.tracks.setSearchCenter(this.lat, this.lon)
+				}
+				this.$store.ui.showSearchCenterModal = false
+			}
+
+		}))
+	})
+</script>
+
 <style>
-	.box {
-		margin-bottom: 0px;
-	}
+    .box {
+        margin-bottom: 0px;
+    }
 
-	.panel {
-		margin-bottom: 0px;
-	}
+    .panel {
+        margin-bottom: 0px;
+    }
 
-	.grid {
-		column-gap: 0.5rem;
-		row-gap: 0.1rem;
-	}
+    .grid {
+        column-gap: 0.5rem;
+        row-gap: 0.1rem;
+    }
 
-	.card {
-		margin-bottom: 0px;
-	}
+    .card {
+        margin-bottom: 0px;
+    }
 
-	.card-content {
-		padding-top: 12px;
-		padding-bottom: 12px;
-	}
+    .card-content {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
 
-	.track-title {
-		overflow-wrap: anywhere;
-		word-break: break-word;
-	}
+    .track-title {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
 
-	.cesium-marker {
-		width: 12px;
-		height: 12px;
-		border-radius: 50%;
-		background-color: rgba(227, 139, 44, 0.9);
-		border: 2px solid #000;
+    .cesium-marker {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(227, 139, 44, 0.9);
+        border: 2px solid #000;
+        display: inline-block;
+        flex-shrink: 0;
+    }
 
-		display: inline-block;
-		flex-shrink: 0;
-	}
+    .heading-wrapper {
+        min-height: 4.6rem;
+        display: flex;
+        align-items: center;
+    }
 
-	.heading-wrapper {
-		min-height: 4.6rem; /* adjust to match your line-height */
-		display: flex;
-		align-items: center;
-	}
+    .fade-in {
+        opacity: 0;
+        transition: opacity 0.35s ease;
+    }
 
-	.fade-in {
-		opacity: 0;
-		transition: opacity 0.35s ease;
-	}
-
-	.fade-in.ready {
-		opacity: 1;
-	}
-
-
+    .fade-in.ready {
+        opacity: 1;
+    }
 </style>
-
-

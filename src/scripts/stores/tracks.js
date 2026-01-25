@@ -14,180 +14,166 @@ import {
 } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 
-export default function initTracksStore(Alpine) {
+//
+// Helpers (must be ABOVE Alpine.store)
+//
+function buildHaystack(track) {
+    return [
+        track.trackName,
+        track.username,
+        track.trackType,
+        track.trackLevel,
+        ...(track.trackRegionTags || []),
+        track.trackFav ? 'favorite fav' : ''
+    ]
+    .join(' ')
+    .toLowerCase()
+}
 
-    //
-    // Reusable track-opening pipeline
-    //
-    async function openTrack(trackId) {
-        const store = Alpine.store('tracks')
-        store.loadingTracks = true
+function filterTracks(all, filter) {
+    const q = filter.toLowerCase().trim()
+    if (!q) return all
 
-        // re-show previous track's search marker (if any)
-        if (store.activeTrackId) {
-            map.showSearchMarker(store.activeTrackId)
+    const tokens = q.split(' ').filter(Boolean)
+
+    return all.filter(track => {
+        const haystack = buildHaystack(track)
+        return tokens.every(token => haystack.includes(token))
+    })
+}
+
+function getUsernameFromUrl() {
+    const seg = window.location.pathname.split('/').filter(Boolean)
+    return seg.length === 1 ? seg[0] : null
+}
+
+async function reloadTracks(store) {
+    if (store.lat == null || store.lon == null) return
+
+    store.loadingTracks = true
+
+    try {
+        const username = getUsernameFromUrl()
+
+        const { tracks, radiusKm, count } =
+            await getTracksByLoc({
+                lat: store.lat,
+                lon: store.lon,
+                maxTracksTarget: 200,
+                username
+            })
+
+        if (username && tracks.length === 0) {
+            history.replaceState(null, '', '/')
+            return reloadTracks(store)
         }
 
-        store.clear()
+        tracks.sort((a, b) =>
+            a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
+        )
 
-        let track = store.items[trackId]
+        store.all = tracks
+        store.radiusKm = radiusKm
+        store.count = count
 
-        if (!track) {
-            const { details, gpxBlob, geotags } = await getTrackDetails(trackId)
+        await map.setTracks(tracks)
 
-            const rawGeoJSON = await parseGPXtoGeoJSON(gpxBlob)
-            details.trackDate = extractTrackDate(rawGeoJSON)
+        const filteredIds = new Set(store.filtered.map(t => t.trackId))
+        map.applyFilter(filteredIds)
 
-            const single = extractSingleLineString(rawGeoJSON)
-            const metrics = computeTrackMetrics(single)
-
-            single.geometry.coordinates =
-                smoothElevation3(single.geometry.coordinates)
-
-            const geojson = {
-                type: 'FeatureCollection',
-                features: [single]
-            }
-
-            const bounds = computeBounds(geojson)
-            const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
-            const { distancesKm, elevationsM } = computeProfileArrays(geojson)
-
-            track = {
-                details,
-                metrics,
-                gpxBlob,
-                geojson,
-                geotags,
-                bounds,
-                czmlOriginal,
-                distancesKm,
-                elevationsM
-            }
-
-            store.setTrack(trackId, track)
-        }
-
-        store.activate(trackId)
-
-        const ds = await map.loadTrackCZML(track.czmlOriginal)
-        await ds.readyPromise
-
-        track.dataSource = ds
-
-        // hide the search marker for the active track
-        map.hideSearchMarker(trackId)
-
-        // remember active track so we can re-show its marker later
-        store.activeTrackId = trackId
-
-        map.setClockToEnd(ds)
-        map.showTrailheadMarker(ds)
-        map.flyToActiveTrack()
+    } finally {
         store.loadingTracks = false
     }
+}
 
-    //
-    // Helpers
-    //
-    function buildHaystack(track) {
-        return [
-            track.trackName,
-            track.username,
-            track.trackType,
-            track.trackLevel,
-            ...(track.trackRegionTags || []),
-            track.trackFav ? 'favorite fav' : ''
-        ]
-        .join(' ')
-        .toLowerCase()
+async function openTrack(trackId) {
+    const store = Alpine.store('tracks')
+    store.loadingTracks = true
+
+    if (store.activeTrackId) {
+        map.showSearchMarker(store.activeTrackId)
     }
 
-    function filterTracks(all, filter) {
-        const q = filter.toLowerCase().trim()
-        if (!q) return all
+    store.clear()
 
-        const tokens = q.split(' ').filter(Boolean)
+    let track = store.items[trackId]
 
-        return all.filter(track => {
-            const haystack = buildHaystack(track)
-            return tokens.every(token => haystack.includes(token))
-        })
-    }
+    if (!track) {
+        const { details, gpxBlob, geotags } = await getTrackDetails(trackId)
 
-    function getUsernameFromUrl() {
-        const seg = window.location.pathname.split('/').filter(Boolean)
-        return seg.length === 1 ? seg[0] : null
-    }
+        const rawGeoJSON = await parseGPXtoGeoJSON(gpxBlob)
+        details.trackDate = extractTrackDate(rawGeoJSON)
 
-    async function reloadTracks(store) {
-        if (store.lat == null || store.lon == null) return
+        const single = extractSingleLineString(rawGeoJSON)
+        const metrics = computeTrackMetrics(single)
 
-        store.loadingTracks = true
+        single.geometry.coordinates =
+            smoothElevation3(single.geometry.coordinates)
 
-        try {
-            const username = getUsernameFromUrl()
-
-            const { tracks, radiusKm, count } =
-                await getTracksByLoc({
-                    lat: store.lat,
-                    lon: store.lon,
-                    maxTracksTarget: 200,
-                    username
-                })
-
-            if (username && tracks.length === 0) {
-                history.replaceState(null, '', '/')
-                return reloadTracks(store)
-            }
-
-            tracks.sort((a, b) =>
-                a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
-            )
-
-            store.all = tracks
-            store.radiusKm = radiusKm
-            store.count = count
-
-            await map.setTracks(tracks)
-
-            const filteredIds = new Set(store.filtered.map(t => t.trackId))
-            map.applyFilter(filteredIds)
-
-        } finally {
-            store.loadingTracks = false
+        const geojson = {
+            type: 'FeatureCollection',
+            features: [single]
         }
+
+        const bounds = computeBounds(geojson)
+        const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
+        const { distancesKm, elevationsM } = computeProfileArrays(geojson)
+
+        track = {
+            details,
+            metrics,
+            gpxBlob,
+            geojson,
+            geotags,
+            bounds,
+            czmlOriginal,
+            distancesKm,
+            elevationsM
+        }
+
+        store.setTrack(trackId, track)
     }
 
-    async function loadMotd(store) {
-        const { motdTracks } = await getMotd()
+    store.activate(trackId)
 
-        store.motdTracks = motdTracks.map(([trackId, index, title]) => ({
-            trackId,
-            index,
-            title
-        }))
-    }
+    const ds = await map.loadTrackCZML(track.czmlOriginal)
+    await ds.readyPromise
 
-    //
-    // Alpine store
-    //
+    track.dataSource = ds
+
+    map.hideSearchMarker(trackId)
+
+    store.activeTrackId = trackId
+
+    map.setClockToEnd(ds)
+    map.showTrailheadMarker(ds)
+    map.flyToActiveTrack()
+    store.loadingTracks = false
+}
+
+async function loadMotd(store) {
+    const { motdTracks } = await getMotd()
+
+    store.motdTracks = motdTracks.map(([trackId, index, title]) => ({
+        trackId,
+        index,
+        title
+    }))
+}
+
+//
+// Alpine store
+//
+export default function initTracksStore(Alpine) {
+
     Alpine.store('tracks', {
-        //
-        // Track list state
-        //
+
         all: [],
         filter: '',
         selected: null,
 
-        //
-        // Loaded track details
-        //
         items: {},
 
-        //
-        // Active trackId
-        //
         active: null,
         activeTrackId: null,
 
@@ -201,14 +187,8 @@ export default function initTracksStore(Alpine) {
         radiusKm: null,
         count: null,
 
-        //
-        // MOTD state
-        //
         motdTracks: [],
 
-        //
-        // Derived state
-        //
         get filtered() {
             return filterTracks(this.all, this.filter)
         },
@@ -239,10 +219,6 @@ export default function initTracksStore(Alpine) {
 
         animationFinished: false,
 
-        //
-        // Actions
-        //
-
         init() {
             map.setOnAnimationFinished(() => {
                 this.animationFinished = true
@@ -260,6 +236,15 @@ export default function initTracksStore(Alpine) {
 
         async reload() {
             await reloadTracks(this)
+        },
+
+        setSearchCenter(lat, lon) {
+            this.lat = lat
+            this.lon = lon
+
+            map.updateSearchCenterMarker(lat, lon)
+
+            this.reload()
         },
 
         selectTrack(track) {
@@ -295,10 +280,7 @@ export default function initTracksStore(Alpine) {
 
             if (isPlaying) {
                 if (map.isAtEnd()) {
-                    // 1. Jump clock to beginning (no animation yet)
                     map.setClockToBeginning(track.dataSource)
-
-                    // 2. Delay tracking a little bit just for the visual effect
                     setTimeout(() => {
                         map.syncClockToCZML(track.dataSource)
                         map.showAnimatedMarker(track.dataSource)
@@ -328,7 +310,6 @@ export default function initTracksStore(Alpine) {
             map.setClockToEnd(track.dataSource)
             map.flyToActiveTrack()
 
-            // restore all search markers except active
             this.showMarkers()
         },
 
@@ -345,10 +326,7 @@ export default function initTracksStore(Alpine) {
                 map.stopTrackingEntity()
             }
 
-            // restore all search markers except active
             this.showMarkers()
-
-            // then show the active one again
             map.showSearchMarker(trackId)
 
             this.active = null

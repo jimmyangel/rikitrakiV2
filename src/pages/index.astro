@@ -71,7 +71,7 @@ import '../styles/map-frame.css'
 
         const { lat, lon, countryCode } = await getApproxLocation()
 
-        map.setSearchCenter(lat, lon)
+        map.updateSearchCenterMarker(lat, lon)
 
         // Option B: cast once, use everywhere
         const tracks = Alpine.store('tracks') as any
