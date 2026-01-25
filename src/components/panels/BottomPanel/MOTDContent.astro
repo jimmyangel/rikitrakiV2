@@ -2,12 +2,13 @@
 
 ---
 <template x-data x-init="$store.tracks.loadMotd()" x-for="item in $store.tracks.motdTracks" :key="item.trackId">
-	<div class="motd-card has-text-centered">
-		<img class="motdThumbs" :src="$store.tracks.thumbnailUrl(item.trackId)">
-		<div class="is-size-7 p-2" x-text="item.title"></div>
-	</div>
+    <div class="motd-card has-text-centered"
+         @click="$store.tracks.openTrack(item.trackId)"
+         style="cursor: pointer;">
+        <img class="motdThumbs" :src="$store.tracks.thumbnailUrl(item.trackId)">
+        <div class="is-size-7 p-2" x-text="item.title"></div>
+    </div>
 </template>
-
 
 <style>
 	.motd-card {
@@ -18,6 +19,11 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		transition: background-color 0.15s ease;
+	}
+
+	.motd-card:hover {
+		background-color: rgba(0, 0, 0, 0.05);
 	}
 
 	.motdThumbs {
