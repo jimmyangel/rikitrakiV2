@@ -1129,38 +1129,36 @@ document.addEventListener('alpine:init', () => {
         { lat: 90,  x: 0.5322, y: 1.0000 }
     ]
 
-    function inverseRobinson(svgX, svgY, width, height) {
-        const xn = (svgX - width / 2) / (width / 2)
-        const yn = (height / 2 - svgY) / (height / 2)
+	function inverseRobinson(svgX, svgY, width, height) {
+		const xn = (svgX - width / 2) / (width / 2)
+		const yn = (height / 2 - svgY) / (height / 2)
 
-        const sign = yn < 0 ? -1 : 1
-        const absY = Math.abs(yn)
-        const clampedY = Math.max(0, Math.min(1, absY))
+		const sign = yn < 0 ? -1 : 1
+		const absY = Math.abs(yn)
+		const clampedY = Math.max(0, Math.min(1, absY))
 
-        let i = 0
-        while (i < robinson.length - 1 && clampedY > robinson[i + 1].y) {
-            i++
-        }
+		let i = 0
+		while (i < robinson.length - 1 && clampedY > robinson[i + 1].y) i++
 
-        const a = robinson[i]
-        const b = robinson[i + 1]
+		const a = robinson[i]
+		const b = robinson[i + 1]
+		const t = (clampedY - a.y) / (b.y - a.y || 1)
 
-        const t = (clampedY - a.y) / (b.y - a.y || 1)
-        const latAbs = a.lat + t * 5
-        let lat = latAbs * sign
+		const latAbs = a.lat + t * 5
+		let lat = latAbs * sign
 
-        const xCoeff = a.x + t * (b.x - a.x)
-        let lon = (xn / xCoeff) * 180
+		const xCoeff = a.x + t * (b.x - a.x)
+		let lon = (xn / xCoeff) * 180
 
-        // Calibration offsets: 0,0 was 1N, 14W
-        const latOffset = -1   // bring 1° N down to 0°
-        const lonOffset = 12   // bring 14° W up to 0°
+		const latOffset = -1
+		const lonOffset = 11
 
-        lat += latOffset
-        lon += lonOffset
+		lat += latOffset
+		lon += lonOffset
 
-        return { lat, lon }
-    }
+		return { lat, lon }
+	}
+
 
     Alpine.data('worldMapPicker', () => ({
         handleClick(e) {
@@ -1179,6 +1177,7 @@ document.addEventListener('alpine:init', () => {
     }))
 })
 </script>
+
 
 
 
