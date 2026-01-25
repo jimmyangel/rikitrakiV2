@@ -1,58 +1,77 @@
 ---
 import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 ---
-<!-- SEARCH CENTER MODAL -->
 <div x-data>
     <div :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }">
 
         <div class="modal-background"
              @click="$store.ui.showSearchCenterModal = false"></div>
 
-        <div class="modal-card" x-data="worldMapModal()">
+        <div class="modal-content" x-data="worldMapModal()">
 
-            <header class="modal-card-head">
-                <p class="modal-card-title">Choose Search Center</p>
-                <button class="delete"
-                        @click="$store.ui.showSearchCenterModal = false"></button>
-            </header>
+            <div class="search-center-box">
 
-            <section class="modal-card-body"
-                     @picked="lat = $event.detail.lat; lon = $event.detail.lon">
+                <header class="search-center-header">
+                    <span class="search-center-title">Click on the map to choose a new search center...</span>
+                    <button class="delete"
+                            @click="$store.ui.showSearchCenterModal = false"></button>
+                </header>
 
-                <WorldMapPicker />
+                <div class="search-center-map"
+                     @picked="pick($event.detail.lat, $event.detail.lon)">
+                    <WorldMapPicker />
+                </div>
 
-            </section>
-
-            <footer class="modal-card-foot">
-                <button class="button is-primary"
-                        @click="confirm()">
-                    Use This Location
-                </button>
-                <button class="button"
-                        @click="$store.ui.showSearchCenterModal = false">
-                    Cancel
-                </button>
-            </footer>
+            </div>
 
         </div>
     </div>
 </div>
 
+<style>
+
+.modal-content {
+    --bulma-modal-content-width: 60rem;
+}
+
+.search-center-box {
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.search-center-header {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.search-center-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-center-map {
+    padding: 1rem;
+}
+</style>
+
 <script is:inline type="module">
-	document.addEventListener('alpine:init', () => {
-		// Modal controller
-		Alpine.data('worldMapModal', () => ({
-			open: false,
-			lat: null,
-			lon: null,
+document.addEventListener('alpine:init', () => {
+    Alpine.data('worldMapModal', () => ({
 
-			confirm() {
-				if (this.lat != null && this.lon != null) {
-					this.$store.tracks.setSearchCenter(this.lat, this.lon)
-				}
-				this.$store.ui.showSearchCenterModal = false
-			}
+        pick(lat, lon) {
+            this.$store.tracks.setSearchCenter(lat, lon)
+            this.$store.ui.showSearchCenterModal = false
+        }
 
-		}))
-	})
+    }))
+})
 </script>
