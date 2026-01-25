@@ -1,7 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components'
 ---
-
 <div class="side-panel-inner" x-data>
 
     <div class="panel has-text-centered">
@@ -24,14 +23,14 @@ import { Icon } from 'astro-icon/components'
 
                     <span class="cesium-marker"></span>
 
-					<span
-						x-text="
-							$store.tracks.lat != null && $store.tracks.lon != null
-								? `${Math.abs($store.tracks.lat).toFixed(3)}° ${$store.tracks.lat >= 0 ? 'N' : 'S'}, ` +
-								`${Math.abs($store.tracks.lon).toFixed(3)}° ${$store.tracks.lon >= 0 ? 'E' : 'W'}`
-								: '…'
-						"
-					></span>
+                    <span
+                        x-text="
+                            $store.tracks.lat != null && $store.tracks.lon != null
+                                ? `${Math.abs($store.tracks.lat).toFixed(3)}° ${$store.tracks.lat >= 0 ? 'N' : 'S'}, ` +
+                                  `${Math.abs($store.tracks.lon).toFixed(3)}° ${$store.tracks.lon >= 0 ? 'E' : 'W'}`
+                                : '…'
+                        "
+                    ></span>
 
                 </div>
             </div>
@@ -72,9 +71,10 @@ import { Icon } from 'astro-icon/components'
             <div class="card" x-data="{ open: false }">
 
                 <header class="card-header">
-                    <p class="card-header-title has-text-weight-medium track-title"
-                        x-html="t.trackFav ? `${t.trackName} ✭` : t.trackName">
-                    </p>
+                    <a class="card-header-title has-text-weight-medium track-title track-link"
+                       @click="$store.tracks.openTrack(t.trackId)"
+                       x-html="t.trackFav ? `${t.trackName} ✭` : t.trackName">
+                    </a>
 
                     <button class="card-header-icon"
                             @click="open = !open">
@@ -149,6 +149,14 @@ import { Icon } from 'astro-icon/components'
     .track-title {
         overflow-wrap: anywhere;
         word-break: break-word;
+    }
+
+    .track-link:hover {
+        text-decoration: underline;
+    }
+
+    .card-header {
+        font-size: 0.95rem !important;
     }
 
     .cesium-marker {
