@@ -25,13 +25,15 @@ import WorldMapPicker from './WorldMapPicker.astro'
 
                     <span class="cesium-marker"></span>
 
-                    <span
-                        x-text="
-                            $store.tracks.lat != null && $store.tracks.lon != null
-                                ? `${$store.tracks.lat.toFixed(3)}° N, ${Math.abs($store.tracks.lon).toFixed(3)}° W.`
-                                : '…'
-                        "
-                    ></span>
+					<span
+						x-text="
+							$store.tracks.lat != null && $store.tracks.lon != null
+								? `${Math.abs($store.tracks.lat).toFixed(3)}° ${$store.tracks.lat >= 0 ? 'N' : 'S'}, ` +
+								`${Math.abs($store.tracks.lon).toFixed(3)}° ${$store.tracks.lon >= 0 ? 'E' : 'W'}`
+								: '…'
+						"
+					></span>
+
                 </div>
             </div>
         </div>
@@ -141,7 +143,7 @@ import WorldMapPicker from './WorldMapPicker.astro'
                      @picked="lat = $event.detail.lat; lon = $event.detail.lon">
 
                 <WorldMapPicker />
-				
+
             </section>
 
             <footer class="modal-card-foot">
