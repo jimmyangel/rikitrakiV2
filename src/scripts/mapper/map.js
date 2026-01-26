@@ -455,7 +455,8 @@ export function showAnimatedMarker(ds) {
         position: trackEntity.position,
         billboard: {
             image: 'images/marker.png',
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY
         }
     })
 
