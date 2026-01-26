@@ -452,11 +452,16 @@ export function showAnimatedMarker(ds) {
 
     animatedMarker = viewer.entities.add({
         id: 'animatedMarker',
+
         position: trackEntity.position,
-        billboard: {
-            image: 'images/marker.png',
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY
+
+        orientation: new Cesium.VelocityOrientationProperty(trackEntity.position),
+
+        model: {
+            uri: 'models/marker_diamond_up.glb',
+            scale: 6,
+            minimumPixelSize: 42,
+            heightReference: Cesium.HeightReference.NONE
         }
     })
 
