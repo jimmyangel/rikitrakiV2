@@ -11,7 +11,11 @@ import MapPopup from './MapPopup.astro'
         <div class="map-loading-spinner"></div>
     </div>
 
+    <!-- Cesium canvas -->
     <div id="cesiumContainer"></div>
+
+    <!-- HTML layer for geotagged thumbnails -->
+    <div id="map-thumbnails-layer"></div>
 
     <MapPopup />
 
@@ -34,55 +38,59 @@ import MapPopup from './MapPopup.astro'
     </div>
 </div>
 
-
-
 <style>
-	#mapRoot {
-		position: relative;
-		height: 100%;
-		/* height: calc(100vh - 52px); */
-		font-family: sans-serif;
-	}
+    #mapRoot {
+        position: relative;
+        height: 100%;
+        font-family: sans-serif;
+    }
 
-	#cesiumContainer {
-		position: absolute;
-		inset: 0;
-	}
+    #cesiumContainer {
+        position: absolute;
+        inset: 0;
+    }
 
-	.attribution-box {
-		position: absolute;
-		bottom: 10px;
-		right: 10px;
-		background: rgba(0,0,0,0.35);
-		padding: 4px 8px;
-		border-radius: 4px;
-		font-size: 11px;
-		color: #fff;
-		z-index: 9999;
-		pointer-events: auto;
-	}
+    /* Layer for map thumbnails */
+    #map-thumbnails-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: var(--z-map-thumbnails);
+    }
 
-	.map-loading-overlay {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		pointer-events: none; /* Cesium still receives mouse events */
-		z-index: 500; /* above map, below popup */
-	}
+    .attribution-box {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.35);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #fff;
+        z-index: 9999;
+        pointer-events: auto;
+    }
 
-	.map-loading-spinner {
-		width: 36px;
-		height: 36px;
-		border: 4px solid rgba(0,0,0,0.2);
-		border-top-color: rgba(0,0,0,0.6);
-		border-radius: 50%;
-		animation: spin 0.6s linear infinite;
-	}
+    .map-loading-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 500;
+    }
 
-	@keyframes spin {
-		to { transform: rotate(360deg); }
-	}
+    .map-loading-spinner {
+        width: 36px;
+        height: 36px;
+        border: 4px solid rgba(0,0,0,0.2);
+        border-top-color: rgba(0,0,0,0.6);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
 
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
 </style>

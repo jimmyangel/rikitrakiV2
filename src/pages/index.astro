@@ -78,6 +78,15 @@ import '../styles/map-frame.css'
         mapFrame.initUI()
         map.initMap()
 
+        // Make map API globally available to Alpine components
+        // Public map API for UI components (e.g., TrackTools) 
+        ;(window as any).map = {
+            showMapThumbnails: map.showMapThumbnails,
+            hideMapThumbnails: map.hideMapThumbnails,
+            renderMapThumbnails: map.renderMapThumbnails,
+            clearMapThumbnails: map.clearMapThumbnails
+        }
+        
         const { lat, lon, countryCode } = await getApproxLocation()
 
         map.updateSearchCenterMarker(lat, lon)

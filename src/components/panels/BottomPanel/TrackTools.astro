@@ -1,24 +1,30 @@
 ---
+import '../../../styles/vendor/bulma-switch-control/main.min.css' 
 import { Icon } from 'astro-icon/components'
 ---
-<div class="track-card track-card-animation p-3" x-data="trackAnimationControls()">
+<div class="track-card p-3" x-data="trackTools()">
 
-    <div class="animation-title mb-3">Track playback</div>
+    <div class="track-tools-title mb-3">Track tools</div>
+
+    <!-- Checkbox row -->
+    <div class="switch-row mb-3">
+        <label class="switch is-rounded">
+            <input
+                type="checkbox"
+                x-model="showThumbnails"
+                @change="toggleThumbnails"
+            >
+            <span class="check is-info"></span>
+            <span class="control-label">Thumbnails</span>
+        </label>
+    </div>
+
 
     <div class="control-grid">
 
-        <!-- Row 1: Reset -->
-        <div></div>
-        <div class="center">
-            <button class="anim-btn" @click="reset()">
-                <Icon name="fa7-solid:arrows-rotate" />
-            </button>
-        </div>
-        <div></div>
-
-        <!-- Row 2: Slower / Play / Faster -->
+        <!-- Transport row: Slower / Play-Pause / Stop / Faster -->
         <div class="control-row">
-            <button class="anim-btn" @click="slower()">
+            <button class="anim-btn" @click="slower()" title="Slower">
                 <Icon name="fa7-solid:backward" />
             </button>
 
@@ -26,6 +32,7 @@ import { Icon } from 'astro-icon/components'
                 class="anim-btn"
                 x-bind:class="{ blink: isActive }"
                 @click="togglePlay()"
+                title="Play / Pause"
             >
                 <template x-if="isPlaying">
                     <Icon name="fa7-solid:pause" />
@@ -35,15 +42,19 @@ import { Icon } from 'astro-icon/components'
                 </template>
             </button>
 
-            <button class="anim-btn" @click="faster()">
+            <button class="anim-btn" @click="reset()" title="Stop">
+                <Icon name="fa7-solid:stop" />
+            </button>
+
+            <button class="anim-btn" @click="faster()" title="Faster">
                 <Icon name="fa7-solid:forward" />
             </button>
         </div>
 
-        <!-- Row 3: Exit -->
+        <!-- Exit row -->
         <div></div>
         <div class="center">
-            <button class="exit-btn" @click="exitTrack()">
+            <button class="exit-btn" @click="exitTrack()" title="Exit track">
                 Exit track
             </button>
         </div>
@@ -54,10 +65,11 @@ import { Icon } from 'astro-icon/components'
 </div>
 
 <script is:inline>
-    function trackAnimationControls() {
+    function trackTools() {
         return {
             isPlaying: false,
             isActive: false,
+            showThumbnails: true,   // default ON
 
             init() {
                 this.$watch('$store.tracks.animationFinished', value => {
@@ -68,6 +80,28 @@ import { Icon } from 'astro-icon/components'
                         this.$store.tracks.animationFinished = false
                     }
                 })
+                this.$watch('$store.tracks.active', trackId => {
+                    map.clearMapThumbnails()
+
+                    if (!trackId) return
+
+                    const track = this.$store.tracks.items[trackId]
+                    if (!track?.geotags) return
+
+                    map.renderMapThumbnails(track.geotags.geoTags)
+
+                    if (!this.showThumbnails) {
+                        map.hideMapThumbnails()
+                    }
+                })
+            },
+
+            toggleThumbnails() {
+                if (this.showThumbnails) {
+                    map.showMapThumbnails()
+                } else {
+                    map.hideMapThumbnails()
+                }
             },
 
             togglePlay() {
@@ -104,11 +138,30 @@ import { Icon } from 'astro-icon/components'
 </script>
 
 <style>
-    .animation-title {
+    .track-tools-title {
         font-size: 0.8rem;
         font-weight: 600;
         margin-bottom: 0.2rem;
         text-align: center;
+    }
+
+    .switch-row {
+        display: flex;
+        justify-content: center;
+    }
+
+    .switch-row .switch {
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /*.switch-row .switch .control-label {
+        margin-left: 0.4rem;
+    } */
+
+    .checkbox-row .checkbox input {
+        margin-right: 6px;
     }
 
     .control-grid {

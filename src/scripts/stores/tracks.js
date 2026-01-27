@@ -90,6 +90,9 @@ async function openTrack(trackId) {
     const store = Alpine.store('tracks')
     store.loadingTracks = true
 
+    // Patch 3: Always clear thumbnails before loading a new track
+    map.clearMapThumbnails()
+
     if (store.activeTrackId) {
         map.showSearchMarker(store.activeTrackId)
     }
@@ -134,7 +137,13 @@ async function openTrack(trackId) {
         store.setTrack(trackId, track)
     }
 
+    console.log(track)
+
     store.activate(trackId)
+
+    // Patch 1: Render thumbnails for this track
+    map.clearMapThumbnails()
+    map.renderMapThumbnails(track.geotags.geoTags)
 
     const ds = await map.loadTrackCZML(track.czmlOriginal)
     await ds.readyPromise
@@ -328,6 +337,9 @@ export default function initTracksStore(Alpine) {
 
             this.showMarkers()
             map.showSearchMarker(trackId)
+
+            // Patch 2: Clear thumbnails when exiting a track
+            map.clearMapThumbnails()
 
             this.active = null
             map.flyToTrackDataSource()

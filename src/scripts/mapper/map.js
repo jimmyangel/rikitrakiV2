@@ -121,6 +121,28 @@ export function initMap() {
             if (onAnimationFinished) onAnimationFinished()
         }
     })
+
+    // -----------------------------------------------------------------------
+    // Map Thumbnails: position them every frame
+    // -----------------------------------------------------------------------
+    viewer.scene.postRender.addEventListener(() => {
+        const thumbs = viewer?._mapThumbnails
+        if (!thumbs) return
+
+        for (const p of thumbs) {
+            const win = Cesium.SceneTransforms.worldToWindowCoordinates(
+                viewer.scene,
+                p._cartesian
+            )
+
+            if (Cesium.defined(win)) {
+                p._element.style.transform = `translate(${win.x}px, ${win.y}px)`
+                p._element.style.display = 'block'
+            } else {
+                p._element.style.display = 'none'
+            }
+        }
+    })
 }
 
 export function updateSearchCenterMarker(lat, lon) {
@@ -504,3 +526,80 @@ export function showAllSearchMarkersExcept(activeTrackId) {
         }
     })
 }
+
+// ---------------------------------------------------------------------------
+// Map Thumbnails: create and clear
+// ---------------------------------------------------------------------------
+
+export function renderMapThumbnails(geoTags) {
+    console.log("renderMapThumbnails called", geoTags)
+    const layer = document.getElementById('map-thumbnails-layer')
+    if (!layer) return
+
+    layer.innerHTML = ''
+
+    if (!geoTags || !geoTags.trackPhotos) {
+        viewer._mapThumbnails = null
+        return
+    }
+
+    const photos = geoTags.trackPhotos
+        .map((p, arrayIndex) => ({ ...p, arrayIndex }))
+        .filter(p => p.picLatLng)
+
+    console.log("Geotagged photos:", photos)
+
+    if (photos.length === 0) {
+        viewer._mapThumbnails = null
+        return
+    }
+
+    const cartographics = photos.map(p =>
+        Cesium.Cartographic.fromDegrees(p.picLatLng[1], p.picLatLng[0])
+    )
+
+    Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, cartographics)
+        .then(sampled => {
+            photos.forEach((photo, i) => {
+                const t = sampled[i]
+
+                const cartesian = Cesium.Cartesian3.fromRadians(
+                    t.longitude,
+                    t.latitude,
+                    t.height + 50
+                )
+
+                const el = document.createElement('div')
+                el.className = 'map-thumb'
+                el.dataset.arrayIndex = photo.arrayIndex
+
+                const img = document.createElement('img')
+                img.src = 'data:image/jpeg;base64,' + photo.picThumbBlob
+                el.appendChild(img)
+
+                layer.appendChild(el)
+
+                photo._cartesian = cartesian
+                photo._element = el
+            })
+
+            viewer._mapThumbnails = photos
+        })
+}
+
+export function clearMapThumbnails() {
+    const layer = document.getElementById('map-thumbnails-layer')
+    if (layer) layer.innerHTML = ''
+    viewer._mapThumbnails = null
+}
+
+export function showMapThumbnails() {
+    const layer = document.getElementById('map-thumbnails-layer')
+    if (layer) layer.style.display = 'block'
+}
+
+export function hideMapThumbnails() {
+    const layer = document.getElementById('map-thumbnails-layer')
+    if (layer) layer.style.display = 'none'
+}
+

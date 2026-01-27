@@ -4,6 +4,7 @@
 
 :root {
     --z-map: 1;
+    --z-map-thumbnails: 5;
     --z-map-controls: 10;
     --z-panels: 20;
 
