@@ -104,7 +104,13 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
 
                 const card = el.querySelector('.card-row > *')
                 const w = card?.offsetWidth || el.clientWidth * 0.8
-                el.scrollBy({ left: -w, behavior: 'smooth' })
+
+                if (window.env.isIOS()) {
+                    // iPad/iPhone Safari fix: no smooth scrolling
+                    el.scrollLeft -= w
+                } else {
+                    el.scrollBy({ left: -w, behavior: 'smooth' })
+                }
             },
 
             scrollRight() {
@@ -113,12 +119,17 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
 
                 const card = el.querySelector('.card-row > *')
                 const w = card?.offsetWidth || el.clientWidth * 0.8
-                el.scrollBy({ left: w, behavior: 'smooth' })
+
+                if (window.env.isIOS()) {
+                    // iPad/iPhone Safari fix: no smooth scrolling
+                    el.scrollLeft += w
+                } else {
+                    el.scrollBy({ left: w, behavior: 'smooth' })
+                }
             }
         }
     }
 </script>
-
 
 <style>
     .bottom-panel {
@@ -133,6 +144,14 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
 
     .bottom-panel:not(.isopen) {
         max-height: 0;
+    }
+
+    /* Safari/iPad compositing bug: force title into its own GPU layer so thumbnails don’t draw over it */
+    .bottom-panel-title {
+        position: relative;
+        z-index: 2;
+        transform: translateZ(0); /* force GPU compositing */
+        will-change: transform;   /* hint to Safari */
     }
 
     .bottom-panel-content {
@@ -190,8 +209,8 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
         align-items: center;
         justify-content: center;
 
-        border-radius: 50%;                 /* perfect circle */
-        background: rgba(154, 154, 154, 0.8); /* medium gray */
+        border-radius: 50%;
+        background: rgba(154, 154, 154, 0.8);
         color: white;
 
         pointer-events: auto;
@@ -199,17 +218,14 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
         transition: opacity .15s ease;
     }
 
-    /* Left arrow position */
     .arrow-overlay.left {
         left: var(--ui-space);
     }
 
-    /* Right arrow position */
     .arrow-overlay.right {
         right: var(--ui-space);
     }
 
-    /* Arrow glyphs */
     .arrow-overlay::after {
         content: '‹';
         font-size: 1.25rem;

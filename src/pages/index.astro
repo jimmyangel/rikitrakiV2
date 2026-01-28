@@ -64,6 +64,8 @@ import '../styles/map-frame.css'
     import { getApproxLocation } from '../scripts/utils/geoUtils.js'
     import initTracksStore from '../scripts/stores/tracks.js'
     import descWidth from '../scripts/alpine-plugins/formatting.js'
+    import { isIOS, isChromeOniPad } from "../scripts/utils/env"
+
 
     document.addEventListener('alpine:init', () => {
         Alpine.plugin(descWidth)
@@ -85,6 +87,12 @@ import '../styles/map-frame.css'
             hideMapThumbnails: map.hideMapThumbnails,
             renderMapThumbnails: map.renderMapThumbnails,
             clearMapThumbnails: map.clearMapThumbnails
+        }
+
+        // Make env API globally available to Alpine components
+        ;(window as any).env = {
+            isIOS,
+            isChromeOniPad
         }
         
         const { lat, lon, countryCode } = await getApproxLocation()

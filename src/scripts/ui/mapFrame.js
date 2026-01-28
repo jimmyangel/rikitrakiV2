@@ -1,3 +1,5 @@
+import { isChromeOniPad } from "../utils/env"
+
 export const initUI = () => {
 	// Side panel
 	const sidePanel = document.querySelector('.side-panel')
@@ -77,7 +79,3 @@ export const initUI = () => {
 	}
 }
 
-function isChromeOniPad() {
-	const ua = navigator.userAgent
-	return ua.includes('CriOS') && navigator.maxTouchPoints > 1
-}
