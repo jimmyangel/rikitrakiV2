@@ -181,33 +181,39 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
     /* Overlay arrows */
     .arrow-overlay {
         position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 2.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 32px;
+        height: 32px;
+
         display: flex;
         align-items: center;
         justify-content: center;
+
+        border-radius: 50%;                 /* perfect circle */
+        background: rgba(154, 154, 154, 0.8); /* medium gray */
+        color: white;
+
         pointer-events: auto;
         z-index: var(--z-arrow-overlays);
-        opacity: 0.85;
-        transition: opacity 0.15s;
+        transition: opacity .15s ease;
     }
 
+    /* Left arrow position */
     .arrow-overlay.left {
-        left: 0;
-        background: linear-gradient(to right, rgba(0,0,0,0.18), transparent);
+        left: var(--ui-space);
     }
 
+    /* Right arrow position */
     .arrow-overlay.right {
-        right: 0;
-        background: linear-gradient(to left, rgba(0,0,0,0.18), transparent);
+        right: var(--ui-space);
     }
 
+    /* Arrow glyphs */
     .arrow-overlay::after {
         content: '‹';
-        font-size: 1.5rem;
-        color: white;
-        text-shadow: 0 0 3px rgba(0,0,0,0.6);
+        font-size: 1.25rem;
+        line-height: 1;
     }
 
     .arrow-overlay.right::after {

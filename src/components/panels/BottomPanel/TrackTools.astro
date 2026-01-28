@@ -8,11 +8,12 @@ import { Icon } from 'astro-icon/components'
 
     <!-- Checkbox row -->
     <div class="switch-row mb-3">
-        <label class="switch is-rounded">
+        <label :disabled="!hasGeotaggedPhotos()" class="switch is-rounded">
             <input
                 type="checkbox"
                 x-model="showThumbnails"
                 @change="toggleThumbnails"
+                :disabled="!hasGeotaggedPhotos()"
             >
             <span class="check is-info"></span>
             <span class="control-label">Thumbnails</span>
@@ -102,6 +103,22 @@ import { Icon } from 'astro-icon/components'
                 } else {
                     map.hideMapThumbnails()
                 }
+            },
+
+            hasGeotaggedPhotos() {
+                const store = this.$store.tracks
+                if (!store) return false
+
+                const active = store.active
+                if (active == null) return false
+
+                const track = store.items[active]
+                if (!track) return false
+
+                const photos = track.photos
+                if (!Array.isArray(photos)) return false
+
+                return photos.some(p => p.picLatLng)
             },
 
             togglePlay() {
