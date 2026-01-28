@@ -115,10 +115,8 @@ import { Icon } from 'astro-icon/components'
                 const track = store.items[active]
                 if (!track) return false
 
-                const photos = track.photos
-                if (!Array.isArray(photos)) return false
+                return (track?.geotags?.geoTags?.trackPhotos ?? []).some(p => p.picLatLng)
 
-                return photos.some(p => p.picLatLng)
             },
 
             togglePlay() {
@@ -172,10 +170,6 @@ import { Icon } from 'astro-icon/components'
         display: inline-flex;
         align-items: center;
     }
-
-    /*.switch-row .switch .control-label {
-        margin-left: 0.4rem;
-    } */
 
     .checkbox-row .checkbox input {
         margin-right: 6px;
