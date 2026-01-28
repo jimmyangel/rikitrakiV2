@@ -4,10 +4,19 @@ import MOTDContent from './MOTDContent.astro'
 import ActiveTrackContent from './ActiveTrackContent.astro'
 ---
 
-<div class="bottom-panel isopen" x-data>
+<div 
+    class="bottom-panel isopen" 
+    x-data="bottomPanelArrows()" 
+    x-init="init()"
+>
+    <!-- Close button -->
     <button class="bottom-panel-close-button" title="Close info panel">
         <Icon name="fa7-solid:xmark" class="icon" />
     </button>
+
+    <!-- OVERLAY ARROWS (desktop only) -->
+    <div class="arrow-overlay left" x-cloak x-show="showLeft" @click="scrollLeft"></div>
+    <div class="arrow-overlay right" x-cloak x-show="showRight" @click="scrollRight"></div>
 
     <div class="bottom-panel-content">
 
@@ -29,10 +38,14 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
         <!-- ACTIVE TRACK MODE -->
         <template x-if="$store.tracks.active">
             <div class="panel-mode-wrapper">
-                <div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5"
-                    x-text="$store.tracks.items[$store.tracks.active].details.trackName 
-                        + ($store.tracks.items[$store.tracks.active].details.trackFav ? ' ✭' : '')">
-                </div>
+                <div 
+                    class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5"
+                    x-text="
+                        $store.tracks.items[$store.tracks.active].details.trackName +
+                        ($store.tracks.items[$store.tracks.active].details.trackFav ? ' ✭' : '')
+                    "
+                ></div>
+
                 <div class="card-container">
                     <div class="card-row">
                         <ActiveTrackContent />
@@ -43,6 +56,69 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
 
     </div>
 </div>
+
+<script is:inline>
+    function bottomPanelArrows() {
+        return {
+            showLeft: false,
+            showRight: false,
+            _scroller: null,
+
+            init() {
+                this.$nextTick(() => {
+                    this.bindScroller()
+                })
+
+                // Rebind when switching between MOTD and ActiveTrack
+                this.$watch('$store.tracks.active', () => {
+                    this.bindScroller()
+                })
+            },
+
+            bindScroller() {
+                const scroller = [...this.$root.querySelectorAll('.card-container')]
+                    .find(el => el.offsetParent !== null)
+
+                if (!scroller) {
+                    this.$nextTick(() => this.bindScroller())
+                    return
+                }
+
+                this._scroller = scroller
+
+                const update = () => {
+                    const max = scroller.scrollWidth - scroller.clientWidth
+                    this.showLeft = scroller.scrollLeft > 0
+                    this.showRight = scroller.scrollLeft < max
+                }
+
+                scroller.addEventListener('scroll', update)
+                window.addEventListener('resize', update)
+
+                requestAnimationFrame(update)
+            },
+
+            scrollLeft() {
+                const el = this._scroller
+                if (!el) return
+
+                const card = el.querySelector('.card-row > *')
+                const w = card?.offsetWidth || el.clientWidth * 0.8
+                el.scrollBy({ left: -w, behavior: 'smooth' })
+            },
+
+            scrollRight() {
+                const el = this._scroller
+                if (!el) return
+
+                const card = el.querySelector('.card-row > *')
+                const w = card?.offsetWidth || el.clientWidth * 0.8
+                el.scrollBy({ left: w, behavior: 'smooth' })
+            }
+        }
+    }
+</script>
+
 
 <style>
     .bottom-panel {
@@ -102,7 +178,47 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
         min-height: 0;
     }
 
+    /* Overlay arrows */
+    .arrow-overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        z-index: var(--z-arrow-overlays);
+        opacity: 0.85;
+        transition: opacity 0.15s;
+    }
+
+    .arrow-overlay.left {
+        left: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.18), transparent);
+    }
+
+    .arrow-overlay.right {
+        right: 0;
+        background: linear-gradient(to left, rgba(0,0,0,0.18), transparent);
+    }
+
+    .arrow-overlay::after {
+        content: '‹';
+        font-size: 1.5rem;
+        color: white;
+        text-shadow: 0 0 3px rgba(0,0,0,0.6);
+    }
+
+    .arrow-overlay.right::after {
+        content: '›';
+    }
+
     @media (max-width: 768px) {
+        .arrow-overlay {
+            display: none;
+        }
+
         .bottom-panel-content {
             overflow-y: auto;
             overflow-x: hidden;

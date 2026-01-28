@@ -36,10 +36,12 @@ export const initUI = () => {
 
 	openBottom?.addEventListener('click', () => {
 		bottomPanel.classList.add('isopen')
+		document.querySelector('.bottom-panel-open-button').classList.remove('visible')
 	})
 
 	closeBottom?.addEventListener('click', () => {
 		bottomPanel.classList.remove('isopen')
+		document.querySelector('.bottom-panel-open-button').classList.add('visible')
 	})
 
 	document.addEventListener('click', e => {

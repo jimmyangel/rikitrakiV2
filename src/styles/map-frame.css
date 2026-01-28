@@ -7,6 +7,8 @@
     --z-map-thumbnails: 5;
     --z-map-controls: 10;
     --z-panels: 20;
+    --z-arrow-overlays: 30;
+    --z-special-buttons: 40;
 
     --ui-radius: 4px;
     --ui-bg: #333;
@@ -93,21 +95,13 @@
     user-select: none;
 }
 
-
 @media (max-width: 768px) {
-    /*.map-touch-wrapper {
-        position: relative;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        user-select: none;
-        touch-action: pan-x pan-y;
-    } */
-
     .map-touch-overlay {
         position: absolute;
         inset: 0;
         pointer-events: auto;
         background: transparent;
+        z-index: 5;
     }
 
     .map-touch-wrapper.map-active .map-touch-overlay {
@@ -277,6 +271,8 @@
     display: grid;
     height: 100%;
     grid-template-rows: 1fr auto auto;
+    position: relative;          /* <-- added */
+    z-index: var(--z-map);       /* <-- added */
 }
 
 /* ----------------------------------------------------------
@@ -301,7 +297,7 @@
 .bottom-panel-open-button,
 .bottom-panel-close-button {
     position: absolute;
-    z-index: var(--z-panels);
+    z-index: var(--z-special-buttons);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -315,18 +311,16 @@
     transition: background var(--ui-transition);
 }
 
-/* open button position */
+
 .bottom-panel-open-button {
+    opacity: 0;
+    position: fixed;            
     bottom: var(--ui-space);
     right: var(--ui-space);
-
-    /* new: hidden by default */
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .2s ease;
+    z-index: var(--z-special-buttons); 
 }
 
-/* close button position */
+
 .bottom-panel-close-button {
     top: var(--ui-space);
     right: var(--ui-space);
@@ -337,14 +331,10 @@
     font-size: var(--ui-icon-size);
 }
 
-/* show open button only when panel is fully closed */
-.bottom-panel:not(.isopen) + .bottom-panel-open-button {
+.bottom-panel-open-button.visible {
     opacity: 1;
     pointer-events: auto;
-    transition-delay: .25s; /* match your panel collapse duration */
 }
-
-
 
 /* ----------------------------------------------------------
     MAP GRID MAP
