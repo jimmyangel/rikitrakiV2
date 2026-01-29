@@ -1,0 +1,40 @@
+---
+const { item, index, getImage, getLabel, onClick } = Astro.props;
+---
+
+<div
+    class="thumb-card"
+    x-data="{ item: null, index: null }"
+    x-init="
+        item = p;
+        index = i;
+    "
+    @click="onClick(item, index)"
+>
+    <img class="thumbImg" :src="getImage(item)">
+    <div class="is-size-7 p-2" x-text="getLabel(item, index)"></div>
+</div>
+
+<style>
+    .thumb-card {
+        flex: 0 0 auto;
+        width: 12rem;
+        height: 100%;
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: background-color 0.15s ease;
+    }
+
+    .thumb-card:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .thumbImg {
+        border: 2px solid #fff;
+        width: 10rem;
+        height: 7.5rem;
+        object-fit: cover;
+    }
+</style>

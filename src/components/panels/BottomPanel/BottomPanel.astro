@@ -58,77 +58,67 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
 </div>
 
 <script is:inline>
-    function bottomPanelArrows() {
-        return {
-            showLeft: false,
-            showRight: false,
-            _scroller: null,
+function bottomPanelArrows() {
+    return {
+        showLeft: false,
+        showRight: false,
+        scroller: null,
 
-            init() {
-                this.$nextTick(() => {
-                    this.bindScroller()
-                })
+        init() {
+            this.$nextTick(() => this.bindScroller())
+            this.$watch('$store.tracks.active', () => this.bindScroller())
+        },
 
-                // Rebind when switching between MOTD and ActiveTrack
-                this.$watch('$store.tracks.active', () => {
-                    this.bindScroller()
-                })
-            },
+        bindScroller() {
+            const scroller = [...this.$root.querySelectorAll('.card-container')]
+                .find(el => el.offsetParent !== null)
 
-            bindScroller() {
-                const scroller = [...this.$root.querySelectorAll('.card-container')]
-                    .find(el => el.offsetParent !== null)
+            if (!scroller) {
+                this.$nextTick(() => this.bindScroller())
+                return
+            }
 
-                if (!scroller) {
-                    this.$nextTick(() => this.bindScroller())
-                    return
-                }
+            this.scroller = scroller
 
-                this._scroller = scroller
+            const update = () => {
+                const max = scroller.scrollWidth - scroller.clientWidth
+                this.showLeft = scroller.scrollLeft > 0
+                this.showRight = scroller.scrollLeft < max - 1
+            }
 
-                const update = () => {
-                    const max = scroller.scrollWidth - scroller.clientWidth
-                    this.showLeft = scroller.scrollLeft > 0
-                    this.showRight = scroller.scrollLeft < max
-                }
+            scroller.addEventListener('scroll', update)
+            window.addEventListener('resize', update)
 
-                scroller.addEventListener('scroll', update)
-                window.addEventListener('resize', update)
+            requestAnimationFrame(update)
+        },
 
-                requestAnimationFrame(update)
-            },
+        scrollLeft() {
+            const el = this.scroller
+            if (!el) return
 
-            scrollLeft() {
-                const el = this._scroller
-                if (!el) return
+            const amount = el.clientWidth * 0.9
 
-                const card = el.querySelector('.card-row > *')
-                const w = card?.offsetWidth || el.clientWidth * 0.8
+            if (window.env.isIOS()) {
+                el.scrollLeft -= amount
+            } else {
+                el.scrollBy({ left: -amount, behavior: 'smooth' })
+            }
+        },
 
-                if (window.env.isIOS()) {
-                    // iPad/iPhone Safari fix: no smooth scrolling
-                    el.scrollLeft -= w
-                } else {
-                    el.scrollBy({ left: -w, behavior: 'smooth' })
-                }
-            },
+        scrollRight() {
+            const el = this.scroller
+            if (!el) return
 
-            scrollRight() {
-                const el = this._scroller
-                if (!el) return
+            const amount = el.clientWidth * 0.9
 
-                const card = el.querySelector('.card-row > *')
-                const w = card?.offsetWidth || el.clientWidth * 0.8
-
-                if (window.env.isIOS()) {
-                    // iPad/iPhone Safari fix: no smooth scrolling
-                    el.scrollLeft += w
-                } else {
-                    el.scrollBy({ left: w, behavior: 'smooth' })
-                }
+            if (window.env.isIOS()) {
+                el.scrollLeft += amount
+            } else {
+                el.scrollBy({ left: amount, behavior: 'smooth' })
             }
         }
     }
+}
 </script>
 
 <style>

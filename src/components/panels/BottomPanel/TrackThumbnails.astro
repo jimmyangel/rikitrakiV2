@@ -1,0 +1,38 @@
+---
+import Thumbnail from './Thumbnail.astro';
+---
+
+<template x-for="(p, i) in photos" :key="i" x-data="trackThumbnails()">
+    <Thumbnail
+        item="p"
+        index="i"
+        getImage="getImage"
+        getLabel="getLabel"
+        onClick="onClick"
+    />
+</template>
+
+<script is:inline>
+	function trackThumbnails() {
+		return {
+			get photos() {
+				return this.$store.tracks.items[this.$store.tracks.active]
+					?.geotags?.geoTags?.trackPhotos ?? [];
+			},
+
+			getImage(p) {
+				return p?.picThumbBlob
+					? `data:image/jpeg;base64,${p.picThumbBlob}`
+					: '';
+			},
+
+			getLabel(p, i) {
+				return p?.picCaption || `Photo ${i}`;
+			},
+
+			onClick(p) {
+				this.$store.tracks.openPhoto?.(p);
+			}
+		};
+	}
+</script>
