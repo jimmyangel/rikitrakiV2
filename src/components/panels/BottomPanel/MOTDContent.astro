@@ -1,64 +1,40 @@
 ---
-
+import Thumbnail from './Thumbnail.astro';
 ---
-<template x-data x-init="$store.tracks.loadMotd()" x-for="item in $store.tracks.motdTracks" :key="item.trackId">
-    <div class="motd-card has-text-centered"
-         @click="$store.tracks.openTrack(item.trackId)"
-         style="cursor: pointer;">
-        <img class="motdThumbs" :src="$store.tracks.thumbnailUrl(item.trackId)">
-        <div class="is-size-7 p-2" x-text="item.title"></div>
-    </div>
+
+<template
+    x-data="motdContent()"
+    x-init="$store.tracks.loadMotd()"
+    x-for="(p, i) in motdTracks"
+    :key="p.trackId"
+>
+    <Thumbnail
+        item="p"
+        index="i"
+        getImage="getImage"
+        getLabel="getLabel"
+        onClick="onClick"
+    />
 </template>
 
-<style>
-	.motd-card {
-		flex: 0 0 auto;
-		width: 12rem;
-		height: 100%;
-		scroll-snap-align: start;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		transition: background-color 0.15s ease;
-	}
+<script is:inline>
+function motdContent() {
+    return {
+        get motdTracks() {
+            return this.$store.tracks.motdTracks ?? []
+        },
 
-	.motd-card:hover {
-		background-color: rgba(0, 0, 0, 0.05);
-	}
+        getImage(p) {
+            return this.$store.tracks.thumbnailUrl(p.trackId)
+        },
 
-	.motdThumbs {
-		border: 2px solid #fff;
-		width: 10rem;
-		height: 7.5rem;
-	}
+        getLabel(p) {
+            return p.title
+        },
 
-	@media (max-width: 768px) {
-
-		.motd-card {
-			height: auto;
-			min-width: 0;
-			margin-bottom: 0;
-
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-
-			flex: 0 0 calc(33.333% - 1rem);
-			max-width: calc(33.333% - 1rem);
-		}
-
-		@media (max-width: 600px) {
-			.motd-card {
-				flex: 0 0 calc(50% - 1rem);
-				max-width: calc(50% - 1rem);
-			}
-		}
-
-		@media (max-width: 400px) {
-			.motd-card {
-				flex: 0 0 100%;
-				max-width: 100%;
-			}
-		}
-	}
-</style>
+        onClick(p) {
+            this.$store.tracks.openTrack(p.trackId)
+        }
+    }
+}
+</script>
