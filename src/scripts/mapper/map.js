@@ -383,7 +383,6 @@ export function showTrailheadMarker(ds) {
 }
 
 export function setClockToBeginning(ds) {
-    console.log('set clock to beginning')
     if (!viewer || !ds || !ds.clock) return
 
     const clock = ds.clock
@@ -532,7 +531,6 @@ export function showAllSearchMarkersExcept(activeTrackId) {
 // ---------------------------------------------------------------------------
 
 export function renderMapThumbnails(geoTags) {
-    console.log("renderMapThumbnails called", geoTags)
     const layer = document.getElementById('map-thumbnails-layer')
     if (!layer) return
 
@@ -546,8 +544,6 @@ export function renderMapThumbnails(geoTags) {
     const photos = geoTags.trackPhotos
         .map((p, arrayIndex) => ({ ...p, arrayIndex }))
         .filter(p => p.picLatLng)
-
-    console.log("Geotagged photos:", photos)
 
     if (photos.length === 0) {
         viewer._mapThumbnails = null
