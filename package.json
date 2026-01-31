@@ -11,6 +11,7 @@
   "dependencies": {
     "@astrojs/alpinejs": "^0.4.9",
     "@iconify-json/fa7-solid": "^1.2.3",
+    "@splidejs/splide": "^4.1.4",
     "@tmcw/togeojson": "^7.1.2",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.15.3",

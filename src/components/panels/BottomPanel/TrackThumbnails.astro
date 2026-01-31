@@ -16,28 +16,28 @@ import Thumbnail from './Thumbnail.astro';
     />
 </template>
 
-
 <script is:inline>
-function trackThumbnails() {
-    return {
-        get photos() {
-            return this.$store.tracks.items[this.$store.tracks.active]
-                ?.geotags?.geoTags?.trackPhotos ?? [];
-        },
+    function trackThumbnails() {
+        return {
+            get photos() {
+                return this.$store.tracks.items[this.$store.tracks.active]
+                    ?.geotags?.geoTags?.trackPhotos ?? []
+            },
 
-        getImage(p) {
-            return p?.picThumbBlob
-                ? `data:image/jpeg;base64,${p.picThumbBlob}`
-                : '';
-        },
+            getImage(p) {
+                return p?.picThumbBlob
+                    ? `data:image/jpeg;base64,${p.picThumbBlob}`
+                    : ''
+            },
 
-        getLabel(p, i) {
-            return p?.picCaption || `Photo ${i}`;
-        },
+            getLabel(p, i) {
+                return p?.picCaption || `Photo ${i}`
+            },
 
-        onClick(p) {
-            this.$store.tracks.openPhoto?.(p);
+            onClick(p, i) {
+				console.log('open carousel')
+                this.$store.carousel.open(this.photos, i)
+            }
         }
-    };
-}
+    }
 </script>

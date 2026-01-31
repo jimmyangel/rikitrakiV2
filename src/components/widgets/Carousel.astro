@@ -1,0 +1,109 @@
+---
+/* no frontmatter needed */
+---
+<!-- Outer wrapper ensures Alpine hydrates immediately -->
+<div x-data>
+    <div
+        x-show="$store.carousel.isOpen"
+        x-cloak
+        x-transition.opacity
+        class="carousel-modal"
+        @keydown.escape.window="$store.carousel.close()"
+    >
+        <div id="splide" class="splide">
+            <div class="splide__track">
+                <ul id="splide-list" class="splide__list"></ul>
+            </div>
+        </div>
+
+        <button class="carousel-close" @click="$store.carousel.close()">×</button>
+    </div>
+</div>
+
+<script is:inline>
+    let splide = null
+
+    function buildSlides(photos, startIndex) {
+        const list = document.getElementById('splide-list')
+        if (!list) return
+
+        list.innerHTML = ''
+
+        const carouselStore = Alpine.store('carousel')
+
+        photos.forEach((p, i) => {
+            const li = document.createElement('li')
+            li.className = 'splide__slide'
+
+            const img = document.createElement('img')
+            img.className = 'carousel-image'
+            img.src = carouselStore.getFullUrl(p, i)
+
+            li.appendChild(img)
+            list.appendChild(li)
+        })
+
+        if (splide) {
+            splide.destroy()
+            splide = null
+        }
+
+        splide = new Splide('#splide', {
+            start: startIndex,
+            type: 'loop',
+            pagination: false,
+            arrows: true,
+            heightRatio: 0.75
+        })
+
+        splide.mount()
+    }
+
+    function destroySplide() {
+        if (splide) {
+            splide.destroy()
+            splide = null
+        }
+    }
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.effect(() => {
+            const store = Alpine.store('carousel')
+
+            if (store && store.isOpen) {
+                buildSlides(store.photos, store.index)
+            } else {
+                destroySplide()
+            }
+        })
+    })
+</script>
+
+<style>
+    .carousel-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .carousel-image {
+        max-width: 100vw;
+        max-height: 100vh;
+        object-fit: contain;
+    }
+
+    .carousel-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 2rem;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+</style>
