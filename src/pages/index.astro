@@ -75,13 +75,7 @@ import '../styles/map-frame.css'
         //initCarouselStore(Alpine)
 
         Alpine.store('ui', {
-            showSearchCenterModal: false,
-            showCarouselModal: false,
-            openCarousel(index) {
-                console.log('carousel open from ui store')
-                this.carouselStartIndex = index
-                this.showCarouselModal = true
-            },
+            showSearchCenterModal: false
         })
     })
 
@@ -120,4 +114,7 @@ import '../styles/map-frame.css'
         tracks.reload()
     })
 </script>
+
+<script type="module" src="/src/scripts/vendor/glightbox.js"></script>
+
 

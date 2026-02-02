@@ -137,9 +137,8 @@ async function openTrack(trackId) {
         store.setTrack(trackId, track)
     }
 
-    console.log(track)
-
     store.activate(trackId)
+    store.activeTrackId = trackId
 
     // Patch 1: Render thumbnails for this track
     map.clearMapThumbnails()
@@ -151,8 +150,6 @@ async function openTrack(trackId) {
     track.dataSource = ds
 
     map.hideSearchMarker(trackId)
-
-    store.activeTrackId = trackId
 
     map.setClockToEnd(ds)
     map.showTrailheadMarker(ds)

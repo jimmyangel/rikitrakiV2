@@ -2,23 +2,15 @@
 import Thumbnail from './Thumbnail.astro';
 ---
 
-<template
-    x-for="(p, i) in photos"
-    :key="$store.tracks.active + '-' + i"
-    x-data="trackThumbnails()"
->
-    <Thumbnail
-        item="p"
-        index="i"
-        getImage="getImage"
-        getLabel="getLabel"
-        onClick="onClick"
-    />
+<template x-data="trackThumbnails(true)" x-for="(p, i) in photos" :key="$store.tracks.active + '-' + i">
+	<Thumbnail />
 </template>
 
+
 <script is:inline>
-    function trackThumbnails() {
+    function trackThumbnails(isActiveTrackMode = true) {
         return {
+			isActiveTrackMode,
             get photos() {
                 return this.$store.tracks.items[this.$store.tracks.active]
                     ?.geotags?.geoTags?.trackPhotos ?? []
@@ -34,10 +26,33 @@ import Thumbnail from './Thumbnail.astro';
                 return p?.picCaption || `Photo ${i}`
             },
 
-            onClick(p, i) {
-				console.log('open slide show')
-                // open slide show
-            }
+			getFullUrl(p, i) {
+				const trackId = this.$store.tracks.activeTrackId
+				if (!p || !trackId) return null
+				const picPointer = p.picIndex ?? i
+				return `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${picPointer}`
+			},
+
+			init() {
+				const refresh = () => {
+					console.log('here is init',this.$store.tracks.activeTrackId )
+					if (!this.isActiveTrackMode) return
+
+					this.$nextTick(() => {
+						if (this.lightbox) this.lightbox.destroy()
+
+						this.lightbox = GLightbox({
+							selector: '.glightbox',
+							touchNavigation: true,
+							loop: false,
+						})
+					})
+				}
+				refresh()
+
+				this.$watch('$store.tracks.activeTrackId', refresh)
+			}
+
         }
     }
 </script>

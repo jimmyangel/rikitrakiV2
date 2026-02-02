@@ -8,18 +8,15 @@ import Thumbnail from './Thumbnail.astro';
     x-for="(p, i) in motdTracks"
     :key="p.trackId"
 >
-    <Thumbnail
-        item="p"
-        index="i"
-        getImage="getImage"
-        getLabel="getLabel"
-        onClick="onClick"
-    />
+    <Thumbnail />
 </template>
+
 
 <script is:inline>
 function motdContent() {
     return {
+		isActiveTrackMode: false,
+		
         get motdTracks() {
             return this.$store.tracks.motdTracks ?? []
         },
