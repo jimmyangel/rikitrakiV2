@@ -5,6 +5,8 @@
 :root {
     --z-map: 1;
     --z-map-thumbnails: 5;
+    --z-touch-overlay: 8;
+    --z-tap-to-interact: 15;
     --z-map-controls: 10;
     --z-panels: 20;
     --z-arrow-overlays: 30;
@@ -101,7 +103,7 @@
         inset: 0;
         pointer-events: auto;
         background: transparent;
-        z-index: 5;
+        z-index: var(--z-touch-overlay);
     }
 
     .map-touch-wrapper.map-active .map-touch-overlay {
@@ -122,6 +124,7 @@
         opacity: 1;
         transition: opacity 0.25s ease-out;
         backdrop-filter: blur(6px);
+        z-index: var(--z-tap-to-interact);
     }
 
     .map-touch-wrapper.map-active .map-interact-hint {
