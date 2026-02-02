@@ -9,6 +9,7 @@
         :href="isActiveTrackMode ? getFullUrl(p, i) : undefined"
         :data-title="isActiveTrackMode ? getLabel(p, i) : null"
         data-type="image"
+        @click.capture="event.currentTarget.blur()"
         @click="!isActiveTrackMode && onClick && onClick(p, i)"
     >
         <img class="thumbImg" :src="getImage(p)" :alt="getLabel(p, i)" />

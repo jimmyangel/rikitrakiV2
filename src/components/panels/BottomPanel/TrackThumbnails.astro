@@ -51,6 +51,13 @@ import Thumbnail from './Thumbnail.astro';
 				refresh()
 
 				this.$watch('$store.tracks.activeTrackId', refresh)
+
+				// Open the slides from the map thumbnails
+				window.addEventListener('map-thumb-click', (e) => { 
+					const index = e.detail.index
+					if (!this.lightbox) return 
+					this.lightbox.openAt(index)
+				})
 			}
 
         }

@@ -575,12 +575,22 @@ export function renderMapThumbnails(geoTags) {
 
                 layer.appendChild(el)
 
+                el.style.cursor = 'pointer'
+
+                // Event to fire the slides from the map thumbnails
+                el.addEventListener('click', () => {
+                    window.dispatchEvent(new CustomEvent('map-thumb-click', {
+                        detail: { index: photo.arrayIndex }
+                    }))
+                })
+
                 photo._cartesian = cartesian
                 photo._element = el
             })
 
             viewer._mapThumbnails = photos
         })
+
 }
 
 export function clearMapThumbnails() {
