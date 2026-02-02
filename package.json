@@ -11,7 +11,6 @@
   "dependencies": {
     "@astrojs/alpinejs": "^0.4.9",
     "@iconify-json/fa7-solid": "^1.2.3",
-    "@splidejs/splide": "^4.1.4",
     "@tmcw/togeojson": "^7.1.2",
     "@types/alpinejs": "^3.13.11",
     "alpinejs": "^3.15.3",
@@ -19,6 +18,7 @@
     "astro-icon": "^1.1.5",
     "bulma": "^1.0.4",
     "cesium": "^1.136.0",
+    "glightbox": "^3.3.1",
     "sass": "^1.96.0"
   },
   "devDependencies": {
