@@ -1,7 +1,12 @@
 # Don’t rewrite static assets
-/assets/*    /assets/:splat    200
-/js/*        /js/:splat        200
-/*.(js|css|wasm|json|map)      /$1.$2   200
+/assets/*      /assets/:splat      200
+/_astro/*      /_astro/:splat      200
+/js/*          /js/:splat          200
+/*.js          /:splat             200
+/*.css         /:splat             200
+/*.wasm        /:splat             200
+/*.json        /:splat             200
+/*.map         /:splat             200
 
 # Rewrite everything else to index.html
-/*          /index.html        200
+/*            /index.html          200
