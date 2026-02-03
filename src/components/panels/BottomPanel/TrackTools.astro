@@ -81,20 +81,6 @@ import { Icon } from 'astro-icon/components'
                         this.$store.tracks.animationFinished = false
                     }
                 })
-                this.$watch('$store.tracks.active', trackId => {
-                    map.clearMapThumbnails()
-
-                    if (!trackId) return
-
-                    const track = this.$store.tracks.items[trackId]
-                    if (!track?.geotags) return
-
-                    map.renderMapThumbnails(track.geotags.geoTags)
-
-                    if (!this.showThumbnails) {
-                        map.hideMapThumbnails()
-                    }
-                })
             },
 
             toggleThumbnails() {
