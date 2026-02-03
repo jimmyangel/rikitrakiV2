@@ -31,7 +31,7 @@ import { Icon } from 'astro-icon/components'
 
             <button
                 class="anim-btn"
-                x-bind:class="{ blink: isActive }"
+                x-bind:class="{ blink: isTrackInPlay }"
                 @click="togglePlay()"
                 title="Play / Pause"
             >
@@ -78,14 +78,14 @@ import { Icon } from 'astro-icon/components'
     function trackTools() {
         return {
             isPlaying: false,
-            isActive: false,
+            isTrackInPlay: false,
             showThumbnails: true,   // default ON
 
             init() {
                 this.$watch('$store.tracks.animationFinished', value => {
                     if (value) {
                         this.isPlaying = false
-                        this.isActive = false
+                        this.isTrackInPlay = false
                         this.$store.tracks.showMarkers()
                         this.$store.tracks.animationFinished = false
                     }
@@ -115,8 +115,8 @@ import { Icon } from 'astro-icon/components'
             },
 
             togglePlay() {
-                if (!this.isActive) {
-                    this.isActive = true
+                if (!this.isTrackInPlay) {
+                    this.isTrackInPlay = true
                     this.$store.tracks.hideMarkers()
                 }
 
@@ -134,13 +134,13 @@ import { Icon } from 'astro-icon/components'
 
             reset() {
                 this.isPlaying = false
-                this.isActive = false
+                this.isTrackInPlay = false
                 this.$store.tracks.resetAnimation()
             },
 
             exitTrack() {
                 this.isPlaying = false
-                this.isActive = false
+                this.isTrackInPlay = false
                 this.$store.tracks.exitActiveTrack()
             },
 
