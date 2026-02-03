@@ -1110,77 +1110,77 @@
 	</svg>
 </div>
 
-<script is:inline type="module">
-document.addEventListener('alpine:init', () => {
+<script is:inline>
+	document.addEventListener('alpine:init', () => {
 
-    const robinson = [
-        { lat: 0,   x: 1.0000, y: 0.0000 },
-        { lat: 5,   x: 0.9986, y: 0.0620 },
-        { lat: 10,  x: 0.9954, y: 0.1240 },
-        { lat: 15,  x: 0.9900, y: 0.1860 },
-        { lat: 20,  x: 0.9822, y: 0.2480 },
-        { lat: 25,  x: 0.9730, y: 0.3100 },
-        { lat: 30,  x: 0.9600, y: 0.3720 },
-        { lat: 35,  x: 0.9427, y: 0.4340 },
-        { lat: 40,  x: 0.9216, y: 0.4958 },
-        { lat: 45,  x: 0.8962, y: 0.5571 },
-        { lat: 50,  x: 0.8679, y: 0.6176 },
-        { lat: 55,  x: 0.8350, y: 0.6769 },
-        { lat: 60,  x: 0.7986, y: 0.7346 },
-        { lat: 65,  x: 0.7597, y: 0.7903 },
-        { lat: 70,  x: 0.7186, y: 0.8435 },
-        { lat: 75,  x: 0.6732, y: 0.8936 },
-        { lat: 80,  x: 0.6213, y: 0.9394 },
-        { lat: 85,  x: 0.5722, y: 0.9761 },
-        { lat: 90,  x: 0.5322, y: 1.0000 }
-    ]
+		const robinson = [
+			{ lat: 0,   x: 1.0000, y: 0.0000 },
+			{ lat: 5,   x: 0.9986, y: 0.0620 },
+			{ lat: 10,  x: 0.9954, y: 0.1240 },
+			{ lat: 15,  x: 0.9900, y: 0.1860 },
+			{ lat: 20,  x: 0.9822, y: 0.2480 },
+			{ lat: 25,  x: 0.9730, y: 0.3100 },
+			{ lat: 30,  x: 0.9600, y: 0.3720 },
+			{ lat: 35,  x: 0.9427, y: 0.4340 },
+			{ lat: 40,  x: 0.9216, y: 0.4958 },
+			{ lat: 45,  x: 0.8962, y: 0.5571 },
+			{ lat: 50,  x: 0.8679, y: 0.6176 },
+			{ lat: 55,  x: 0.8350, y: 0.6769 },
+			{ lat: 60,  x: 0.7986, y: 0.7346 },
+			{ lat: 65,  x: 0.7597, y: 0.7903 },
+			{ lat: 70,  x: 0.7186, y: 0.8435 },
+			{ lat: 75,  x: 0.6732, y: 0.8936 },
+			{ lat: 80,  x: 0.6213, y: 0.9394 },
+			{ lat: 85,  x: 0.5722, y: 0.9761 },
+			{ lat: 90,  x: 0.5322, y: 1.0000 }
+		]
 
-	function inverseRobinson(svgX, svgY, width, height) {
-		const xn = (svgX - width / 2) / (width / 2)
-		const yn = (height / 2 - svgY) / (height / 2)
+		function inverseRobinson(svgX, svgY, width, height) {
+			const xn = (svgX - width / 2) / (width / 2)
+			const yn = (height / 2 - svgY) / (height / 2)
 
-		const sign = yn < 0 ? -1 : 1
-		const absY = Math.abs(yn)
-		const clampedY = Math.max(0, Math.min(1, absY))
+			const sign = yn < 0 ? -1 : 1
+			const absY = Math.abs(yn)
+			const clampedY = Math.max(0, Math.min(1, absY))
 
-		let i = 0
-		while (i < robinson.length - 1 && clampedY > robinson[i + 1].y) i++
+			let i = 0
+			while (i < robinson.length - 1 && clampedY > robinson[i + 1].y) i++
 
-		const a = robinson[i]
-		const b = robinson[i + 1]
-		const t = (clampedY - a.y) / (b.y - a.y || 1)
+			const a = robinson[i]
+			const b = robinson[i + 1]
+			const t = (clampedY - a.y) / (b.y - a.y || 1)
 
-		const latAbs = a.lat + t * 5
-		let lat = latAbs * sign
+			const latAbs = a.lat + t * 5
+			let lat = latAbs * sign
 
-		const xCoeff = a.x + t * (b.x - a.x)
-		let lon = (xn / xCoeff) * 180
+			const xCoeff = a.x + t * (b.x - a.x)
+			let lon = (xn / xCoeff) * 180
 
-		const latOffset = -1
-		const lonOffset = 11
+			const latOffset = -1
+			const lonOffset = 11
 
-		lat += latOffset
-		lon += lonOffset
+			lat += latOffset
+			lon += lonOffset
 
-		return { lat, lon }
-	}
+			return { lat, lon }
+		}
 
-    Alpine.data('worldMapPicker', () => ({
-        handleClick(e) {
-            const svg = e.currentTarget
-            const rect = svg.getBoundingClientRect()
-            const x = e.clientX - rect.left
-            const y = e.clientY - rect.top
+		Alpine.data('worldMapPicker', () => ({
+			handleClick(e) {
+				const svg = e.currentTarget
+				const rect = svg.getBoundingClientRect()
+				const x = e.clientX - rect.left
+				const y = e.clientY - rect.top
 
-            const { lat, lon } = inverseRobinson(x, y, rect.width, rect.height)
+				const { lat, lon } = inverseRobinson(x, y, rect.width, rect.height)
 
-            this.$dispatch('picked', {
-                lat: Math.round(lat),
-                lon: Math.round(lon)
-            })
-        }
-    }))
-})
+				this.$dispatch('picked', {
+					lat: Math.round(lat),
+					lon: Math.round(lon)
+				})
+			}
+		}))
+	})
 </script>
 
 <style>
