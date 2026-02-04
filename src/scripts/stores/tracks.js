@@ -47,7 +47,7 @@ function getUsernameFromUrl() {
     return seg.length === 1 ? seg[0] : null
 }
 
-async function reloadTracks(store) {
+async function reloadTracks(store, { fly = true } = {}) {
     if (store.lat == null || store.lon == null) return
 
     store.loadingTracks = true
@@ -76,7 +76,7 @@ async function reloadTracks(store) {
         store.radiusKm = radiusKm
         store.count = count
 
-        await map.setTracks(tracks, { fly: true })
+        await map.setTracks(tracks, { fly: fly })
 
         const filteredIds = new Set(store.filtered.map(t => t.trackId))
         map.applyFilter(filteredIds)
@@ -141,10 +141,10 @@ async function openTrack(trackId) {
 
     // Update search center (lat/lon from details)
     const [lat, lon] = track.details.trackLatLng
-    store.setSearchCenter(lat, lon)
+    store.setSearchCenter(lat, lon, { fly: false })
 
     // Reload nearby tracks but skip flyTo inside setTracks()
-    await store.reload({ fly: false })
+    //await store.reload({ fly: false })
 
     store.activate(trackId)
     store.activeTrackId = trackId
@@ -255,13 +255,13 @@ export default function initTracksStore(Alpine) {
             await reloadTracks(this)
         },
 
-        setSearchCenter(lat, lon) {
+        async setSearchCenter(lat, lon, { fly = true } = {}) {
             this.lat = lat
             this.lon = lon
 
             map.updateSearchCenterMarker(lat, lon)
 
-            this.reload()
+            await reloadTracks(this, {fly})
         },
 
         selectTrack(track) {

@@ -35,7 +35,6 @@ import Thumbnail from './Thumbnail.astro';
 
 			init() {
 				const refresh = () => {
-					console.log('here is init',this.$store.tracks.activeTrackId )
 					if (!this.isActiveTrackMode) return
 
 					this.$nextTick(() => {
