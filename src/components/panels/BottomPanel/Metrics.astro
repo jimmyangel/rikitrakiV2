@@ -5,16 +5,16 @@
 <div class="track-card p-3 metrics-scroll">
 
     <div class="metric-line">
-        <span class="metric-label">Activity</span>
+        <span class="metric-label">By</span>
         <span class="metric-value"
-            x-text="$store.tracks.items[$store.tracks.active].details.trackType">
+            x-text="$store.tracks.items[$store.tracks.active].details.username">
         </span>
     </div>
 
     <div class="metric-line">
-        <span class="metric-label">Level</span>
+        <span class="metric-label">Activity</span>
         <span class="metric-value"
-            x-text="$store.tracks.items[$store.tracks.active].details.trackLevel">
+            x-text="`${$store.tracks.items[$store.tracks.active].details.trackType}, ${$store.tracks.items[$store.tracks.active].details.trackLevel}`">
         </span>
     </div>
 
