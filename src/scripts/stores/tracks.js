@@ -76,7 +76,7 @@ async function reloadTracks(store) {
         store.radiusKm = radiusKm
         store.count = count
 
-        await map.setTracks(tracks)
+        await map.setTracks(tracks, { fly: true })
 
         const filteredIds = new Set(store.filtered.map(t => t.trackId))
         map.applyFilter(filteredIds)
@@ -90,7 +90,7 @@ async function openTrack(trackId) {
     const store = Alpine.store('tracks')
     store.loadingTracks = true
 
-    // Patch 3: Always clear thumbnails before loading a new track
+    // Always clear thumbnails before loading a new track
     map.clearMapThumbnails()
 
     if (store.activeTrackId) {
@@ -134,13 +134,22 @@ async function openTrack(trackId) {
             elevationsM
         }
 
+        console.log(track)
+
         store.setTrack(trackId, track)
     }
+
+    // Update search center (lat/lon from details)
+    const [lat, lon] = track.details.trackLatLng
+    store.setSearchCenter(lat, lon)
+
+    // Reload nearby tracks but skip flyTo inside setTracks()
+    await store.reload({ fly: false })
 
     store.activate(trackId)
     store.activeTrackId = trackId
 
-    // Patch 1: Render thumbnails for this track
+    // Render thumbnails for this track
     map.clearMapThumbnails()
     map.renderMapThumbnails(track.geotags.geoTags)
 
@@ -154,8 +163,10 @@ async function openTrack(trackId) {
     map.setClockToEnd(ds)
     map.showTrailheadMarker(ds)
     map.flyToActiveTrack()
+
     store.loadingTracks = false
 }
+
 
 async function loadMotd(store) {
     const { motdTracks } = await getMotd()
@@ -345,11 +356,13 @@ export default function initTracksStore(Alpine) {
 
         hideMarkers() {
             map.hideAllSearchMarkers()
+            map.hideSearchCenter()
         },
 
         showMarkers() {
             const active = this.active
             map.showAllSearchMarkersExcept(active)
+            map.showSearchCenter()
         }
 
     })

@@ -5,21 +5,29 @@ import { constants } from '../config.js'
 let viewer = null
 let searchCenterEntity = null
 
+// Permanent search‑area DataSource (created once)
 let trackDataSource = null
 
 let savedEntity = null
-
 let anchorEntityScreenPos = null
 let anchorPopupPos = null
 
+// CZML DataSource (one at a time)
 let activeTrackDataSource = null
 
 let onAnimationFinished = null
+
+// Reusable animated marker
+let animatedMarker = null
 
 export function initMap() {
 
     Alpine.store('tracks').loadingCesium = true
     viewer = createViewer()
+
+    // Create permanent search‑area DataSource
+    trackDataSource = new Cesium.CustomDataSource('tracks')
+    viewer.dataSources.add(trackDataSource)
 
     const wrapper = document.querySelector('.map-touch-wrapper')
 
@@ -81,6 +89,7 @@ export function initMap() {
         }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 
+    // Popup tracking
     viewer.scene.postRender.addEventListener(() => {
         if (!savedEntity || !anchorEntityScreenPos || !anchorPopupPos) return
 
@@ -123,128 +132,8 @@ export function initMap() {
     })
 
     // -----------------------------------------------------------------------
-    // Map Thumbnails: position them every frame
+    // Pointer handlers (installed once)
     // -----------------------------------------------------------------------
-    viewer.scene.postRender.addEventListener(() => {
-        const thumbs = viewer?._mapThumbnails
-        if (!thumbs) return
-
-        for (const p of thumbs) {
-            const win = Cesium.SceneTransforms.worldToWindowCoordinates(
-                viewer.scene,
-                p._cartesian
-            )
-
-            if (Cesium.defined(win)) {
-                p._element.style.transform = `translate(${win.x}px, ${win.y}px)`
-                p._element.style.display = 'block'
-            } else {
-                p._element.style.display = 'none'
-            }
-        }
-    })
-}
-
-export function updateSearchCenterMarker(lat, lon) {
-    if (!viewer) return
-
-    if (!searchCenterEntity) {
-        searchCenterEntity = viewer.entities.add({
-            id: 'search-center',
-            position: Cesium.Cartesian3.fromDegrees(lon, lat),
-            point: {
-                pixelSize: 12,
-                translucent: true,
-                color: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.9),
-                outlineColor: Cesium.Color.BLACK,
-                outlineWidth: 2,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY
-            }
-        })
-        return
-    }
-
-    searchCenterEntity.position = Cesium.Cartesian3.fromDegrees(lon, lat)
-}
-
-export function applyFilter(filteredIds) {
-    if (!trackDataSource) return
-    const entities = trackDataSource.entities.values
-
-    for (const entity of entities) {
-        entity.show = filteredIds.has(entity.id)
-    }
-}
-
-export async function setTracks(tracks) {
-    if (!viewer) {
-        console.warn('setTracks called before initMap()')
-        return
-    }
-
-    while (!viewer.terrainProvider) {
-        await new Promise(r => setTimeout(r, 10))
-    }
-
-    await viewer.terrainProvider.readyPromise
-
-    if (trackDataSource) {
-        viewer.dataSources.remove(trackDataSource)
-    }
-
-    trackDataSource = new Cesium.CustomDataSource('tracks')
-
-    const entities = []
-    const cartographics = []
-
-    for (const track of tracks) {
-        if (!track.trackLatLng[1] || !track.trackLatLng[0]) continue
-
-        const entity = trackDataSource.entities.add({
-            id: track.trackId,
-            name: track.trackId,
-            position: Cesium.Cartesian3.fromDegrees(
-                track.trackLatLng[1],
-                track.trackLatLng[0]
-            ),
-            billboard: {
-                image: '/images/l-marker.png',
-                scale: 0.8,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY
-            },
-            properties: { track }
-        })
-
-        entities.push(entity)
-
-        cartographics.push(
-            Cesium.Cartographic.fromDegrees(
-                track.trackLatLng[1],
-                track.trackLatLng[0]
-            )
-        )
-    }
-
-    if (cartographics.length > 0) {
-        const updated = await Cesium.sampleTerrain(
-            viewer.terrainProvider,
-            14,
-            cartographics
-        )
-
-        for (let i = 0; i < updated.length; i++) {
-            const c = updated[i]
-            const e = entities[i]
-
-            e.position = new Cesium.ConstantPositionProperty(
-                Cesium.Cartesian3.fromRadians(
-                    c.longitude,
-                    c.latitude,
-                    c.height
-                )
-            )
-        }
-    }
 
     let isPointer = false
 
@@ -318,10 +207,144 @@ export async function setTracks(tracks) {
         popup.style.top  = `${anchorPopupPos.y}px`
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
-    viewer.dataSources.add(trackDataSource)
-    flyToTrackDataSource()
+    // -----------------------------------------------------------------------
+    // Map Thumbnails: position them every frame
+    // -----------------------------------------------------------------------
+    viewer.scene.postRender.addEventListener(() => {
+        const thumbs = viewer?._mapThumbnails
+        if (!thumbs) return
+
+        for (const p of thumbs) {
+            const win = Cesium.SceneTransforms.worldToWindowCoordinates(
+                viewer.scene,
+                p._cartesian
+            )
+
+            if (Cesium.defined(win)) {
+                p._element.style.transform = `translate(${win.x}px, ${win.y}px)`
+                p._element.style.display = 'block'
+            } else {
+                p._element.style.display = 'none'
+            }
+        }
+    })
+}
+
+export function updateSearchCenterMarker(lat, lon) {
+    if (!viewer) return
+
+    if (!searchCenterEntity) {
+        searchCenterEntity = viewer.entities.add({
+            id: 'search-center',
+            position: Cesium.Cartesian3.fromDegrees(lon, lat),
+            point: {
+                pixelSize: 12,
+                translucent: true,
+                color: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.9),
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                disableDepthTestDistance: Number.POSITIVE_INFINITY
+            }
+        })
+        return
+    }
+
+    searchCenterEntity.position = Cesium.Cartesian3.fromDegrees(lon, lat)
+}
+
+export function applyFilter(filteredIds) {
+    if (!trackDataSource) return
+    const entities = trackDataSource.entities.values
+
+    for (const entity of entities) {
+        entity.show = filteredIds.has(entity.id)
+    }
+}
+
+export async function setTracks(tracks, { fly = true } = {}) {
+    if (!viewer) {
+        console.warn('setTracks called before initMap()')
+        return
+    }
+
+    while (!viewer.terrainProvider) {
+        await new Promise(r => setTimeout(r, 10))
+    }
+
+    await viewer.terrainProvider.readyPromise
+
+    // Clear existing markers
+    trackDataSource.entities.removeAll()
+
+    const entities = []
+    const cartographics = []
+
+    for (const track of tracks) {
+        if (!track.trackLatLng[1] || !track.trackLatLng[0]) continue
+
+        const entity = trackDataSource.entities.add({
+            id: track.trackId,
+            name: track.trackId,
+            position: Cesium.Cartesian3.fromDegrees(
+                track.trackLatLng[1],
+                track.trackLatLng[0]
+            ),
+            billboard: {
+                image: '/images/l-marker.png',
+                scale: 0.8,
+                disableDepthTestDistance: Number.POSITIVE_INFINITY
+            },
+            properties: { track }
+        })
+
+        entities.push(entity)
+
+        cartographics.push(
+            Cesium.Cartographic.fromDegrees(
+                track.trackLatLng[1],
+                track.trackLatLng[0]
+            )
+        )
+    }
+
+    if (cartographics.length > 0) {
+        const updated = await Cesium.sampleTerrain(
+            viewer.terrainProvider,
+            14,
+            cartographics
+        )
+
+        for (let i = 0; i < updated.length; i++) {
+            const c = updated[i]
+            const e = entities[i]
+
+            e.position = new Cesium.ConstantPositionProperty(
+                Cesium.Cartesian3.fromRadians(
+                    c.longitude,
+                    c.latitude,
+                    c.height
+                )
+            )
+        }
+    }
+
+    if (fly) {
+        flyToTrackDataSource()
+    }
 
     console.log(`Added ${tracks.length} markers`)
+}
+
+// Safe removal for CZML only
+function safeRemoveDataSource(ds) {
+    const scene = viewer.scene
+
+    function removeAfterFrame() {
+        viewer.dataSources.remove(ds, false)
+        scene.postRender.removeEventListener(removeAfterFrame)
+    }
+
+    scene.postRender.addEventListener(removeAfterFrame)
 }
 
 export function flyToTrackDataSource() {
@@ -346,14 +369,11 @@ function handleLongPress(position) {
     Alpine.store('tracks').setSearchCenter(lat, lon)
 }
 
-/*
-    Legacy behavior: only one CZML track at a time.
-*/
 export async function loadTrackCZML(czml) {
     if (!viewer) return null
 
     if (activeTrackDataSource) {
-        viewer.dataSources.remove(activeTrackDataSource)
+        safeRemoveDataSource(activeTrackDataSource)
         activeTrackDataSource = null
     }
 
@@ -366,7 +386,6 @@ export async function loadTrackCZML(czml) {
 
 export function flyToActiveTrack() {
     if (!viewer || !activeTrackDataSource) return
-
     viewer.flyTo(activeTrackDataSource)
 }
 
@@ -460,39 +479,36 @@ export function setOnAnimationFinished(callback) {
     onAnimationFinished = callback
 }
 
-let animatedMarker = null
-
 export function showAnimatedMarker(ds) {
+    if (!viewer || !ds) return
+
     const trackEntity = ds.entities.getById('track')
     if (!trackEntity) return
 
-    if (animatedMarker) {
-        viewer.entities.remove(animatedMarker)
-        animatedMarker = null
+    if (!animatedMarker) {
+        animatedMarker = viewer.entities.add({
+            id: 'animatedMarker',
+            position: trackEntity.position,
+            orientation: new Cesium.VelocityOrientationProperty(trackEntity.position),
+            model: {
+                uri: 'models/marker_diamond_up.glb',
+                scale: 6,
+                minimumPixelSize: 42,
+                heightReference: Cesium.HeightReference.NONE
+            }
+        })
+
+        animatedMarker.viewFrom = new Cesium.Cartesian3(0, -1000, 300)
     }
 
-    animatedMarker = viewer.entities.add({
-        id: 'animatedMarker',
-
-        position: trackEntity.position,
-
-        orientation: new Cesium.VelocityOrientationProperty(trackEntity.position),
-
-        model: {
-            uri: 'models/marker_diamond_up.glb',
-            scale: 6,
-            minimumPixelSize: 42,
-            heightReference: Cesium.HeightReference.NONE
-        }
-    })
-
-    animatedMarker.viewFrom = new Cesium.Cartesian3(0, -1000, 300)
+    animatedMarker.position = trackEntity.position
+    animatedMarker.orientation = new Cesium.VelocityOrientationProperty(trackEntity.position)
+    animatedMarker.show = true
 }
 
 export function hideAnimatedMarker() {
     if (animatedMarker) {
-        viewer.entities.remove(animatedMarker)
-        animatedMarker = null
+        animatedMarker.show = false
     }
 }
 
@@ -524,6 +540,14 @@ export function showAllSearchMarkersExcept(activeTrackId) {
             e.billboard.show = true
         }
     })
+}
+
+export function hideSearchCenter() {
+    if (searchCenterEntity) searchCenterEntity.show = false
+}
+
+export function showSearchCenter() {
+    if (searchCenterEntity) searchCenterEntity.show = true
 }
 
 // ---------------------------------------------------------------------------
@@ -577,7 +601,6 @@ export function renderMapThumbnails(geoTags) {
 
                 el.style.cursor = 'pointer'
 
-                // Event to fire the slides from the map thumbnails
                 el.addEventListener('click', () => {
                     window.dispatchEvent(new CustomEvent('map-thumb-click', {
                         detail: { index: photo.arrayIndex }
@@ -590,7 +613,6 @@ export function renderMapThumbnails(geoTags) {
 
             viewer._mapThumbnails = photos
         })
-
 }
 
 export function clearMapThumbnails() {
@@ -608,4 +630,3 @@ export function hideMapThumbnails() {
     const layer = document.getElementById('map-thumbnails-layer')
     if (layer) layer.style.display = 'none'
 }
-
