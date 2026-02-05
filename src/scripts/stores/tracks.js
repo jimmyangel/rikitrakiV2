@@ -337,6 +337,7 @@ export default function initTracksStore(Alpine) {
             map.flyToActiveTrack()
 
             this.showMarkers()
+            map.setNorthArrowDisabled(false)
         },
 
         exitActiveTrack() {
