@@ -4,6 +4,8 @@ import LayerControl from './LayerControl.astro'
 import ZoomControl from './ZoomControl.astro'
 import { Icon } from 'astro-icon/components'
 import MapPopup from './MapPopup.astro'
+import LookDownControl from './LookDownControl.astro'
+import NorthArrowControl from './NorthArrowControl.astro'
 ---
 <div id="mapRoot" style="position: relative;">
 
@@ -20,12 +22,9 @@ import MapPopup from './MapPopup.astro'
     <MapPopup />
 
     <div class="map-top map-right">
+        <NorthArrowControl />
         <ZoomControl />
-        <div class="map-bar map-control">
-            <a id="lookDown" href="#" title="Look down">
-                <Icon name="fa7-solid:circle-arrow-down" class="map-look-down-icon" />
-            </a>
-        </div>
+        <LookDownControl />
         <LayerControl />
     </div>
 

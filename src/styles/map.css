@@ -509,6 +509,12 @@
 	height: 24px; 
 }
 
+.north-arrow-icon {
+	padding: 4px;
+	width: 24px;
+	height: 24px; 
+}
+
 /* Map Thumbnails */
 
 .map-thumb {
