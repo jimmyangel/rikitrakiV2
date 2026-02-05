@@ -540,6 +540,13 @@
     cursor: not-allowed;
 }
 
+.cesium-credit-wrapper img[title="Cesium ion"] {
+    height: 20px;  
+    width: auto;
+    vertical-align: -5px !important; 
+}
+
+
 
 
 
