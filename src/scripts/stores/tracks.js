@@ -194,6 +194,8 @@ export default function initTracksStore(Alpine) {
         active: null,
         activeTrackId: null,
 
+        isTrackInPlay: false,
+
         loadingTracks: false,
         loadingCesium: false,
 
@@ -296,6 +298,7 @@ export default function initTracksStore(Alpine) {
             if (!track || !track.dataSource) return
 
             if (isPlaying) {
+                map.setNorthArrowDisabled(true)
                 if (map.isAtEnd()) {
                     map.setClockToBeginning(track.dataSource)
                     setTimeout(() => {
@@ -305,11 +308,16 @@ export default function initTracksStore(Alpine) {
                     }, 500)
                     return
                 }
+
                 map.showAnimatedMarker(track.dataSource)
                 map.startTrackingEntity(track.dataSource)
                 map.resumeClock()
+
             } else {
                 map.pauseClock()
+                // Stop tracking AND unlock the camera
+                map.stopTrackingEntity()
+                map.setNorthArrowDisabled(false)
             }
         },
 

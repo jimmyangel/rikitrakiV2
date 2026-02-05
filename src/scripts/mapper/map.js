@@ -522,6 +522,7 @@ export function startTrackingEntity() {
 
 export function stopTrackingEntity() {
     viewer.trackedEntity = undefined
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY)
 }
 
 export function hideAllSearchMarkers() {
@@ -630,3 +631,15 @@ export function hideMapThumbnails() {
     const layer = document.getElementById('map-thumbnails-layer')
     if (layer) layer.style.display = 'none'
 }
+
+export function setNorthArrowDisabled(disabled) {
+    const el = document.getElementById('alignNorth')
+    if (!el) return
+
+    if (disabled) {
+        el.classList.add('is-disabled')
+    } else {
+        el.classList.remove('is-disabled')
+    }
+}
+

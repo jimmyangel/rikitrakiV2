@@ -31,7 +31,7 @@ import { Icon } from 'astro-icon/components'
 
             <button
                 class="anim-btn"
-                x-bind:class="{ blink: isTrackInPlay }"
+                x-bind:class="{ blink: $store.tracks.isTrackInPlay }"
                 @click="togglePlay()"
                 title="Play / Pause"
             >
@@ -78,14 +78,17 @@ import { Icon } from 'astro-icon/components'
     function trackTools() {
         return {
             isPlaying: false,
-            isTrackInPlay: false,
             showThumbnails: true,   // default ON
 
             init() {
                 this.$watch('$store.tracks.animationFinished', value => {
                     if (value) {
+                        // Local truth first
                         this.isPlaying = false
-                        this.isTrackInPlay = false
+
+                        // Mirror to store
+                        this.$store.tracks.isTrackInPlay = false
+
                         this.$store.tracks.showMarkers()
                         this.$store.tracks.animationFinished = false
                     }
@@ -110,37 +113,54 @@ import { Icon } from 'astro-icon/components'
                 const track = store.items[active]
                 if (!track) return false
 
-                return (track?.geotags?.geoTags?.trackPhotos ?? []).some(p => p.picLatLng)
-
+                return (track?.geotags?.geoTags?.trackPhotos ?? [])
+                    .some(p => p.picLatLng)
             },
 
             togglePlay() {
-                if (!this.isTrackInPlay) {
-                    this.isTrackInPlay = true
+                // Flip local state
+                this.isPlaying = !this.isPlaying
+
+                if (this.isPlaying) {
+                    // We are entering play/resume mode
+                    this.$store.tracks.isTrackInPlay = true
                     this.$store.tracks.hideMarkers()
                 }
 
-                this.isPlaying = !this.isPlaying
+                // Drive animation with the local truth
                 this.$store.tracks.animate(this.isPlaying)
             },
 
+
             faster() {
-                if (this.isPlaying) this.$store.tracks.increaseSpeed()
+                if (this.isPlaying) {
+                    this.$store.tracks.increaseSpeed()
+                }
             },
 
             slower() {
-                if (this.isPlaying) this.$store.tracks.decreaseSpeed()
+                if (this.isPlaying) {
+                    this.$store.tracks.decreaseSpeed()
+                }
             },
 
             reset() {
+                // Local truth
                 this.isPlaying = false
-                this.isTrackInPlay = false
+
+                // Mirror to store
+                this.$store.tracks.isTrackInPlay = false
+
                 this.$store.tracks.resetAnimation()
             },
 
             exitTrack() {
+                // Local truth
                 this.isPlaying = false
-                this.isTrackInPlay = false
+
+                // Mirror to store
+                this.$store.tracks.isTrackInPlay = false
+
                 this.$store.tracks.exitActiveTrack()
             },
 
@@ -154,7 +174,6 @@ import { Icon } from 'astro-icon/components'
                 const blob = track.gpxBlob
                 const url = URL.createObjectURL(blob)
 
-                // Use the original filename from the upload
                 const originalName = track.details?.trackGPX || `track-${trackId}.gpx`
 
                 const a = document.createElement('a')
