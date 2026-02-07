@@ -4,6 +4,7 @@ import { wireLayerControl, wireLayerControlToggle } from './layerControl.js'
 import { wireLookDownControl } from './mapLookDownControl.js'
 import { wireZoomControl } from './zoomControl.js'
 import { wireNorthArrowControl } from './northArrowControl.js'
+import { wireResetToSearchCenter } from './resetToSearchCenter.js'
 import { Cartesian3, Ion, Math as CesiumMath, Terrain, Viewer, UrlTemplateImageryProvider } from 'cesium'
 import * as Cesium from 'cesium'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
@@ -41,6 +42,7 @@ export const createViewer = () => {
 	wireLookDownControl(viewer)
 	wireZoomControl(viewer)
 	wireNorthArrowControl(viewer)
+	wireResetToSearchCenter(viewer)
 
 	return viewer
 }

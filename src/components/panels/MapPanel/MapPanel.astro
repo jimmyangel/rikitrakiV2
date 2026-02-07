@@ -6,6 +6,7 @@ import { Icon } from 'astro-icon/components'
 import MapPopup from './MapPopup.astro'
 import LookDownControl from './LookDownControl.astro'
 import NorthArrowControl from './NorthArrowControl.astro'
+import ResetToSearchCenter from './ResetToSearchCenter.astro'
 ---
 <div id="mapRoot" style="position: relative;">
 
@@ -24,6 +25,7 @@ import NorthArrowControl from './NorthArrowControl.astro'
     <div class="map-top map-right">
         <NorthArrowControl />
         <ZoomControl />
+        <ResetToSearchCenter />
         <LookDownControl />
         <LayerControl />
     </div>
