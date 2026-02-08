@@ -1168,6 +1168,13 @@
 		Alpine.data('worldMapPicker', () => ({
 			handleClick(e) {
 				const svg = e.currentTarget
+
+				const target = document.elementFromPoint(e.clientX, e.clientY)
+
+				if (target === svg) {
+					return
+				}
+
 				const rect = svg.getBoundingClientRect()
 				const x = e.clientX - rect.left
 				const y = e.clientY - rect.top
@@ -1180,6 +1187,7 @@
 				})
 			}
 		}))
+
 	})
 </script>
 
@@ -1188,6 +1196,7 @@
         fill: #ccc;
         stroke: #000;
         stroke-width: 0.1;
+		cursor: crosshair;
     }
 
     #worldmap .water {
