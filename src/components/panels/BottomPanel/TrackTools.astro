@@ -43,8 +43,13 @@ import { Icon } from 'astro-icon/components'
                 </template>
             </button>
 
-            <button class="anim-btn" @click="reset()" title="Stop">
-                <Icon name="fa7-solid:stop" />
+            <button class="anim-btn" @click="reset()" title="Stop/Reset">
+                <template x-if="$store.tracks.isTrackInPlay">
+                    <Icon name="fa7-solid:stop" />
+                </template>
+                <template x-if="!$store.tracks.isTrackInPlay">
+                    <Icon name="fa7-solid:bullseye" />
+                </template>
             </button>
 
             <button class="anim-btn" @click="faster()" title="Faster">
