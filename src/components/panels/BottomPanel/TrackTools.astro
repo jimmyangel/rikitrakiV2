@@ -161,7 +161,7 @@ import { Icon } from 'astro-icon/components'
                 // Mirror to store
                 this.$store.tracks.isTrackInPlay = false
 
-                this.$store.tracks.exitActiveTrack()
+                this.$store.tracks.exitActiveTrack({ fromHistory: false })
             },
 
             downloadGPX() {

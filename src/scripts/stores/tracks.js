@@ -13,6 +13,7 @@ import {
     computeProfileArrays
 } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
+import { setTrackHistory } from '../utils/history.js'
 
 //
 // Helpers (must be ABOVE Alpine.store)
@@ -86,7 +87,8 @@ async function reloadTracks(store, { fly = true } = {}) {
     }
 }
 
-async function openTrack(trackId) {
+async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}) {
+    console.log('opentrack fromInit', fromInit)
     const store = Alpine.store('tracks')
     store.loadingTracks = true
 
@@ -143,11 +145,12 @@ async function openTrack(trackId) {
     const [lat, lon] = track.details.trackLatLng
     store.setSearchCenter(lat, lon, { fly: false })
 
-    // Reload nearby tracks but skip flyTo inside setTracks()
-    //await store.reload({ fly: false })
-
     store.activate(trackId)
     store.activeTrackId = trackId
+
+    if (!fromInit && !fromHistory) {
+        setTrackHistory(trackId) 
+    }
 
     // Render thumbnails for this track
     map.clearMapThumbnails()
@@ -162,11 +165,25 @@ async function openTrack(trackId) {
 
     map.setClockToEnd(ds)
     map.showTrailheadMarker(ds)
-    map.flyToActiveTrack()
+
+    // First fly: only on page load
+    if (fromInit) {
+        // Force Cesium to render one frame before flying
+        await new Promise(resolve => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+        })
+
+        map.flyToTrackDataSource()
+
+        map.waitForTerrainTiles().then(() => {
+            map.flyToActiveTrack()
+        })
+    } else {
+        map.flyToActiveTrack()
+    }
 
     store.loadingTracks = false
 }
-
 
 async function loadMotd(store) {
     const { motdTracks } = await getMotd()
@@ -239,6 +256,7 @@ export default function initTracksStore(Alpine) {
         animationFinished: false,
 
         init() {
+            if (!window.map?.viewer) return
             map.setOnAnimationFinished(() => {
                 this.animationFinished = true
 
@@ -340,7 +358,7 @@ export default function initTracksStore(Alpine) {
             map.setNorthArrowDisabled(false)
         },
 
-        exitActiveTrack() {
+        exitActiveTrack({ fromHistory = false } = {}) {
             if (!this.active) return
 
             const trackId = this.active
@@ -356,10 +374,15 @@ export default function initTracksStore(Alpine) {
             this.showMarkers()
             map.showSearchMarker(trackId)
 
-            // Patch 2: Clear thumbnails when exiting a track
             map.clearMapThumbnails()
 
             this.active = null
+
+            // Only push history when this is a user action, not a popstate
+            if (!fromHistory) {
+                setTrackHistory(null)
+            }
+
             map.flyToTrackDataSource()
         },
 

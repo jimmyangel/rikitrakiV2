@@ -63,16 +63,16 @@ import '../styles/map-frame.css'
     import * as map from '../scripts/mapper/map.js'
     import { getApproxLocation } from '../scripts/utils/geoUtils.js'
     import initTracksStore from '../scripts/stores/tracks.js'
-    //import initCarouselStore from '../scripts/stores/carousel.js'
     import descWidth from '../scripts/alpine-plugins/formatting.js'
     import { isIOS, isChromeOniPad } from '../scripts/utils/env'
     import { constants } from '../scripts/config'
 
+    // Read initial trackId from URL
+    import { initFromUrl } from '../scripts/utils/history.js'
 
     document.addEventListener('alpine:init', () => {
         Alpine.plugin(descWidth)
         initTracksStore(Alpine)
-        //initCarouselStore(Alpine)
 
         Alpine.store('ui', {
             showSearchCenterModal: false
@@ -81,16 +81,26 @@ import '../styles/map-frame.css'
 
     document.addEventListener('DOMContentLoaded', async () => {
         mapFrame.initUI()
+
+        // Initialize Cesium viewer (sync creation, async internals)
         map.initMap()
 
+        const tracks = Alpine.store('tracks') as any 
+        tracks.loadingCesium = true
+
         // Make map API globally available to Alpine components
-        // Public map API for UI components (e.g., TrackTools) 
         ;(window as any).map = {
+            whenViewerReady: map.whenViewerReady,
             showMapThumbnails: map.showMapThumbnails,
             hideMapThumbnails: map.hideMapThumbnails,
             renderMapThumbnails: map.renderMapThumbnails,
             clearMapThumbnails: map.clearMapThumbnails
         }
+
+        // Wait for terrain readiness (viewer exists, terrain loads async)
+        await map.whenViewerReady()
+
+        tracks.loadingCesium = false
 
         // Make env API globally available to Alpine components
         ;(window as any).env = {
@@ -105,15 +115,43 @@ import '../styles/map-frame.css'
 
         map.updateSearchCenterMarker(lat, lon)
 
-        // Option B: cast once, use everywhere
-        const tracks = Alpine.store('tracks') as any
-
         tracks.lat = lat
         tracks.lon = lon
         tracks.countryCode = countryCode
-        tracks.reload()
+
+        // Restore track mode from URL
+        // 1. Wait for Cesium viewer + terrain provider to exist
+        await map.whenViewerReady()
+
+        // 2. Wait for Cesium to render at least one frame
+        await new Promise(resolve => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+        })
+
+        // 3. Now it is safe to open the track
+        const { trackId } = initFromUrl()
+        if (trackId) {
+            await tracks.openTrack(trackId, { fromInit: true })
+        } else {
+            await tracks.reload()
+        }
+
+
+        // Popstate handler (BACK/FORWARD)
+        window.addEventListener('popstate', e => {
+            const state = e.state
+            const tracks = Alpine.store('tracks') as any
+
+            if (state?.trackId) {
+                tracks.openTrack(state.trackId, { fromHistory: true })
+            } else {
+                tracks.exitActiveTrack({ fromHistory: true })
+            }
+        })
     })
+
 </script>
+
 
 <script src="/src/scripts/vendor/glightbox.js"></script>
 

@@ -2,7 +2,7 @@ import { createViewer } from '../mapper/viewer.js'
 import * as Cesium from 'cesium'
 import { constants } from '../config.js'
 
-let viewer = null
+export let viewer = null
 let searchCenterEntity = null
 
 // Permanent search‑area DataSource (created once)
@@ -22,7 +22,6 @@ let animatedMarker = null
 
 export function initMap() {
 
-    Alpine.store('tracks').loadingCesium = true
     viewer = createViewer()
 
     // Create permanent search‑area DataSource
@@ -111,12 +110,6 @@ export function initMap() {
 
         popup.style.left = `${anchorPopupPos.x + dx}px`
         popup.style.top  = `${anchorPopupPos.y + dy}px`
-    })
-
-    viewer.scene.globe.tileLoadProgressEvent.addEventListener((pending) => {
-        if (pending === 0) {
-            Alpine.store('tracks').loadingCesium = false
-        }
     })
 
     viewer.clock.onTick.addEventListener(() => {
@@ -230,6 +223,39 @@ export function initMap() {
     })
 }
 
+export async function whenViewerReady() {
+    // 1. Wait until viewer exists
+    while (!viewer) {
+        await new Promise(r => setTimeout(r, 10))
+    }
+
+    // 2. Wait until terrainProvider exists
+    while (!viewer.terrainProvider) {
+        await new Promise(r => setTimeout(r, 10))
+    }
+
+    // 3. Wait until terrainProvider.readyPromise resolves
+    if (viewer.terrainProvider.readyPromise) {
+        await viewer.terrainProvider.readyPromise
+    }
+
+    // 4. Wait for at least one render frame
+    await new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve))
+    })
+}
+
+export function waitForTerrainTiles() {
+    return new Promise(resolve => {
+        const remove = viewer.scene.globe.tileLoadProgressEvent.addEventListener(pending => {
+            if (pending === 0) {
+                remove()
+                resolve()
+            }
+        })
+    })
+}
+
 export function updateSearchCenterMarker(lat, lon) {
     if (!viewer) return
 
@@ -250,6 +276,21 @@ export function updateSearchCenterMarker(lat, lon) {
     }
 
     searchCenterEntity.position = Cesium.Cartesian3.fromDegrees(lon, lat)
+}
+
+export function flyToBounds(bounds) {
+    if (!viewer) return
+
+    const rectangle = Cesium.Rectangle.fromDegrees(
+        bounds.west,
+        bounds.south,
+        bounds.east,
+        bounds.north
+    )
+
+    viewer.camera.flyTo({
+        destination: rectangle
+    })
 }
 
 export function applyFilter(filteredIds) {
