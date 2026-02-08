@@ -21,7 +21,7 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
     <div class="bottom-panel-content">
 
         <!-- MOTD MODE -->
-        <template x-if="!$store.tracks.active">
+        <template x-if="!$store.tracks.activeTrackId">
             <div class="panel-mode-wrapper">
                 <div class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light p-2">
                     What's new...
@@ -36,13 +36,13 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
         </template>
 
         <!-- ACTIVE TRACK MODE -->
-        <template x-if="$store.tracks.active">
+        <template x-if="$store.tracks.activeTrackId">
             <div class="panel-mode-wrapper">
                 <div 
                     class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5"
                     x-text="
-                        $store.tracks.items[$store.tracks.active].details.trackName +
-                        ($store.tracks.items[$store.tracks.active].details.trackFav ? ' ✭' : '')
+                        $store.tracks.items[$store.tracks.activeTrackId].details.trackName +
+                        ($store.tracks.items[$store.tracks.activeTrackId].details.trackFav ? ' ✭' : '')
                     "
                 ></div>
 
@@ -66,7 +66,7 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
 
             init() {
                 this.$nextTick(() => this.bindScroller())
-                this.$watch('$store.tracks.active', () => this.bindScroller())
+                this.$watch('$store.tracks.activeTrackId', () => this.bindScroller())
             },
 
             bindScroller() {

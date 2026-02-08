@@ -2,7 +2,7 @@
 import Thumbnail from './Thumbnail.astro';
 ---
 
-<template x-data="trackThumbnails(true)" x-for="(p, i) in photos" :key="$store.tracks.active + '-' + i">
+<template x-data="trackThumbnails(true)" x-for="(p, i) in photos" :key="$store.tracks.activeTrackId + '-' + i">
 	<Thumbnail />
 </template>
 
@@ -12,7 +12,7 @@ import Thumbnail from './Thumbnail.astro';
         return {
 			isActiveTrackMode,
             get photos() {
-                return this.$store.tracks.items[this.$store.tracks.active]
+                return this.$store.tracks.items[this.$store.tracks.activeTrackId]
                     ?.geotags?.geoTags?.trackPhotos ?? []
             },
 

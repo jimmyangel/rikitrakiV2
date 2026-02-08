@@ -7,22 +7,22 @@
     <div class="metric-line">
         <span class="metric-label">By</span>
         <span class="metric-value"
-            x-text="$store.tracks.items[$store.tracks.active].details.username">
+            x-text="$store.tracks.items[$store.tracks.activeTrackId].details.username">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Activity</span>
         <span class="metric-value"
-            x-text="`${$store.tracks.items[$store.tracks.active].details.trackType}, ${$store.tracks.items[$store.tracks.active].details.trackLevel}`">
+            x-text="`${$store.tracks.items[$store.tracks.activeTrackId].details.trackType}, ${$store.tracks.items[$store.tracks.activeTrackId].details.trackLevel}`">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Date recorded</span>
         <span class="metric-value"
-            x-text="$store.tracks.items[$store.tracks.active].details.trackDate
-                ? new Date($store.tracks.items[$store.tracks.active].details.trackDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+            x-text="$store.tracks.items[$store.tracks.activeTrackId].details.trackDate
+                ? new Date($store.tracks.items[$store.tracks.activeTrackId].details.trackDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
                 : 'Not Available'">
         </span>
     </div>
@@ -30,28 +30,28 @@
     <div class="metric-line">
         <span class="metric-label">Distance</span>
         <span class="metric-value"
-            x-text="$formatDistanceLabel($store.tracks.items[$store.tracks.active].metrics.lengthKm)">
+            x-text="$formatDistanceLabel($store.tracks.items[$store.tracks.activeTrackId].metrics.lengthKm)">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Elevation Gain</span>
         <span class="metric-value"
-            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.active].metrics.elevationGain)">
+            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.activeTrackId].metrics.elevationGain)">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Max Elevation</span>
         <span class="metric-value"
-            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.active].metrics.maxElevation)">
+            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.activeTrackId].metrics.maxElevation)">
         </span>
     </div>
 
     <div class="metric-line">
         <span class="metric-label">Min Elevation</span>
         <span class="metric-value"
-            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.active].metrics.minElevation)">
+            x-text="$formatElevationLabel($store.tracks.items[$store.tracks.activeTrackId].metrics.minElevation)">
         </span>
     </div>
 
@@ -59,7 +59,7 @@
     <div class="metric-line">
         <span class="metric-label">Region</span>
         <span class="metric-value"
-            x-text="$store.tracks.items[$store.tracks.active].details.trackRegionTags?.join(', ') || '—'">
+            x-text="$store.tracks.items[$store.tracks.activeTrackId].details.trackRegionTags?.join(', ') || '—'">
         </span>
     </div>
 

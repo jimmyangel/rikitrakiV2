@@ -401,6 +401,8 @@ export function flyToTrackDataSource() {
 function handleLongPress(position) {
     if (!viewer) return
 
+    if (Alpine.store('tracks').active) return
+
     const scene = viewer.scene
     const ellipsoid = scene.globe.ellipsoid
 

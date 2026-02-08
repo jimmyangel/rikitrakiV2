@@ -194,7 +194,6 @@ export default function initTracksStore(Alpine) {
 
         items: {},
 
-        active: null,
         activeTrackId: null,
 
         isTrackInPlay: false,
@@ -246,7 +245,7 @@ export default function initTracksStore(Alpine) {
             map.setOnAnimationFinished(() => {
                 this.animationFinished = true
 
-                const trackId = this.active
+                const trackId = this.activeTrackId
                 if (!trackId) return
 
                 const track = this.items[trackId]
@@ -260,15 +259,6 @@ export default function initTracksStore(Alpine) {
         async reload() {
             await reloadTracks(this)
         },
-
-       /* async setSearchCenter(lat, lon, { fly = true } = {}) {
-            this.lat = lat
-            this.lon = lon
-
-            map.updateSearchCenterMarker(lat, lon)
-
-            await reloadTracks(this, {fly})
-        }, */
 
         async setSearchCenter(lat, lon, { fly = true, fromHistory = false, fromInit = false } = {}) {
             // 1. Update store
@@ -295,7 +285,7 @@ export default function initTracksStore(Alpine) {
         },
 
         activate(trackId) {
-            this.active = trackId
+            this.activeTrackId = trackId
         },
 
         async loadMotd() {
@@ -307,7 +297,7 @@ export default function initTracksStore(Alpine) {
         },
 
         animate(isPlaying) {
-            const trackId = this.active
+            const trackId = this.activeTrackId
             if (!trackId) return
 
             const track = this.items[trackId]
@@ -341,7 +331,7 @@ export default function initTracksStore(Alpine) {
         decreaseSpeed() { map.decreaseSpeed() },
 
         resetAnimation() {
-            const trackId = this.active
+            const trackId = this.activeTrackId
             if (!trackId) return
 
             const track = this.items[trackId]
@@ -357,9 +347,9 @@ export default function initTracksStore(Alpine) {
         },
 
         exitActiveTrack({ fromHistory = false } = {}) {
-            if (!this.active) return
+            if (!this.activeTrackId) return
 
-            const trackId = this.active
+            const trackId = this.activeTrackId
             const track = this.items[trackId]
 
             if (track && track.dataSource) {
@@ -374,7 +364,7 @@ export default function initTracksStore(Alpine) {
 
             map.clearMapThumbnails()
 
-            this.active = null
+            this.activeTrackId = null
 
             if (!fromHistory) { pushHistory({ trackId: null, center: null })}
 
@@ -387,8 +377,8 @@ export default function initTracksStore(Alpine) {
         },
 
         showMarkers() {
-            const active = this.active
-            map.showAllSearchMarkersExcept(active)
+            const activeTrackId = this.activeTrackId
+            map.showAllSearchMarkersExcept(activeTrackId)
             map.showSearchCenter()
         }
 

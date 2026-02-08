@@ -31,12 +31,12 @@
             },
 
             init() {
-                this.$watch('$store.tracks.active', () => this.loadTrack())
+                this.$watch('$store.tracks.activeTrackId', () => this.loadTrack())
                 this.$nextTick(() => this.loadTrack())
             },
 
             loadTrack() {
-                const t = this.$store.tracks.items[this.$store.tracks.active]
+                const t = this.$store.tracks.items[this.$store.tracks.activeTrackId]
                 if (!t) return
                 if (!Array.isArray(t.distancesKm) || !Array.isArray(t.elevationsM)) return
 

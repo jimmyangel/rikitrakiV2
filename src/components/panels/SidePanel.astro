@@ -43,8 +43,8 @@ import { Icon } from 'astro-icon/components'
         <div class="panel-block">
             <button class="button is-small is-light is-fullwidth"
                     @click="$store.ui.showSearchCenterModal = true"
-                    :disabled="$store.tracks.active"
-                    :title="$store.tracks.active ? 'Exit Active Track Mode to change search center' : ''">
+                    :disabled="$store.tracks.activeTrackId"
+                    :title="$store.tracks.activeTrackId ? 'Exit Active Track Mode to change search center' : ''">
                 Change Search Center
             </button>
         </div>

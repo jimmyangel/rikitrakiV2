@@ -103,23 +103,6 @@ import '../styles/map-frame.css'
         }
 
         ;(window as any).constants = (constants)
-        
-        /* const { lat, lon, countryCode } = await getApproxLocation()
-
-        map.updateSearchCenterMarker(lat, lon)
-
-        tracks.lat = lat
-        tracks.lon = lon
-        tracks.countryCode = countryCode
-
-        await map.whenViewerReady()
-
-        const { trackId } = initFromUrl()
-        if (trackId) {
-            await tracks.openTrack(trackId, { fromInit: true })
-        } else {
-            await tracks.reload()
-        } */
 
         const { lat, lon, countryCode } = await getApproxLocation()
         tracks.countryCode = countryCode
@@ -146,7 +129,6 @@ import '../styles/map-frame.css'
     })
 
 </script>
-
 
 <script src="/src/scripts/vendor/glightbox.js"></script>
 
