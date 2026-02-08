@@ -82,13 +82,11 @@ import '../styles/map-frame.css'
     document.addEventListener('DOMContentLoaded', async () => {
         mapFrame.initUI()
 
-        // Initialize Cesium viewer (sync creation, async internals)
         map.initMap()
 
         const tracks = Alpine.store('tracks') as any 
         tracks.loadingCesium = true
 
-        // Make map API globally available to Alpine components
         ;(window as any).map = {
             whenViewerReady: map.whenViewerReady,
             showMapThumbnails: map.showMapThumbnails,
@@ -97,18 +95,13 @@ import '../styles/map-frame.css'
             clearMapThumbnails: map.clearMapThumbnails
         }
 
-        // Wait for terrain readiness (viewer exists, terrain loads async)
-        await map.whenViewerReady()
-
         tracks.loadingCesium = false
 
-        // Make env API globally available to Alpine components
         ;(window as any).env = {
             isIOS,
             isChromeOniPad
         }
 
-        // Make constants globally available to Alpine
         ;(window as any).constants = (constants)
         
         const { lat, lon, countryCode } = await getApproxLocation()
@@ -119,16 +112,8 @@ import '../styles/map-frame.css'
         tracks.lon = lon
         tracks.countryCode = countryCode
 
-        // Restore track mode from URL
-        // 1. Wait for Cesium viewer + terrain provider to exist
         await map.whenViewerReady()
 
-        // 2. Wait for Cesium to render at least one frame
-        await new Promise(resolve => {
-            requestAnimationFrame(() => requestAnimationFrame(resolve))
-        })
-
-        // 3. Now it is safe to open the track
         const { trackId } = initFromUrl()
         if (trackId) {
             await tracks.openTrack(trackId, { fromInit: true })
@@ -136,8 +121,6 @@ import '../styles/map-frame.css'
             await tracks.reload()
         }
 
-
-        // Popstate handler (BACK/FORWARD)
         window.addEventListener('popstate', e => {
             const state = e.state
             const tracks = Alpine.store('tracks') as any

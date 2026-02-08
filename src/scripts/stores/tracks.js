@@ -168,11 +168,6 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
     // First fly: only on page load
     if (fromInit) {
-        // Force Cesium to render one frame before flying
-        await new Promise(resolve => {
-            requestAnimationFrame(() => requestAnimationFrame(resolve))
-        })
-
         map.flyToTrackDataSource()
 
         map.waitForTerrainTiles().then(() => {
