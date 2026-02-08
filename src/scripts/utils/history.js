@@ -64,11 +64,6 @@ export function replaceHistory(raw) {
     history.replaceState(state, '', url)
 }
 
-
-export function setTrackHistory(trackId) {
-    pushHistory({ trackId, center: null })
-}
-
 // Read initial state from the URL on page load
 export function initFromUrl() {
     const url = new URL(window.location)

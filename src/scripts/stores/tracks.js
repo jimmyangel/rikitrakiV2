@@ -13,7 +13,7 @@ import {
     computeProfileArrays
 } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
-import { setTrackHistory } from '../utils/history.js'
+import { pushHistory } from '../utils/history.js'
 
 //
 // Helpers (must be ABOVE Alpine.store)
@@ -149,7 +149,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
     store.activeTrackId = trackId
 
     if (!fromInit && !fromHistory) {
-        setTrackHistory(trackId) 
+        pushHistory( {trackId, center: null })
     }
 
     // Render thumbnails for this track
@@ -373,10 +373,7 @@ export default function initTracksStore(Alpine) {
 
             this.active = null
 
-            // Only push history when this is a user action, not a popstate
-            if (!fromHistory) {
-                setTrackHistory(null)
-            }
+            if (!fromHistory) { pushHistory({ trackId: null, center: null })}
 
             map.flyToTrackDataSource()
         },
