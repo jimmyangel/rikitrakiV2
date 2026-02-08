@@ -36,8 +36,12 @@ import { Icon } from 'astro-icon/components'
             </div>
         </div>
 
-        <div class="panel-block is-size-7">
-            Change search center by long tap/click directly on the map or click below...
+        <div x-show="!$store.tracks.activeTrackId" class="panel-block is-size-7">
+            Change search center by long tap/click directly on the map or click below…
+        </div>
+
+        <div x-show="$store.tracks.activeTrackId" class="panel-block is-size-7">
+            Search center is disabled while viewing a track
         </div>
 
         <div class="panel-block">
