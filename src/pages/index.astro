@@ -112,8 +112,12 @@ import '../styles/map-frame.css'
         await map.whenViewerReady()
 
         const { trackId } = initFromUrl()
+
         if (trackId) {
             await tracks.openTrack(trackId, { fromInit: true })
+            history.replaceState({ trackId }, '')
+        } else {
+            history.replaceState({ trackId: null }, '')
         }
 
         window.addEventListener('popstate', e => {
