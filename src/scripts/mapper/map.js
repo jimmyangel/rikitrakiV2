@@ -224,24 +224,29 @@ export function initMap() {
 }
 
 export async function whenViewerReady() {
-    // 1. Wait until viewer exists
-    while (!viewer) {
-        await new Promise(r => setTimeout(r, 10))
+    // 1. Wait until viewer is assigned
+    if (!viewer) {
+        await new Promise(resolve => {
+            const check = setInterval(() => {
+                if (viewer) {
+                    clearInterval(check)
+                    resolve()
+                }
+            }, 0)
+        })
     }
 
-    // 2. Wait until terrainProvider exists
-    while (!viewer.terrainProvider) {
-        await new Promise(r => setTimeout(r, 10))
-    }
-
-    // 3. Wait until terrainProvider.readyPromise resolves
-    if (viewer.terrainProvider.readyPromise) {
+    // 2. Wait for terrain provider readiness
+    if (viewer.terrainProvider?.readyPromise) {
         await viewer.terrainProvider.readyPromise
     }
 
-    // 4. Wait for at least one render frame
+    // 3. Wait for first real Cesium render
     await new Promise(resolve => {
-        requestAnimationFrame(() => requestAnimationFrame(resolve))
+        const remove = viewer.scene.postRender.addEventListener(() => {
+            remove()
+            resolve()
+        })
     })
 }
 

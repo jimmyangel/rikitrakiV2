@@ -166,16 +166,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
     map.setClockToEnd(ds)
     map.showTrailheadMarker(ds)
 
-    // First fly: only on page load
-    if (fromInit) {
-        map.flyToTrackDataSource()
-
-        map.waitForTerrainTiles().then(() => {
-            map.flyToActiveTrack()
-        })
-    } else {
-        map.flyToActiveTrack()
-    }
+    map.flyToActiveTrack()
 
     store.loadingTracks = false
 }
@@ -270,13 +261,25 @@ export default function initTracksStore(Alpine) {
             await reloadTracks(this)
         },
 
-        async setSearchCenter(lat, lon, { fly = true } = {}) {
+       /* async setSearchCenter(lat, lon, { fly = true } = {}) {
             this.lat = lat
             this.lon = lon
 
             map.updateSearchCenterMarker(lat, lon)
 
             await reloadTracks(this, {fly})
+        }, */
+
+        async setSearchCenter(lat, lon, { fly = true, fromHistory = false, fromInit = false } = {}) {
+            // 1. Update store
+            this.lat = lat
+            this.lon = lon
+
+            // 2. Update Cesium marker
+            map.updateSearchCenterMarker(lat, lon)
+
+            // 3. Reload tracks
+            await reloadTracks(this, { fly })
         },
 
         selectTrack(track) {

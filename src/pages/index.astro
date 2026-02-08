@@ -104,7 +104,7 @@ import '../styles/map-frame.css'
 
         ;(window as any).constants = (constants)
         
-        const { lat, lon, countryCode } = await getApproxLocation()
+        /* const { lat, lon, countryCode } = await getApproxLocation()
 
         map.updateSearchCenterMarker(lat, lon)
 
@@ -119,6 +119,18 @@ import '../styles/map-frame.css'
             await tracks.openTrack(trackId, { fromInit: true })
         } else {
             await tracks.reload()
+        } */
+
+        const { lat, lon, countryCode } = await getApproxLocation()
+        tracks.countryCode = countryCode
+
+        await tracks.setSearchCenter(lat, lon, { fromInit: true })
+
+        await map.whenViewerReady()
+
+        const { trackId } = initFromUrl()
+        if (trackId) {
+            await tracks.openTrack(trackId, { fromInit: true })
         }
 
         window.addEventListener('popstate', e => {
