@@ -166,7 +166,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
     map.setClockToEnd(ds)
     map.showTrailheadMarker(ds)
 
-    map.flyToActiveTrack()
+    await map.flyToActiveTrack()
 
     store.loadingTracks = false
 }
@@ -330,7 +330,7 @@ export default function initTracksStore(Alpine) {
         increaseSpeed() { map.increaseSpeed() },
         decreaseSpeed() { map.decreaseSpeed() },
 
-        resetAnimation() {
+        async resetAnimation() {
             const trackId = this.activeTrackId
             if (!trackId) return
 
@@ -340,7 +340,7 @@ export default function initTracksStore(Alpine) {
             map.hideAnimatedMarker(track.dataSource)
             map.stopTrackingEntity()
             map.setClockToEnd(track.dataSource)
-            map.flyToActiveTrack()
+            await map.flyToActiveTrack()
 
             this.showMarkers()
             map.setNorthArrowDisabled(false)

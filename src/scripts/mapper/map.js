@@ -433,8 +433,8 @@ export async function loadTrackCZML(czml) {
 }
 
 export function flyToActiveTrack() {
-    if (!viewer || !activeTrackDataSource) return
-    viewer.flyTo(activeTrackDataSource)
+    if (!viewer || !activeTrackDataSource) return Promise.resolve()
+    return viewer.flyTo(activeTrackDataSource)
 }
 
 export function hideTrailheadMarker(ds) {
