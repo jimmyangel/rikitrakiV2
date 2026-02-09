@@ -143,7 +143,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
     // Update search center (lat/lon from details)
     const [lat, lon] = track.details.trackLatLng
-    store.setSearchCenter(lat, lon, { fly: false })
+    store.setSearchCenter(lat, lon, { fly: false, skipHistory: true })
 
     store.activate(trackId)
     store.activeTrackId = trackId
@@ -260,16 +260,29 @@ export default function initTracksStore(Alpine) {
             await reloadTracks(this)
         },
 
-        async setSearchCenter(lat, lon, { fly = true, fromHistory = false, fromInit = false } = {}) {
-            // 1. Update store
+        async setSearchCenter(lat, lon, { fly = true, fromHistory = false, fromInit = false, skipHistory = false } = {}) {
+            // Track mode guard
+            if (this.activeTrackId) return
+
+            // Update store
             this.lat = lat
             this.lon = lon
 
-            // 2. Update Cesium marker
+            // Update marker
             map.updateSearchCenterMarker(lat, lon)
 
-            // 3. Reload tracks
+            // Reload tracks
             await reloadTracks(this, { fly })
+
+            // History + URL sync
+            if (!fromHistory && !fromInit && !skipHistory) {
+                const url = new URL(window.location)
+                url.searchParams.set('lat', lat.toFixed(5))
+                url.searchParams.set('lon', lon.toFixed(5))
+                url.searchParams.delete('trackId')
+
+                history.pushState({ trackId: null, center: { lat, lon } }, '', url)
+            }
         },
 
         selectTrack(track) {

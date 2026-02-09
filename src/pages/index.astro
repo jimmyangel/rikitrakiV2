@@ -81,10 +81,9 @@ import '../styles/map-frame.css'
 
     document.addEventListener('DOMContentLoaded', async () => {
         mapFrame.initUI()
-
         map.initMap()
 
-        const tracks = Alpine.store('tracks') as any 
+        const tracks = Alpine.store('tracks') as any
         tracks.loadingCesium = true
 
         ;(window as any).map = {
@@ -102,12 +101,29 @@ import '../styles/map-frame.css'
             isChromeOniPad
         }
 
-        ;(window as any).constants = (constants)
+        ;(window as any).constants = constants
 
-        const { lat, lon, countryCode } = await getApproxLocation()
-        tracks.countryCode = countryCode
+        const url = new URL(window.location.href)
+        const latParam = url.searchParams.get('lat')
+        const lonParam = url.searchParams.get('lon')
 
-        await tracks.setSearchCenter(lat, lon, { fromInit: true })
+        let initialLat: number
+        let initialLon: number
+
+        if (latParam && lonParam) {
+            initialLat = parseFloat(latParam)
+            initialLon = parseFloat(lonParam)
+        } else {
+            const approx = await getApproxLocation()
+            initialLat = approx.lat
+            initialLon = approx.lon
+            tracks.countryCode = approx.countryCode
+        }
+
+        tracks.defaultLat = initialLat
+        tracks.defaultLon = initialLon
+
+        await tracks.setSearchCenter(initialLat, initialLon, { fromInit: true })
 
         await map.whenViewerReady()
 
@@ -117,18 +133,35 @@ import '../styles/map-frame.css'
             await tracks.openTrack(trackId, { fromInit: true })
             history.replaceState({ trackId }, '')
         } else {
-            history.replaceState({ trackId: null }, '')
+            history.replaceState(
+                { trackId: null, center: { lat: initialLat, lon: initialLon } },
+                ''
+            )
         }
 
-        window.addEventListener('popstate', e => {
+        window.addEventListener('popstate', async e => {
             const state = e.state
             const tracks = Alpine.store('tracks') as any
 
             if (state?.trackId) {
-                tracks.openTrack(state.trackId, { fromHistory: true })
-            } else {
-                tracks.exitActiveTrack({ fromHistory: true })
+                await tracks.openTrack(state.trackId, { fromHistory: true })
+                return
             }
+
+            if (state?.center) {
+                await tracks.setSearchCenter(
+                    state.center.lat,
+                    state.center.lon,
+                    { fromHistory: true }
+                )
+                return
+            }
+
+            await tracks.setSearchCenter(
+                tracks.defaultLat,
+                tracks.defaultLon,
+                { fromHistory: true }
+            )
         })
     })
 

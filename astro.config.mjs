@@ -42,22 +42,15 @@ export default defineConfig({
               return next()
             }
 
-            // Ignore static assets (anything with a dot)
-            if (url.includes('.')) {
-              return next()
+            // Only look at the PATH for dots, not the query
+            const path = url.split('?')[0] // e.g. "/jimmyangel"
+            if (path.includes('.')) {
+              return next() // real file like "/assets/app.js", "/image.png"
             }
 
-            // Split path into segments
-            const segments = url.split('/').filter(Boolean)
-
-            // Only fallback for exactly one segment
-            if (segments.length === 1) {
-              console.log('[SPA-FALLBACK]', url)
-              req.url = '/index.html'
-              return next()
-            }
-
-            // Otherwise, do nothing
+            // Everything else is SPA → serve index.html
+            console.log('[SPA-FALLBACK]', url)
+            req.url = '/index.html'
             return next()
           })
         }
