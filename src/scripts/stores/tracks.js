@@ -103,42 +103,62 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
     let track = store.items[trackId]
 
-    if (!track) {
-        const { details, gpxBlob, geotags } = await getTrackDetails(trackId)
+    try {
+        if (!track) {
+            const { details, gpxBlob, geotags } = await getTrackDetails(trackId)
 
-        const rawGeoJSON = await parseGPXtoGeoJSON(gpxBlob)
-        details.trackDate = extractTrackDate(rawGeoJSON)
+            const rawGeoJSON = await parseGPXtoGeoJSON(gpxBlob)
+            details.trackDate = extractTrackDate(rawGeoJSON)
 
-        const single = extractSingleLineString(rawGeoJSON)
-        const metrics = computeTrackMetrics(single)
+            const single = extractSingleLineString(rawGeoJSON)
+            const metrics = computeTrackMetrics(single)
 
-        single.geometry.coordinates =
-            smoothElevation3(single.geometry.coordinates)
+            single.geometry.coordinates =
+                smoothElevation3(single.geometry.coordinates)
 
-        const geojson = {
-            type: 'FeatureCollection',
-            features: [single]
+            const geojson = {
+                type: 'FeatureCollection',
+                features: [single]
+            }
+
+            const bounds = computeBounds(geojson)
+            const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
+            const { distancesKm, elevationsM } = computeProfileArrays(geojson)
+
+            track = {
+                details,
+                metrics,
+                gpxBlob,
+                geojson,
+                geotags,
+                bounds,
+                czmlOriginal,
+                distancesKm,
+                elevationsM
+            }
+
+            console.log(track)
+
+            store.setTrack(trackId, track)
         }
+    } catch (err) {
+        console.warn('Track not found, cleaning URL and restoring world mode')
 
-        const bounds = computeBounds(geojson)
-        const czmlOriginal = buildCZMLForTrack(geojson, bounds, details.trackType)
-        const { distancesKm, elevationsM } = computeProfileArrays(geojson)
+        const url = new URL(window.location.href)
+        url.searchParams.delete('trackId')
 
-        track = {
-            details,
-            metrics,
-            gpxBlob,
-            geojson,
-            geotags,
-            bounds,
-            czmlOriginal,
-            distancesKm,
-            elevationsM
-        }
+        history.replaceState(
+            { trackId: null, center: { lat: store.defaultLat, lon: store.defaultLon } },
+            '',
+            url
+        )
 
-        console.log(track)
+        store.activeTrackId = null
 
-        store.setTrack(trackId, track)
+        await store.setSearchCenter(store.defaultLat, store.defaultLon, { fromHistory: true })
+
+        store.loadingTracks = false
+        return
     }
 
     // Update search center (lat/lon from details)
@@ -149,7 +169,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
     store.activeTrackId = trackId
 
     if (!fromInit && !fromHistory) {
-        pushHistory( {trackId, center: null })
+        pushHistory({ trackId, center: null })
     }
 
     // Render thumbnails for this track
@@ -170,6 +190,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
     store.loadingTracks = false
 }
+
 
 async function loadMotd(store) {
     const { motdTracks } = await getMotd()

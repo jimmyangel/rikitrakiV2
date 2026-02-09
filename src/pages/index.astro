@@ -66,6 +66,7 @@ import '../styles/map-frame.css'
     import descWidth from '../scripts/alpine-plugins/formatting.js'
     import { isIOS, isChromeOniPad } from '../scripts/utils/env'
     import { constants } from '../scripts/config'
+    import { sanitizeUrl } from '../scripts/utils/sanitizeUrl'
 
     // Read initial trackId from URL
     import { initFromUrl } from '../scripts/utils/history.js'
@@ -103,16 +104,14 @@ import '../styles/map-frame.css'
 
         ;(window as any).constants = constants
 
-        const url = new URL(window.location.href)
-        const latParam = url.searchParams.get('lat')
-        const lonParam = url.searchParams.get('lon')
+        const { lat: urlLat, lon: urlLon } = sanitizeUrl()
 
         let initialLat: number
         let initialLon: number
 
-        if (latParam && lonParam) {
-            initialLat = parseFloat(latParam)
-            initialLon = parseFloat(lonParam)
+        if (urlLat !== null && urlLon !== null) {
+            initialLat = urlLat
+            initialLon = urlLon
         } else {
             const approx = await getApproxLocation()
             initialLat = approx.lat
@@ -124,6 +123,7 @@ import '../styles/map-frame.css'
         tracks.defaultLon = initialLon
 
         await tracks.setSearchCenter(initialLat, initialLon, { fromInit: true })
+
 
         await map.whenViewerReady()
 
