@@ -186,8 +186,11 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
     map.setClockToEnd(ds)
     map.showTrailheadMarker(ds)
 
-    await map.flyToActiveTrack()
+    map.flyToActiveTrack()
 
+    // This ia hack to allow terrain to stabilize and land in the right place
+    setTimeout(() => { map.flyToActiveTrack() }, 2500)
+    
     store.loadingTracks = false
 }
 

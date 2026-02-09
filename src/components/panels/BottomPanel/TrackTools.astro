@@ -112,10 +112,10 @@ import { Icon } from 'astro-icon/components'
                 const store = this.$store.tracks
                 if (!store) return false
 
-                const active = store.active
-                if (active == null) return false
+                const activeTrackId = store.activeTrackId
+                if (activeTrackId == null) return false
 
-                const track = store.items[active]
+                const track = store.items[activeTrackId]
                 if (!track) return false
 
                 return (track?.geotags?.geoTags?.trackPhotos ?? [])
@@ -170,7 +170,7 @@ import { Icon } from 'astro-icon/components'
             },
 
             downloadGPX() {
-                const trackId = this.$store.tracks.active
+                const trackId = this.$store.tracks.activeTrackId
                 if (!trackId) return
 
                 const track = this.$store.tracks.items[trackId]
