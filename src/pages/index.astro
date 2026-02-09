@@ -148,6 +148,10 @@ import '../styles/map-frame.css'
                 return
             }
 
+            if (tracks.activeTrackId) {
+                tracks.exitActiveTrack({ fromHistory: true }) 
+            }
+
             if (state?.center) {
                 await tracks.setSearchCenter(
                     state.center.lat,

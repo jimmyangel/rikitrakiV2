@@ -2,7 +2,7 @@
 // Encode internal state → URL + history state
 // ---------------------------------------------
 export function encodeState({ trackId, center }) {
-    const url = new URL(window.location)
+	const url = new URL(window.location.href)
 
     if (trackId) {
         // TRACK MODE → center is irrelevant
@@ -37,7 +37,7 @@ export function encodeState({ trackId, center }) {
 // Decode URL → internal state
 // ---------------------------------------------
 export function decodeState() {
-    const url = new URL(window.location)
+	const url = new URL(window.location.href)
 
     const trackId = url.searchParams.get('trackId')
     if (trackId) {
@@ -66,7 +66,8 @@ export function replaceHistory(raw) {
 
 // Read initial state from the URL on page load
 export function initFromUrl() {
-    const url = new URL(window.location)
+	const url = new URL(window.location.href)
+
     const trackId = url.searchParams.get('trackId')
     return { trackId }
 }

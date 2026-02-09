@@ -276,7 +276,7 @@ export default function initTracksStore(Alpine) {
 
             // History + URL sync
             if (!fromHistory && !fromInit && !skipHistory) {
-                const url = new URL(window.location)
+                const url = new URL(window.location.href)
                 url.searchParams.set('lat', lat.toFixed(5))
                 url.searchParams.set('lon', lon.toFixed(5))
                 url.searchParams.delete('trackId')
