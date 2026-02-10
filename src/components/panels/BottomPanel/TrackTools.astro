@@ -82,7 +82,7 @@ import { Icon } from 'astro-icon/components'
             init() {
                 this.$watch('$store.tracks.animationFinished', value => {
                     if (value) {
-                        $this.store.tracks.isPlaying = false
+                        this.$store.tracks.isPlaying = false
 
                         this.$store.tracks.isTrackInPlay = false
 

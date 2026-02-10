@@ -265,9 +265,10 @@ export default function initTracksStore(Alpine) {
 
         animationFinished: false,
 
-        init() {
-            if (!window.map?.viewer) return
+        registerAnimationFinishedCallback() {
             map.setOnAnimationFinished(() => {
+                console.log('animation finished')
+
                 this.animationFinished = true
 
                 const trackId = this.activeTrackId

@@ -28,6 +28,10 @@ export function initMap() {
     trackDataSource = new Cesium.CustomDataSource('tracks')
     viewer.dataSources.add(trackDataSource)
 
+    if (window.Alpine) {
+        Alpine.store('tracks').registerAnimationFinishedCallback()
+    }
+
     const wrapper = document.querySelector('.map-touch-wrapper')
 
     if (window.matchMedia('(max-width: 768px)').matches) {
@@ -120,6 +124,7 @@ export function initMap() {
 
         if (Cesium.JulianDate.greaterThanOrEquals(t, stop)) {
             viewer.clock.shouldAnimate = false
+            console.log('animation finished in map', onAnimationFinished)
             if (onAnimationFinished) onAnimationFinished()
         }
     })
