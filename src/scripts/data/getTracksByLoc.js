@@ -1,42 +1,21 @@
-import { getTrackInfo } from './getTrackInfo.js'
-import { haversineKm } from '../utils/geoUtils.js'
+import { constants } from '../config.js'
 
-export async function getTracksByLoc({ lat, lon, username = null, maxTracksTarget = 200, minTracksTarget = 10, maxRadius = 500 }) {
-
-    const filter = username ? JSON.stringify({ username }) : null
-
-    const all = await getTrackInfo(filter)
-
-    const allTracks = Object.values(all.tracks)
-
-    const withDist = allTracks.map(t => {
-        const [tLat, tLon] = t.trackLatLng
-        return {
-            ...t,
-            distKm: haversineKm(lat, lon, tLat, tLon)
-        }
+export async function getTracksByLoc({ lat, lon, username = null }) {
+    const params = new URLSearchParams({
+        lat: String(lat),
+        lon: String(lon)
     })
 
-    withDist.sort((a, b) => a.distKm - b.distKm)
-
-    const withinMaxRadius = withDist.filter(t => t.distKm <= maxRadius)
-
-    let selected = []
-
-    if (withinMaxRadius.length >= minTracksTarget) {
-        selected = withinMaxRadius.slice(0, maxTracksTarget)
-    } else {
-        selected = withDist.slice(0, minTracksTarget)
+    if (username) {
+        params.set('username', username)
     }
 
-    const radiusKm = selected.length
-        ? selected[selected.length - 1].distKm
-        : 0
+    const url = `${constants.APIV2_BASE_URL}/loctracks?${params}`
 
-    return {
-        center: { lat, lon },
-        radiusKm,
-        count: selected.length,
-        tracks: selected
+    const res = await fetch(url)
+    if (!res.ok) {
+        throw new Error(`getTracksByLoc failed: ${res.status} ${res.statusText}`)
     }
+
+    return await res.json()
 }
