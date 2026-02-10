@@ -35,21 +35,16 @@ import { Icon } from 'astro-icon/components'
                 @click="togglePlay()"
                 title="Play / Pause"
             >
-                <template x-if="isPlaying">
+                <template x-if="$store.tracks.isPlaying">
                     <Icon name="fa7-solid:pause" />
                 </template>
-                <template x-if="!isPlaying">
+                <template x-if="!$store.tracks.isPlaying">
                     <Icon name="fa7-solid:play" />
                 </template>
             </button>
 
             <button class="anim-btn" @click="reset()" title="Stop/Reset">
-                <template x-if="$store.tracks.isTrackInPlay">
-                    <Icon name="fa7-solid:stop" />
-                </template>
-                <template x-if="!$store.tracks.isTrackInPlay">
-                    <Icon name="fa7-solid:bullseye" />
-                </template>
+                <Icon name="fa7-solid:stop" />
             </button>
 
             <button class="anim-btn" @click="faster()" title="Faster">
@@ -82,16 +77,13 @@ import { Icon } from 'astro-icon/components'
 <script is:inline>
     function trackTools() {
         return {
-            isPlaying: false,
             showThumbnails: true,   // default ON
 
             init() {
                 this.$watch('$store.tracks.animationFinished', value => {
                     if (value) {
-                        // Local truth first
-                        this.isPlaying = false
+                        $this.store.tracks.isPlaying = false
 
-                        // Mirror to store
                         this.$store.tracks.isTrackInPlay = false
 
                         this.$store.tracks.showMarkers()
@@ -124,48 +116,36 @@ import { Icon } from 'astro-icon/components'
 
             togglePlay() {
                 // Flip local state
-                this.isPlaying = !this.isPlaying
+                this.$store.tracks.isPlaying = !this.$store.tracks.isPlaying
 
-                if (this.isPlaying) {
+                if (this.$store.tracks.isPlaying) {
                     // We are entering play/resume mode
                     this.$store.tracks.isTrackInPlay = true
                     this.$store.tracks.hideMarkers()
                 }
 
                 // Drive animation with the local truth
-                this.$store.tracks.animate(this.isPlaying)
+                this.$store.tracks.animate(this.$store.tracks.isPlaying)
             },
 
 
             faster() {
-                if (this.isPlaying) {
+                if (this.$store.tracks.isPlaying) {
                     this.$store.tracks.increaseSpeed()
                 }
             },
 
             slower() {
-                if (this.isPlaying) {
+                if (this.$store.tracks.isPlaying) {
                     this.$store.tracks.decreaseSpeed()
                 }
             },
 
             reset() {
-                // Local truth
-                this.isPlaying = false
-
-                // Mirror to store
-                this.$store.tracks.isTrackInPlay = false
-
                 this.$store.tracks.resetAnimation()
             },
 
             exitTrack() {
-                // Local truth
-                this.isPlaying = false
-
-                // Mirror to store
-                this.$store.tracks.isTrackInPlay = false
-
                 this.$store.tracks.exitActiveTrack({ fromHistory: false })
             },
 

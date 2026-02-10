@@ -38,19 +38,34 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
         <!-- ACTIVE TRACK MODE -->
         <template x-if="$store.tracks.activeTrackId">
             <div class="panel-mode-wrapper">
+
                 <div 
-                    class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5"
-                    x-text="
-                        $store.tracks.items[$store.tracks.activeTrackId].details.trackName +
-                        ($store.tracks.items[$store.tracks.activeTrackId].details.trackFav ? ' ✭' : '')
-                    "
-                ></div>
+                    class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5 is-flex is-align-items-center"
+                >
+                    <!-- Reset button (styled like your app buttons) -->
+                    <button 
+                        class="reset-btn mr-2"
+                        @click="$store.tracks.resetAnimation()"
+                        title="Reset to track"
+                    >
+                        <Icon name="fa7-solid:crosshairs" />
+                    </button>
+
+                    <!-- Track name -->
+                    <span
+                        x-text="
+                            $store.tracks.items[$store.tracks.activeTrackId].details.trackName +
+                            ($store.tracks.items[$store.tracks.activeTrackId].details.trackFav ? ' ✭' : '')
+                        "
+                    ></span>
+                </div>
 
                 <div class="card-container">
                     <div class="card-row">
                         <ActiveTrackContent />
                     </div>
                 </div>
+
             </div>
         </template>
 
@@ -254,5 +269,24 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
             width: 100%;
             margin: 0;
         }
+    }
+
+    .reset-btn {
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: none;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+        border-radius: 4px;
+    }
+
+    .reset-btn svg {
+        width: 20px;
+        height: 20px;
     }
 </style>

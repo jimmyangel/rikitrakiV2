@@ -220,6 +220,7 @@ export default function initTracksStore(Alpine) {
 
         activeTrackId: null,
 
+        isPlaying: false,
         isTrackInPlay: false,
 
         loadingTracks: false,
@@ -368,6 +369,10 @@ export default function initTracksStore(Alpine) {
         decreaseSpeed() { map.decreaseSpeed() },
 
         async resetAnimation() {
+
+            this.isPlaying = false
+            this.isTrackInPlay = false
+
             const trackId = this.activeTrackId
             if (!trackId) return
 
@@ -385,6 +390,9 @@ export default function initTracksStore(Alpine) {
 
         exitActiveTrack({ fromHistory = false } = {}) {
             if (!this.activeTrackId) return
+
+            this.isPlaying = false
+            this.isTrackInPlay = false
 
             const trackId = this.activeTrackId
             const track = this.items[trackId]
