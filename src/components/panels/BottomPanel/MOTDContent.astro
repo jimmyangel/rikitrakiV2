@@ -6,7 +6,7 @@ import Thumbnail from './Thumbnail.astro';
      x-init="$store.tracks.loadMotd()"
      style="display: contents">
 
-    <template x-if="$store.tracks.motdTracks.length === 0">
+    <template x-cloak x-if="$store.tracks.motdTracks.length === 0">
         <div class="empty-card">
             <p class="is-size-6 has-text-centered" x-text="emptyMessage"></p>
         </div>
