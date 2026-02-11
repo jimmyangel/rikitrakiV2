@@ -266,6 +266,10 @@ export default function initTracksStore(Alpine) {
             )
         },
 
+        get username() {
+            return getUsernameFromUrl()
+        },
+
         animationFinished: false,
 
         registerAnimationFinishedCallback() {

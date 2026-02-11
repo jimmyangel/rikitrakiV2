@@ -2,24 +2,35 @@
 import Thumbnail from './Thumbnail.astro';
 ---
 
-<template
-    x-data="motdContent()"
-    x-init="$store.tracks.loadMotd()"
-    x-for="(p, i) in motdTracks"
-    :key="p.trackId"
->
-    <Thumbnail />
-</template>
+<div x-data="motdContent()"
+     x-init="$store.tracks.loadMotd()"
+     style="display: contents">
 
+    <template x-if="$store.tracks.motdTracks.length === 0">
+        <div class="empty-card">
+            <p class="is-size-6 has-text-centered" x-text="emptyMessage"></p>
+        </div>
+    </template>
+
+    <template x-for="(p, i) in motdTracks" :key="p.trackId">
+        <Thumbnail />
+    </template>
+</div>
 
 <script is:inline>
 function motdContent() {
     return {
 		isActiveTrackMode: false,
-		
+
         get motdTracks() {
             return this.$store.tracks.motdTracks ?? []
         },
+
+		get emptyMessage() { 
+			if (this.$store.tracks.username) { 
+				return `User "${this.$store.tracks.username}" doesn't have any tracks with photos and descriptions yet.`
+			}
+		},
 
         getImage(p) {
             return this.$store.tracks.thumbnailUrl(p.trackId)
