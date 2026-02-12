@@ -6,7 +6,7 @@ import alpinejs from '@astrojs/alpinejs'
 
 export default defineConfig({
   output: 'static',
-  integrations: [icon(), alpinejs()],
+  integrations: [icon(), alpinejs({ entrypoint: '/src/scripts/alpine-plugins/entrypoint' })],
   devToolbar: { enabled: false },
   vite: {
     plugins: [

@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@alpinejs/collapse": "^3.15.8",
     "@astrojs/alpinejs": "^0.4.9",
     "@iconify-json/fa7-solid": "^1.2.3",
     "@tmcw/togeojson": "^7.1.2",
