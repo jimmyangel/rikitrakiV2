@@ -1,12 +1,20 @@
 ---
 import { Icon } from 'astro-icon/components'
-const { message, icon = "fa7-solid:triangle-exclamation", color = "danger" } = Astro.props;
 ---
-<div class={`notification is-${color} is-light is-flex is-align-items-center`} style="gap: 0.5rem" x-transition.opacity.duration.150ms>
-	<span class="is-flex is-align-items-center">
-		<Icon name={icon} size="24px" />
-	</span>
-	<span class="is-flex is-align-items-center" style="line-height: 1.2">
-		{message}
-	</span>
+
+<div 
+    x-data 
+    class="notification is-danger is-light is-flex is-align-items-center"
+    style="gap: 0.5rem"
+    x-transition.opacity.duration.150ms
+>
+    <span class="is-flex is-align-items-center">
+        <Icon name="fa7-solid:triangle-exclamation" size="24px" />
+    </span>
+
+    <span 
+        class="is-flex is-align-items-center"
+        style="line-height: 1.2"
+        x-text="$store.user.error"
+    ></span>
 </div>

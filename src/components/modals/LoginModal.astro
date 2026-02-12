@@ -4,7 +4,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 ---
 
 <!-- Modal -->
-<div x-data="{ tab: 'login' }">
+<div x-data="loginModal()">
     <div :class="{ modal: true, 'is-active': $store.ui.showLoginModal, 'modal-top': true }">
 
         <div class="modal-background" @click="$store.ui.showLoginModal = false"></div>
@@ -185,8 +185,8 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                 </div>
 				<!-- ERROR MESSAGE -->
 				<div class="pt-2" style="height: 76px;">
-					<template x-if="true">
-						<ErrorMessage message="ok, now this is avery long message to see how it wraps and all" />
+					<template x-if="$store.user.error">
+						<ErrorMessage />
 					</template>
 				</div>
 
@@ -220,26 +220,28 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 <script is:inline>
 	function loginModal() {
 		return {
+			tab: 'login',
 			username: '',
 			password: '',
-			loginerror: '',
+			email: '',
 
-			reset() {
-				this.username = ''
-				this.password = ''
-				this.loginerror = ''
+			init() {
+				this.$watch('$store.ui.showLoginModal', value => {
+					if (value) {
+						this.$store.user.error = null
+					}
+				})
 			},
 
-			submit() {
-				if (!this.username || !this.password) {
-					this.error = 'Please enter both username and password.'
-					return
-				}
+			async submit() {
+				const ok = await this.$store.user.login(this.username, this.password)
 
-				console.log('Login attempt:', this.username, this.password)
-				// Later: call your backend login endpoint
+				if (ok) {
+					this.$store.ui.showLoginModal = false
+				}
 			}
 		}
 	}
+
 </script>
 

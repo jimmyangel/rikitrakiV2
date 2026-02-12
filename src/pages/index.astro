@@ -65,6 +65,7 @@ import '../styles/map-frame.css'
     import * as map from '../scripts/mapper/map.js'
     import { getApproxLocation } from '../scripts/utils/geoUtils.js'
     import initTracksStore from '../scripts/stores/tracks.js'
+    import initUserStore from '../scripts/stores/user.js'
     import descWidth from '../scripts/alpine-plugins/formatting.js'
     import { isIOS, isChromeOniPad } from '../scripts/utils/env'
     import { constants } from '../scripts/config'
@@ -76,6 +77,7 @@ import '../styles/map-frame.css'
     document.addEventListener('alpine:init', () => {
         Alpine.plugin(descWidth)
         initTracksStore(Alpine)
+        initUserStore(Alpine)
 
         Alpine.store('ui', {
             showSearchCenterModal: false,
