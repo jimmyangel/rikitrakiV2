@@ -1,5 +1,6 @@
 ---
-
+import { Icon } from 'astro-icon/components'
+import ErrorMessage from '../widgets/ErrorMessage.astro'
 ---
 
 <!-- Modal -->
@@ -118,13 +119,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- ERROR MESSAGE -->
-                        <div class="notification is-danger"
-                             x-show="loginerror"
-                             x-text="loginerror">
-                        </div>
-
                     </div>
                 </div>
 
@@ -189,6 +183,12 @@
 
                     </div>
                 </div>
+				<!-- ERROR MESSAGE -->
+				<div class="pt-2" style="height: 76px;">
+					<template x-if="true">
+						<ErrorMessage message="ok, now this is avery long message to see how it wraps and all" />
+					</template>
+				</div>
 
             </section>
 
