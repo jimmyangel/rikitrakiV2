@@ -32,7 +32,7 @@ import { Icon } from 'astro-icon/components'
             <div class="navbar-menu" :class="{ 'is-active': open }">
                 <div class="navbar-start"></div>
                 <div class="navbar-end">
-                    <a class="navbar-item" style="max-height: 62px;">
+                    <a class="navbar-item" style="max-height: 62px;" @click="$store.ui.showLoginModal = true">
                         <Icon name="fa7-solid:user" class="is-size-4"/>
                     </a>
                     <a class="navbar-item" style="max-height: 62px;">

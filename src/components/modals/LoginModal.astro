@@ -1,0 +1,144 @@
+---
+
+---
+
+<!-- Modal -->
+<div x-data> 
+	<div :class="{ modal: true, 'is-active': $store.ui.showLoginModal }">
+
+		<div class="modal-background" @click="$store.ui.showLoginModal = false"></div>
+
+		<div class="modal-card">
+
+			<header class="modal-card-head">
+				<div class="modal-card-title"> 
+					<p class="is-size-5 mb-2">Welcome to RikiTraki</p>
+					<p class="is-size-6 mr-2">Please login if you wish to upload your own tracks and photos...</p>
+				</div>
+				<button class="delete" aria-label="close" @click="$store.ui.showLoginModal = false"></button>
+			</header>
+
+			<section class="modal-card-body">
+				<div class="tabs is-boxed">
+					<ul>
+						<li class="is-active"><a>Login</a></li>
+						<li><a>...or register</a></li>
+					</ul>
+				</div>
+				<div class="is-flex is-flex-direction-column">
+					<div class="field is-horizontal">
+						<label class="field-label is-normal">Username</label>
+						<div class="field-body">
+							<div class="field">
+								<div class="control">
+									<input class="input" type="text" placeholder="Your username" x-model="username">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="field is-horizontal">
+						<label class="field-label is-normal">Password</label>
+						<div class="field-body">
+							<div class="field">
+								<div class="control">
+									<input class="input" type="password" placeholder="Your password" x-model="password">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="field is-horizontal">
+						<div class="field-label"></div>
+						<div class="field-body">
+							<div class="field">
+								<div class="control">
+									<button class="button" @click="submit()">Login</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+					<div class="field is-horizontal">
+						<div class="field-label"></div>
+						<div class="field-body">
+							<div class="field">
+								<div class="control">
+									<a>Forgot password and/or username?</a>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div>
+						<div class="field is-horizontal">
+							<label class="field-label is-normal">Email</label>
+							<div class="field-body">
+								<div class="field">
+									<div class="control">
+										<input class="input" type="text" placeholder="Your email" x-model="email">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="field is-horizontal">
+							<div class="field-label"></div>
+							<div class="field-body">
+								<div class="field">
+									<div class="control">
+										<button class="button" @click="submit()">Reset</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="notification is-danger" x-show="false" x-text="loginerror"></div>
+				</div>
+
+			</section>
+
+			<footer class="modal-card-foot is-justify-content-flex-end">
+
+			</footer>
+
+		</div>
+	</div>
+</div>
+
+<style>
+	.modal-card-head .modal-card-title {
+		flex: 1 1 auto;      
+		white-space: normal; 
+	}
+
+</style>
+
+<script is:inline>
+	function loginModal() {
+		return {
+			username: '',
+			password: '',
+			loginerror: '',
+
+			reset() {
+				this.username = ''
+				this.password = ''
+				this.loginerror = ''
+			},
+
+			submit() {
+				if (!this.username || !this.password) {
+					this.error = 'Please enter both username and password.'
+					return
+				}
+
+				console.log('Login attempt:', this.username, this.password)
+				// Later: call your backend login endpoint
+			}
+		}
+	}
+</script>
+
