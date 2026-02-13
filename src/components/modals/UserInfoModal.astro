@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components'
 import ErrorMessage from '../widgets/ErrorMessage.astro'
 ---
 
-<div x-data="userInfoModal()">
+<div class="userinfo-modal" x-data="userInfoModal()">
     <div :class="{ modal: true, 'is-active': $store.ui.showUserInfoModal, 'modal-top': true }">
 
         <div class="modal-background" @click="$store.ui.showUserInfoModal = false"></div>
@@ -13,9 +13,9 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
             <!-- HEADER -->
             <header class="modal-card-head">
                 <div class="modal-card-title">
-                    <p class="is-size-5 mb-2">Your Account</p>
+                    <p class="is-size-5 mb-2"><span>Hi </span><span  x-text="$store.user.username"></span><span>!</span></p>
                     <p class="is-size-6 mr-2">
-                        Manage your password, logout, or update the page URL…
+                        Update your password, update the page URL or logout…
                     </p>
                 </div>
                 <button class="delete" aria-label="close"
@@ -24,21 +24,6 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
             <!-- BODY -->
             <section class="modal-card-body">
-
-                <!-- USERNAME DISPLAY -->
-                <div class="field is-horizontal">
-                    <label class="field-label is-normal">Logged in as</label>
-                    <div class="field-body">
-                        <div class="field">
-                            <div class="control">
-                                <p class="is-size-6" x-text="$store.user.username"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr>
-
                 <!-- CHANGE PASSWORD -->
                 <div class="field is-horizontal">
                     <label class="field-label is-normal">New password</label>
@@ -73,7 +58,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                             <div class="control">
                                 <button class="button"
                                         @click="submitPasswordChange()">
-                                    Update Password
+                                    Update
                                 </button>
                             </div>
                         </div>
@@ -84,19 +69,19 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
                 <!-- USERNAME → URL -->
                 <div class="field is-horizontal">
-                    <label class="field-label is-normal">URL options</label>
+                    <label class="field-label is-normal">Rikitraki URL</label>
                     <div class="field-body">
                         <div class="field is-grouped">
                             <div class="control">
                                 <button class="button is-link is-light"
                                         @click="$store.user.applyUsernameToUrl()">
-                                    Add username
+                                    Private
                                 </button>
                             </div>
                             <div class="control">
                                 <button class="button is-link is-light"
                                         @click="$store.user.removeUsernameFromUrl()">
-                                    Remove username
+                                    Global
                                 </button>
                             </div>
                         </div>
@@ -113,8 +98,8 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                             <div class="control">
                                 <button class="button"
                                         @click="$store.user.logout(); $store.ui.showUserInfoModal = false">
-                                    <Icon name="fa7-solid:arrow-right-from-bracket" class="mr-2" />
-                                    Log Out
+                                    <Icon name="fa7-solid:user-xmark" size="24" class="mr-2" />
+                                    Logout
                                 </button>
                             </div>
                         </div>
@@ -151,6 +136,11 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
         flex: 1 1 auto;
         white-space: normal;
     }
+
+    .userinfo-modal .field-label {
+        flex-basis: 4rem; 
+    }
+
 </style>
 
 <script is:inline>
