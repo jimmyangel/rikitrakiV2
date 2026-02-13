@@ -186,9 +186,9 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
             </section>
 
-            <footer class="modal-card-foot">
+            <footer class="modal-card-foot py-2">
                 <!-- ERROR MESSAGE -->
-                <div class="pt-2 is-fullwidth" style="height: 76px;">
+                <div class="is-fullwidth" style="height: 68px;">
                     <template x-if="$store.user.error">
                         <ErrorMessage />
                     </template>
@@ -232,14 +232,22 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 			tab: 'login',
 			username: '',
 			password: '',
-			email: '',
+			email: '', 
 
 			init() {
 				this.$watch('$store.ui.showLoginModal', value => {
 					if (value) {
-						this.$store.user.error = null
+						this.clearForm()
 					}
 				})
+			},
+
+			clearForm() {
+				this.tab = 'login'
+				this.username = ''
+				this.password = ''
+				this.email = ''
+				this.$store.user.error = null
 			},
 
 			async login() {

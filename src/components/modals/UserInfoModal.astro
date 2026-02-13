@@ -57,7 +57,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                         <div class="field">
                             <div class="control">
                                 <button class="button"
-                                        @click="submitPasswordChange()">
+                                        @click="update()">
                                     Update
                                 </button>
                             </div>
@@ -107,9 +107,9 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                 </div>
             </section>
 
-            <footer class="modal-card-foot">
+            <footer class="modal-card-foot py-2">
                 <!-- ERROR MESSAGE -->
-                <div class="pt-2 is-fullwidth" style="height: 76px;">
+                <div class="is-fullwidth" style="height: 68px;">
                     <template x-if="$store.user.error">
                         <ErrorMessage />
                     </template>
@@ -156,14 +156,18 @@ function userInfoModal() {
         init() {
             this.$watch('$store.ui.showUserInfoModal', value => {
                 if (value) {
-                    this.newPassword = ''
-                    this.confirmPassword = ''
-                    this.$store.user.error = null
+                    this.clearForm()
                 }
             })
         },
 
-        async submitPasswordChange() {
+        clearForm() {
+            this.newPassword = ''
+            this.confirmPassword = ''
+            this.$store.user.error = null
+        },
+
+        async update() {
             this.$store.user.error = null
 
             if (!this.newPassword || !this.confirmPassword) {
