@@ -1,7 +1,5 @@
-//
-// scripts/stores/user.js
-//
 import { getToken } from '../data/getToken.js'
+import { encodeState, decodeState } from '../utils/history.js'
 
 export default function initUserStore(Alpine) {
 
@@ -39,8 +37,6 @@ export default function initUserStore(Alpine) {
 
             const { token, error } = await getToken(username, password)
 
-			console.log(error)
-
             if (error) {
                 this.error = error
                 return false
@@ -62,6 +58,44 @@ export default function initUserStore(Alpine) {
 
             localStorage.removeItem('rikitraki-username')
             localStorage.removeItem('rikitraki-token')
+        },
+
+        //
+        // Change password (placeholder backend call)
+        //
+        async changePassword(newPassword) {
+            this.error = null
+
+            // TODO: real backend call
+            const ok = false // placeholder
+
+            if (!ok) {
+                this.error = 'Password update failed'
+                return false
+            }
+
+            return true
+        },
+
+        //
+        // Canonical URL username handling
+        //
+        applyUsernameToUrl() {
+            if (!this.username) return
+
+            const { url, state } = encodeState(decodeState())
+            url.pathname = `/${this.username}`
+
+            history.pushState(state, '', url)
+            window.location.reload()
+        },
+
+        removeUsernameFromUrl() {
+            const { url, state } = encodeState(decodeState())
+            url.pathname = '/'
+
+            history.pushState(state, '', url)
+            window.location.reload()
         }
     })
 }

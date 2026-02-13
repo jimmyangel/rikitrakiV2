@@ -1,0 +1,196 @@
+---
+import { Icon } from 'astro-icon/components'
+import ErrorMessage from '../widgets/ErrorMessage.astro'
+---
+
+<div x-data="userInfoModal()">
+    <div :class="{ modal: true, 'is-active': $store.ui.showUserInfoModal, 'modal-top': true }">
+
+        <div class="modal-background" @click="$store.ui.showUserInfoModal = false"></div>
+
+        <div class="modal-card">
+
+            <!-- HEADER -->
+            <header class="modal-card-head">
+                <div class="modal-card-title">
+                    <p class="is-size-5 mb-2">Your Account</p>
+                    <p class="is-size-6 mr-2">
+                        Manage your password, logout, or update the page URL…
+                    </p>
+                </div>
+                <button class="delete" aria-label="close"
+                        @click="$store.ui.showUserInfoModal = false"></button>
+            </header>
+
+            <!-- BODY -->
+            <section class="modal-card-body">
+
+                <!-- USERNAME DISPLAY -->
+                <div class="field is-horizontal">
+                    <label class="field-label is-normal">Logged in as</label>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <p class="is-size-6" x-text="$store.user.username"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- CHANGE PASSWORD -->
+                <div class="field is-horizontal">
+                    <label class="field-label is-normal">New password</label>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" type="password"
+                                       placeholder="Enter new password"
+                                       x-model="newPassword">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field is-horizontal">
+                    <label class="field-label is-normal">Re-enter</label>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input" type="password"
+                                       placeholder="Re-enter new password"
+                                       x-model="confirmPassword">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field is-horizontal">
+                    <div class="field-label"></div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <button class="button"
+                                        @click="submitPasswordChange()">
+                                    Update Password
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- USERNAME → URL -->
+                <div class="field is-horizontal">
+                    <label class="field-label is-normal">URL options</label>
+                    <div class="field-body">
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button class="button is-link is-light"
+                                        @click="$store.user.applyUsernameToUrl()">
+                                    Add username
+                                </button>
+                            </div>
+                            <div class="control">
+                                <button class="button is-link is-light"
+                                        @click="$store.user.removeUsernameFromUrl()">
+                                    Remove username
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- LOGOUT -->
+                <div class="field is-horizontal">
+                    <label class="field-label"></label>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <button class="button"
+                                        @click="$store.user.logout(); $store.ui.showUserInfoModal = false">
+                                    <Icon name="fa7-solid:arrow-right-from-bracket" class="mr-2" />
+                                    Log Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ERROR MESSAGE (fixed height like LoginModal) -->
+                <div class="pt-2" style="height: 76px;">
+                    <template x-if="$store.user.error">
+                        <ErrorMessage />
+                    </template>
+                </div>
+
+            </section>
+
+            <footer class="modal-card-foot is-justify-content-flex-end"></footer>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal.modal-top.is-active {
+        display: block !important;
+    }
+
+    .modal.modal-top .modal-card {
+        margin: 1.5rem auto 0 auto;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+
+    .modal-card-head .modal-card-title {
+        flex: 1 1 auto;
+        white-space: normal;
+    }
+</style>
+
+<script is:inline>
+function userInfoModal() {
+    return {
+        newPassword: '',
+        confirmPassword: '',
+
+        init() {
+            this.$watch('$store.ui.showUserInfoModal', value => {
+                if (value) {
+                    this.newPassword = ''
+                    this.confirmPassword = ''
+                    this.$store.user.error = null
+                }
+            })
+        },
+
+        async submitPasswordChange() {
+            this.$store.user.error = null
+
+            if (!this.newPassword || !this.confirmPassword) {
+                this.$store.user.error = 'Please fill out both fields'
+                return
+            }
+
+            if (this.newPassword !== this.confirmPassword) {
+                this.$store.user.error = 'Passwords do not match'
+                return
+            }
+
+            const ok = await this.$store.user.changePassword(this.newPassword)
+
+            if (!ok) {
+                return
+            }
+
+            this.newPassword = ''
+            this.confirmPassword = ''
+        }
+    }
+}
+</script>

@@ -32,13 +32,17 @@ import { Icon } from 'astro-icon/components'
             <div class="navbar-menu" :class="{ 'is-active': open }">
                 <div class="navbar-start"></div>
                 <div class="navbar-end">
-                    <a class="navbar-item" style="max-height: 62px;" @click="$store.ui.showLoginModal = true">
-                        <Icon 
-                            name="fa7-solid:user" 
+                    <a class="navbar-item"
+                    style="max-height: 62px;"
+                    @click="$store.user.isLoggedIn ? $store.ui.showUserInfoModal = true : $store.ui.showLoginModal = true">
+
+                        <Icon
+                            name="fa7-solid:user"
                             class="is-size-4"
-                            :style="$store.user.isLoggedIn ? 'color: #8fd48f' : ''"
+                            :class="{ 'user-icon-logged-in': $store.user.isLoggedIn }"
                         />
                     </a>
+
                     <a class="navbar-item" style="max-height: 62px;">
                         <Icon name="fa7-solid:circle-info" class="is-size-4"/>
                     </a>
@@ -71,6 +75,10 @@ import { Icon } from 'astro-icon/components'
     .navbar-item svg,
     .navbar-brand svg {
         max-height: 4rem;
+    }
+
+    .user-icon-logged-in {
+        color: #8fd48f;
     }
 
 </style>

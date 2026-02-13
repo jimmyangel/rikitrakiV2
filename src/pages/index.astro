@@ -5,6 +5,7 @@ import MapPanel from '../components/panels/MapPanel/MapPanel.astro'
 import BottomPanel from '../components/panels/BottomPanel/BottomPanel.astro'
 import SearchCenterModal from '../components/modals/SearchCenterModal.astro'
 import LoginModal from '../components/modals/LoginModal.astro'
+import UserInfoModal from '../components/modals/UserInfoModal.astro'
 import { Icon } from 'astro-icon/components'
 import '../styles/map-frame.css'
 ---
@@ -58,6 +59,7 @@ import '../styles/map-frame.css'
 <div>
     <SearchCenterModal />
     <LoginModal />
+    <UserInfoModal />
 </div>
 
 <script>
@@ -81,7 +83,8 @@ import '../styles/map-frame.css'
 
         Alpine.store('ui', {
             showSearchCenterModal: false,
-            showLoginModal: false
+            showLoginModal: false,
+            showUserInfoModal: false
         })
     })
 
