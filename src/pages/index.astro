@@ -147,17 +147,29 @@ import '../styles/map-frame.css'
             )
         }
 
+        let lastPathname = window.location.pathname
+
         window.addEventListener('popstate', async e => {
             const state = e.state
             const tracks = Alpine.store('tracks') as any
+            const currentPath = window.location.pathname
 
+            const pathnameChanged = currentPath !== lastPathname
+            lastPathname = currentPath
+
+            // NEW: exit track mode if pathname changed
+            if (pathnameChanged && tracks.activeTrackId) {
+                tracks.exitActiveTrack({ fromHistory: true })
+            }
+
+            // existing logic…
             if (state?.trackId) {
                 await tracks.openTrack(state.trackId, { fromHistory: true })
                 return
             }
 
             if (tracks.activeTrackId) {
-                tracks.exitActiveTrack({ fromHistory: true }) 
+                tracks.exitActiveTrack({ fromHistory: true })
             }
 
             if (state?.center) {
@@ -175,6 +187,7 @@ import '../styles/map-frame.css'
                 { fromHistory: true }
             )
         })
+
     })
 
 </script>

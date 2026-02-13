@@ -71,3 +71,16 @@ export function initFromUrl() {
     const trackId = url.searchParams.get('trackId')
     return { trackId }
 }
+
+export function setUsernamePath(username) {
+    const raw = decodeState()
+    const { url } = encodeState(raw)
+
+    url.pathname = username ? `/${username}` : '/'
+
+    history.pushState(raw, '', url)
+
+    // Trigger your existing popstate-driven re-init
+    window.dispatchEvent(new PopStateEvent('popstate', { state: raw }))
+}
+

@@ -1,5 +1,5 @@
 import { getToken } from '../data/getToken.js'
-import { encodeState, decodeState } from '../utils/history.js'
+import { setUsernamePath } from '../utils/history.js'
 
 export default function initUserStore(Alpine) {
 
@@ -80,22 +80,13 @@ export default function initUserStore(Alpine) {
         //
         // Canonical URL username handling
         //
-        applyUsernameToUrl() {
-            if (!this.username) return
+		applyUsernameToUrl() {
+			if (!this.username) return
+			setUsernamePath(this.username)
+		},
 
-            const { url, state } = encodeState(decodeState())
-            url.pathname = `/${this.username}`
-
-            history.pushState(state, '', url)
-            window.location.reload()
-        },
-
-        removeUsernameFromUrl() {
-            const { url, state } = encodeState(decodeState())
-            url.pathname = '/'
-
-            history.pushState(state, '', url)
-            window.location.reload()
-        }
+		removeUsernameFromUrl() {
+			setUsernamePath(null)
+		},
     })
 }
