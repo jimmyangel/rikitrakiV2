@@ -15,7 +15,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                 <div class="modal-card-title">
                     <p class="is-size-5 mb-2"><span>Hi </span><span  x-text="$store.user.username"></span><span>!</span></p>
                     <p class="is-size-6 mr-2">
-                        Update your password, update the page URL or logout…
+                        Update your password, change the page URL, or logout…
                     </p>
                 </div>
                 <button class="delete" aria-label="close"
@@ -105,17 +105,17 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- ERROR MESSAGE (fixed height like LoginModal) -->
-                <div class="pt-2" style="height: 76px;">
+            <footer class="modal-card-foot">
+                <!-- ERROR MESSAGE -->
+                <div class="pt-2 is-fullwidth" style="height: 76px;">
                     <template x-if="$store.user.error">
                         <ErrorMessage />
                     </template>
                 </div>
 
-            </section>
-
-            <footer class="modal-card-foot is-justify-content-flex-end"></footer>
+            </footer>
 
         </div>
     </div>
@@ -139,6 +139,10 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
     .userinfo-modal .field-label {
         flex-basis: 4rem; 
+    }
+
+    .modal-card-foot .is-fullwidth {
+        flex: 1 1 100%;
     }
 
 </style>

@@ -4,7 +4,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 ---
 
 <!-- Modal -->
-<div x-data="loginModal()">
+<div class="login-modal" x-data="loginModal()">
     <div :class="{ modal: true, 'is-active': $store.ui.showLoginModal, 'modal-top': true }">
 
         <div class="modal-background" @click="$store.ui.showLoginModal = false"></div>
@@ -72,7 +72,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                                 <div class="field">
                                     <div class="control">
                                         <button class="button"
-                                                @click="submit()">
+                                                @click="login()">
                                             Login
                                         </button>
                                     </div>
@@ -112,7 +112,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                                 <div class="field">
                                     <div class="control">
                                         <button class="button"
-                                                @click="submit()">
+                                                @click="reset()">
                                             Reset
                                         </button>
                                     </div>
@@ -183,17 +183,18 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
                     </div>
                 </div>
-				<!-- ERROR MESSAGE -->
-				<div class="pt-2" style="height: 76px;">
-					<template x-if="$store.user.error">
-						<ErrorMessage />
-					</template>
-				</div>
 
             </section>
 
-            <footer class="modal-card-foot is-justify-content-flex-end"></footer>
+            <footer class="modal-card-foot">
+                <!-- ERROR MESSAGE -->
+                <div class="pt-2 is-fullwidth" style="height: 76px;">
+                    <template x-if="$store.user.error">
+                        <ErrorMessage />
+                    </template>
+                </div>
 
+            </footer>
         </div>
     </div>
 </div>
@@ -215,6 +216,14 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 		white-space: normal; 
 	}
 
+	.login-modal .field-label {
+        flex-basis: 4rem; 
+    }
+
+	.modal-card-foot .is-fullwidth {
+        flex: 1 1 100%;
+    }
+
 </style>
 
 <script is:inline>
@@ -233,12 +242,16 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 				})
 			},
 
-			async submit() {
+			async login() {
 				const ok = await this.$store.user.login(this.username, this.password)
 
 				if (ok) {
 					this.$store.ui.showLoginModal = false
 				}
+			},
+
+			async reset() {
+				console.log('reset')
 			}
 		}
 	}
