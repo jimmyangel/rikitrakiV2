@@ -163,7 +163,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
     // Update search center (lat/lon from details)
     const [lat, lon] = track.details.trackLatLng
-    store.setSearchCenter(lat, lon, { fly: false, skipHistory: true })
+    await store.setSearchCenter(lat, lon, { fly: false, skipHistory: true })
 
     store.activate(trackId)
     store.activeTrackId = trackId
@@ -294,8 +294,8 @@ export default function initTracksStore(Alpine) {
         },
 
         async setSearchCenter(lat, lon, { fly = true, fromHistory = false, fromInit = false, skipHistory = false } = {}) {
-            // Track mode guard
-            if (this.activeTrackId) return
+            // Track mode guard            
+            //if (this.activeTrackId) return
 
             // Update store
             this.lat = lat
