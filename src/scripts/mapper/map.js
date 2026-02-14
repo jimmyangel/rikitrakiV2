@@ -620,6 +620,12 @@ export function renderMapThumbnails(geoTags) {
         return
     }
 
+    const trackId = geoTags.trackId
+    if (!trackId) {
+        viewer._mapThumbnails = null
+        return
+    }
+
     const photos = geoTags.trackPhotos
         .map((p, arrayIndex) => ({ ...p, arrayIndex }))
         .filter(p => p.picLatLng)
@@ -635,6 +641,7 @@ export function renderMapThumbnails(geoTags) {
 
     Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, cartographics)
         .then(sampled => {
+
             photos.forEach((photo, i) => {
                 const t = sampled[i]
 
@@ -644,29 +651,48 @@ export function renderMapThumbnails(geoTags) {
                     t.height + 50
                 )
 
-                const el = document.createElement('div')
-                el.className = 'map-thumb'
+                //
+                // GLightbox-compatible anchor element
+                //
+                const el = document.createElement('a')
+                el.className = 'map-thumb glightbox'
+                el.dataset.gallery = 'track-photos'
+                el.dataset.glightboxIndex = photo.arrayIndex
                 el.dataset.arrayIndex = photo.arrayIndex
+                el.dataset.type = 'image'
 
+                // Full-size image URL (canonical rule)
+                const picPointer = photo.picIndex ?? photo.arrayIndex
+                el.href = `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${picPointer}`
+
+                // Optional metadata
+                if (photo.picCaption) el.dataset.title = photo.picCaption
+
+                // Thumbnail image
                 const img = document.createElement('img')
                 img.src = 'data:image/jpeg;base64,' + photo.picThumbBlob
                 el.appendChild(img)
+
+                // Prevent ARIA warning: remove focus before GLightbox opens 
+                el.addEventListener('click', e => { e.currentTarget.blur() })
 
                 layer.appendChild(el)
 
                 el.style.cursor = 'pointer'
 
-                el.addEventListener('click', () => {
-                    window.dispatchEvent(new CustomEvent('map-thumb-click', {
-                        detail: { index: photo.arrayIndex }
-                    }))
-                })
-
+                // Store Cesium info
                 photo._cartesian = cartesian
                 photo._element = el
             })
 
             viewer._mapThumbnails = photos
+
+            //
+            // Refresh GLightbox so it picks up new elements
+            //
+            if (window.lightbox && window.lightbox.reload) {
+                window.lightbox.reload()
+            }
         })
 }
 

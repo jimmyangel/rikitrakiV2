@@ -38,26 +38,28 @@ import Thumbnail from './Thumbnail.astro';
 					if (!this.isActiveTrackMode) return
 
 					this.$nextTick(() => {
+						// Destroy old instance
 						if (this.lightbox) this.lightbox.destroy()
 
+						// Create new instance
 						this.lightbox = GLightbox({
 							selector: '.glightbox',
 							touchNavigation: true,
 							loop: false,
 						})
+
+						// Make it globally accessible so renderMapThumbnails() can reload it
+						window.lightbox = this.lightbox
 					})
 				}
+
+				// Initial load
 				refresh()
 
+				// Rebuild lightbox when track changes
 				this.$watch('$store.tracks.activeTrackId', refresh)
-
-				// Open the slides from the map thumbnails
-				window.addEventListener('map-thumb-click', (e) => { 
-					const index = e.detail.index
-					if (!this.lightbox) return 
-					this.lightbox.openAt(index)
-				})
 			}
+
 
         }
     }
