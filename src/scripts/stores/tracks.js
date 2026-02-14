@@ -301,11 +301,11 @@ export default function initTracksStore(Alpine) {
             this.lat = lat
             this.lon = lon
 
-            // Update marker
-            map.updateSearchCenterMarker(lat, lon)
-
             // Reload tracks
             await reloadTracks(this, { fly })
+
+            // Update marker
+            map.updateSearchCenterMarker(lat, lon, this.radiusKm)
 
             // History + URL sync
             if (!fromHistory && !fromInit && !skipHistory) {

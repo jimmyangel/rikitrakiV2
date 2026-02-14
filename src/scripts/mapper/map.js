@@ -4,6 +4,7 @@ import { constants } from '../config.js'
 
 export let viewer = null
 let searchCenterEntity = null
+let searchCenterRingEntity = null
 
 // Permanent search‑area DataSource (created once)
 let trackDataSource = null
@@ -266,13 +267,18 @@ export function waitForTerrainTiles() {
     })
 }
 
-export function updateSearchCenterMarker(lat, lon) {
+export function updateSearchCenterMarker(lat, lon, radiusKm = null) {
     if (!viewer) return
 
+    const position = Cesium.Cartesian3.fromDegrees(lon, lat)
+
+    //
+    // 1. Create or update the POINT
+    //
     if (!searchCenterEntity) {
         searchCenterEntity = viewer.entities.add({
             id: 'search-center',
-            position: Cesium.Cartesian3.fromDegrees(lon, lat),
+            position,
             point: {
                 pixelSize: 12,
                 translucent: true,
@@ -283,10 +289,35 @@ export function updateSearchCenterMarker(lat, lon) {
                 heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
             }
         })
-        return
+    } else {
+        searchCenterEntity.position = position
     }
 
-    searchCenterEntity.position = Cesium.Cartesian3.fromDegrees(lon, lat)
+    //
+    // 2. Create or update the RING
+    //
+    if (radiusKm !== null) {
+        const radiusMeters = radiusKm * 1000
+
+        if (!searchCenterRingEntity) {
+            searchCenterRingEntity = viewer.entities.add({
+                id: 'search-center-ring',
+                position,
+                ellipse: {
+                    semiMajorAxis: radiusMeters,
+                    semiMinorAxis: radiusMeters,
+                    height: 0,
+                    material: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.0),
+                    outline: true,
+                    outlineColor: Cesium.Color.fromCssColorString('#e38b2c')
+                }
+            })
+        } else {
+            searchCenterRingEntity.position = position
+            searchCenterRingEntity.ellipse.semiMajorAxis = radiusMeters
+            searchCenterRingEntity.ellipse.semiMinorAxis = radiusMeters
+        }
+    }
 }
 
 export function flyToBounds(bounds) {
@@ -600,11 +631,14 @@ export function showAllSearchMarkersExcept(activeTrackId) {
 
 export function hideSearchCenter() {
     if (searchCenterEntity) searchCenterEntity.show = false
+    if (searchCenterRingEntity) searchCenterRingEntity.show = false
 }
 
 export function showSearchCenter() {
     if (searchCenterEntity) searchCenterEntity.show = true
+    if (searchCenterRingEntity) searchCenterRingEntity.show = true
 }
+
 
 // ---------------------------------------------------------------------------
 // Map Thumbnails: create and clear
