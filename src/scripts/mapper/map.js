@@ -279,7 +279,8 @@ export function updateSearchCenterMarker(lat, lon) {
                 color: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.9),
                 outlineColor: Cesium.Color.BLACK,
                 outlineWidth: 2,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY
+                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
             }
         })
         return
