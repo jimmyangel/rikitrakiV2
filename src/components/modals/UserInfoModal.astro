@@ -73,14 +73,14 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                     <div class="field-body">
                         <div class="field is-grouped">
                             <div class="control">
-                                <button class="button is-link is-light"
-                                        @click="$store.user.applyUsernameToUrl()">
+                                <button class="button is-light"
+                                        @click="$store.user.applyUsernameToUrl(); $store.ui.showUserInfoModal = false">
                                     Private
                                 </button>
                             </div>
                             <div class="control">
-                                <button class="button is-link is-light"
-                                        @click="$store.user.removeUsernameFromUrl()">
+                                <button class="button is-light"
+                                        @click="$store.user.removeUsernameFromUrl(); $store.ui.showUserInfoModal = false">
                                     Global
                                 </button>
                             </div>
