@@ -73,8 +73,6 @@ export function initFromUrl() {
 }
 
 export function setUsernamePath(username) {
-	console.log('setUsernamePath CALLED')
-
     const prevState = history.state || {}
 
     const url = new URL(window.location.href)
@@ -87,15 +85,12 @@ export function setUsernamePath(username) {
         trackId: null
     }
 
-	console.log('setUsernamePath push', { newState, url: url.toString() })
-
-    // Exactly ONE new history entry
     history.pushState(newState, '', url)
 
     const tracks = Alpine.store('tracks')
 
     if (tracks.activeTrackId) {
-        tracks.exitActiveTrack({ fromHistory: false })
+        tracks.exitActiveTrack({ fromHistory: true })
     }
 
     tracks.reload()
