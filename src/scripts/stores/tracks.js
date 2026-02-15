@@ -10,7 +10,8 @@ import {
     smoothElevation3,
     computeTrackMetrics,
     extractTrackDate,
-    computeProfileArrays
+    computeProfileArrays,
+    haversineKm
 } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 import { pushHistory } from '../utils/history.js'
@@ -163,7 +164,18 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
     // Update search center (lat/lon from details)
     const [lat, lon] = track.details.trackLatLng
-    await store.setSearchCenter(lat, lon, { fly: false, skipHistory: true })
+
+    const currentLat = store.lat
+    const currentLon = store.lon
+    const radiusKm = store.radiusKm
+
+    // Compute distance from current search center
+    const distKm = haversineKm(currentLat, currentLon, lat, lon)
+
+    // Only update search center if track is far enough
+    if (distKm >= (radiusKm * 2/3)) {
+        await store.setSearchCenter(lat, lon, {fly: false, skipHistory: true})
+    }
 
     store.activate(trackId)
     store.activeTrackId = trackId
