@@ -7,6 +7,9 @@
 /*.wasm        /:splat             200
 /*.json        /:splat             200
 /*.map         /:splat             200
+/Cesium/*      /Cesium/:splat      200
 
-# Rewrite everything else to index.html
-/*            /index.html          200
+# Rewrite only SPA routes (no dots)
+# This prevents Netlify from creating a second history entry
+/[^.]*         /index.html         200
+
