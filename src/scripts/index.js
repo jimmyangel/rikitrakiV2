@@ -78,50 +78,46 @@ export default async function initApp() {
         )
     }
 
-    // --------------------------------------------------------
-    // Canonical popstate handler 
-    // --------------------------------------------------------
-    let lastPathname = window.location.pathname
+	// ---------------------------------------------
+	// popstate handler
+	// ---------------------------------------------
+	let lastPathname = window.location.pathname
 
-    window.addEventListener('popstate', async e => {
-        const state = e.state
-        const tracks = Alpine.store('tracks')
-        const currentPath = window.location.pathname
+	window.addEventListener('popstate', async e => {
 
-        const pathnameChanged = currentPath !== lastPathname
-        lastPathname = currentPath
+		const state = e.state || {}
+		const tracks = Alpine.store('tracks')
 
-        // If username path changed → exit track mode
-        if (pathnameChanged && tracks.activeTrackId) {
-            tracks.exitActiveTrack({ fromHistory: true })
-        }
+		const currentPath = window.location.pathname
+		lastPathname = currentPath
 
-        // Track mode restoration
-        if (state?.trackId) {
-            await tracks.openTrack(state.trackId, { fromHistory: true })
-            return
-        }
+		// 1. Track restoration always wins if state has a trackId
+		if (state.trackId) {
+			await tracks.openTrack(state.trackId, { fromHistory: true })
+			return
+		}
 
-        // Exit track mode if needed
-        if (tracks.activeTrackId) {
-            tracks.exitActiveTrack({ fromHistory: true })
-        }
+		// 2. If we're in track mode but state has no trackId, exit track mode
+		if (tracks.activeTrackId) {
+			tracks.exitActiveTrack({ fromHistory: true })
+		}
 
-        // Restore center
-        if (state?.center) {
-            await tracks.setSearchCenter(
-                state.center.lat,
-                state.center.lon,
-                { fromHistory: true }
-            )
-            return
-        }
+		// 3. Restore center if present
+		if (state.center) {
+			await tracks.setSearchCenter(
+				state.center.lat,
+				state.center.lon,
+				{ fromHistory: true }
+			)
+			return
+		}
 
-        // Default center
-        await tracks.setSearchCenter(
-            tracks.defaultLat,
-            tracks.defaultLon,
-            { fromHistory: true }
-        )
-    })
+		// 4. Default center
+		await tracks.setSearchCenter(
+			tracks.defaultLat,
+			tracks.defaultLon,
+			{ fromHistory: true }
+		)
+	})
+
 }

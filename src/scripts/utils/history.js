@@ -73,14 +73,37 @@ export function initFromUrl() {
 }
 
 export function setUsernamePath(username) {
-    const raw = decodeState()
-    const { url } = encodeState(raw)
+	console.log('setUsernamePath CALLED')
 
+    const prevState = history.state || {}
+
+    const url = new URL(window.location.href)
     url.pathname = username ? `/${username}` : '/'
+    url.searchParams.delete('trackId')
 
-    history.pushState(raw, '', url)
+    const newState = {
+        ...prevState,
+        username: username || null,
+        trackId: null
+    }
 
-    // Trigger your existing popstate-driven re-init
-    window.dispatchEvent(new PopStateEvent('popstate', { state: raw }))
+	console.log('setUsernamePath push', { newState, url: url.toString() })
+
+    // Exactly ONE new history entry
+    history.pushState(newState, '', url)
+
+    const tracks = Alpine.store('tracks')
+
+    if (tracks.activeTrackId) {
+        tracks.exitActiveTrack({ fromHistory: false })
+    }
+
+    tracks.reload()
 }
+
+
+
+
+
+
 
