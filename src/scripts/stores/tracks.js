@@ -89,7 +89,6 @@ async function reloadTracks(store, { fly = true } = {}) {
 }
 
 async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}) {
-    console.log('opentrack fromInit', fromInit)
     const store = Alpine.store('tracks')
     store.loadingTracks = true
 
@@ -286,8 +285,6 @@ export default function initTracksStore(Alpine) {
 
         registerAnimationFinishedCallback() {
             map.setOnAnimationFinished(() => {
-                console.log('animation finished')
-
                 this.animationFinished = true
 
                 const trackId = this.activeTrackId
@@ -410,7 +407,6 @@ export default function initTracksStore(Alpine) {
 
         exitActiveTrack({ fromHistory = false } = {}) {
             if (!this.activeTrackId) return
-            console.log('exit track from store')
 
             this.isPlaying = false
             this.isTrackInPlay = false
@@ -433,8 +429,6 @@ export default function initTracksStore(Alpine) {
             this.activeTrackId = null
 
             if (!fromHistory) { pushHistory({ trackId: null, center: null })}
-
-            console.log('exit track from store exit')
 
             map.flyToTrackDataSource()
         },
