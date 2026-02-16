@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components'
 import ErrorMessage from '../widgets/ErrorMessage.astro'
 ---
 
-<div class="userinfo-modal" x-data="userInfoModal()">
+<div class="userinfo-modal" x-data="userInfoModal">
     <div :class="{ modal: true, 'is-active': $store.ui.showUserInfoModal, 'modal-top': true }">
 
         <div class="modal-background" @click="$store.ui.showUserInfoModal = false"></div>
@@ -13,7 +13,9 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
             <!-- HEADER -->
             <header class="modal-card-head">
                 <div class="modal-card-title">
-                    <p class="is-size-5 mb-2"><span>Hi </span><span  x-text="$store.user.username"></span><span>!</span></p>
+                    <p class="is-size-5 mb-2">
+                        <span>Hi </span><span x-text="$store.user.username"></span><span>!</span>
+                    </p>
                     <p class="is-size-6 mr-2">
                         Update your password, change the page URL, or logout…
                     </p>
@@ -24,13 +26,16 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
             <!-- BODY -->
             <section class="modal-card-body">
+
                 <!-- CHANGE PASSWORD -->
                 <div class="field is-horizontal">
                     <label class="field-label is-normal">New password</label>
                     <div class="field-body">
                         <div class="field">
                             <div class="control">
-                                <input class="input" type="password"
+                                <input class="input"
+                                       :class="{ 'is-danger': errorField === 'newPassword' }"
+                                       type="password"
                                        placeholder="Enter new password"
                                        x-model="newPassword">
                             </div>
@@ -43,7 +48,9 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                     <div class="field-body">
                         <div class="field">
                             <div class="control">
-                                <input class="input" type="password"
+                                <input class="input"
+                                       :class="{ 'is-danger': errorField === 'confirmPassword' }"
+                                       type="password"
                                        placeholder="Re-enter new password"
                                        x-model="confirmPassword">
                             </div>
@@ -105,16 +112,16 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                         </div>
                     </div>
                 </div>
+
             </section>
 
+            <!-- FOOTER ERROR SLOT -->
             <footer class="modal-card-foot py-2">
-                <!-- ERROR MESSAGE -->
                 <div class="is-fullwidth" style="height: 68px;">
                     <template x-if="$store.user.error">
                         <ErrorMessage />
                     </template>
                 </div>
-
             </footer>
 
         </div>
@@ -138,57 +145,10 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
     }
 
     .userinfo-modal .field-label {
-        flex-basis: 4rem; 
+        flex-basis: 4rem;
     }
 
     .modal-card-foot .is-fullwidth {
         flex: 1 1 100%;
     }
-
 </style>
-
-<script is:inline>
-function userInfoModal() {
-    return {
-        newPassword: '',
-        confirmPassword: '',
-
-        init() {
-            this.$watch('$store.ui.showUserInfoModal', value => {
-                if (value) {
-                    this.clearForm()
-                }
-            })
-        },
-
-        clearForm() {
-            this.newPassword = ''
-            this.confirmPassword = ''
-            this.$store.user.error = null
-        },
-
-        async update() {
-            this.$store.user.error = null
-
-            if (!this.newPassword || !this.confirmPassword) {
-                this.$store.user.error = 'Please fill out both fields'
-                return
-            }
-
-            if (this.newPassword !== this.confirmPassword) {
-                this.$store.user.error = 'Passwords do not match'
-                return
-            }
-
-            const ok = await this.$store.user.changePassword(this.newPassword)
-
-            if (!ok) {
-                return
-            }
-
-            this.newPassword = ''
-            this.confirmPassword = ''
-        }
-    }
-}
-</script>
