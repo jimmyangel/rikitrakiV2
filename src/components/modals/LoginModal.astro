@@ -4,221 +4,235 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 ---
 
 <!-- Modal -->
-<div class="login-modal" x-data="loginModal()">
-    <div :class="{ modal: true, 'is-active': $store.ui.showLoginModal, 'modal-top': true }">
+<div x-data>
+	<div class="login-modal">
+ 		<div :class="{ modal: true, 'is-active': $store.ui.showLoginModal, 'modal-top': true }">
 
-        <div class="modal-background" @click="$store.ui.showLoginModal = false"></div>
+        	<div class="modal-background" @click="$store.ui.showLoginModal = false"></div>
 
-        <div class="modal-card">
+			<div class="modal-card" x-data="loginModal">
 
-            <header class="modal-card-head">
-                <div class="modal-card-title"> 
-                    <p class="is-size-5 mb-2">Welcome to RikiTraki</p>
-                    <p class="is-size-6 mr-2">
-                        Please login if you wish to upload your own tracks and photos...
-                    </p>
-                </div>
-                <button class="delete" aria-label="close"
-                        @click="$store.ui.showLoginModal = false"></button>
-            </header>
+				<header class="modal-card-head">
+					<div class="modal-card-title"> 
+						<p class="is-size-5 mb-2">Welcome to RikiTraki</p>
+						<p class="is-size-6 mr-2">
+							Please login if you wish to upload your own tracks and photos...
+						</p>
+					</div>
+					<button class="delete" aria-label="close"
+							@click="$store.ui.showLoginModal = false"></button>
+				</header>
 
-            <section class="modal-card-body">
+				<section class="modal-card-body">
 
-                <!-- TABS -->
-                <div class="tabs is-boxed">
-                    <ul>
-                        <li :class="{ 'is-active': tab === 'login' }">
-                            <a @click="tab = 'login'">Login</a>
-                        </li>
-                        <li :class="{ 'is-active': tab === 'register' }">
-                            <a @click="tab = 'register'">...or register</a>
-                        </li>
-                    </ul>
-                </div>
+					<!-- TABS -->
+					<div class="tabs is-boxed">
+						<ul>
+							<li :class="{ 'is-active': tab === 'login' }">
+								<a @click="tab = 'login'">Login</a>
+							</li>
+							<li :class="{ 'is-active': tab === 'register' }">
+								<a @click="tab = 'register'">...or register</a>
+							</li>
+						</ul>
+					</div>
 
-                <!-- LOGIN FORM -->
-                <div x-show="tab === 'login'">
-                    <div> <!-- neutral wrapper -->
+					<!-- LOGIN FORM -->
+					<div x-show="tab === 'login'">
+						<div> <!-- neutral wrapper -->
 
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Username</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="text"
-                                               placeholder="Your username"
-                                               x-model="username">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+							<!-- USERNAME -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Username</label>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<input class="input"
+												type="text"
+												placeholder="Your username"
+												x-model="username">
+										</div>
+									</div>
+								</div>
+							</div>
 
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Password</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="password"
-                                               placeholder="Your password"
-                                               x-model="password">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+							<!-- PASSWORD -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Password</label>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<input class="input"
+												type="password"
+												placeholder="Your password"
+												x-model="password">
+										</div>
+									</div>
+								</div>
+							</div>
 
-                        <div class="field is-horizontal">
-                            <div class="field-label"></div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <button class="button"
-                                                @click="login()">
-                                            Login
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+							<!-- LOGIN BUTTON -->
+							<div class="field is-horizontal">
+								<div class="field-label"></div>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<button class="button"
+													@click="login()">
+												Login
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
 
-                        <hr>
+							<hr>
 
-                        <div class="field is-horizontal">
-                            <div class="field-label"></div>
-                            <div class="field-body">
-                                <div class="field">
-									<p class="is-size-6 mb-2">
-										Forgot your username or password?  
-									</p>
-                                </div>
-                            </div>
-                        </div>
+							<!-- RESET SECTION -->
+							<div class="field is-horizontal">
+								<div class="field-label"></div>
+								<div class="field-body">
+									<div class="field">
+										<p class="is-size-6 mb-2">
+											Forgot your username or password?
+										</p>
+									</div>
+								</div>
+							</div>
 
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Email</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="text"
-                                               placeholder="Your email"
-                                               x-model="email">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+							<!-- RESET EMAIL -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Email</label>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<input class="input"
+												:class="{ 'is-danger': errorField === 'email' }"
+												x-model="email">
+										</div>
+									</div>
+								</div>
+							</div>
 
-                        <div class="field is-horizontal">
-                            <div class="field-label"></div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <button class="button"
-                                                @click="reset()">
-                                            Reset
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+							<!-- RESET BUTTON -->
+							<div class="field is-horizontal">
+								<div class="field-label"></div>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<button class="button"
+													@click="reset()">
+												Reset
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
 
-                <!-- REGISTER FORM -->
-                <div x-show="tab === 'register'">
-                    <div> <!-- neutral wrapper -->
+						</div>
+					</div>
 
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Username</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="text" placeholder="Choose a username">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Email</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="email" placeholder="Your email">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+					<!-- REGISTER FORM -->
+					<div x-show="tab === 'register'">
+						<div>
 
-						<div class="field is-horizontal">
-                            <label class="field-label is-normal"></label>
-                            <div class="field-body">
-                                <div class="field">
-									<p class="is-size-6 mb-2">
-										We will not send you spam nor share your email address. 
-									</p>
-                                </div>
-                            </div>
-                        </div>
+							<!-- USERNAME -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Username</label>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<input class="input"
+												:class="{ 'is-danger': errorField === 'regUsername' }"
+												type="text"
+												placeholder="Choose a username"
+												x-model="regUsername">
+										</div>
+									</div>
+								</div>
+							</div>
 
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Password</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="password" placeholder="Choose a password">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+							<!-- EMAIL -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Email</label>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<input class="input"
+												:class="{ 'is-danger': errorField === 'regEmail' }"
+												type="email"
+												placeholder="Your email"
+												x-model="regEmail">
+										</div>
+									</div>
+								</div>
+							</div>
 
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Re-enter password</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="password" placeholder="Re-enter password">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+							<!-- PASSWORD -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Password</label>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<input class="input"
+												:class="{ 'is-danger': errorField === 'regPassword' }"
+												type="password"
+												placeholder="Choose a password"
+												x-model="regPassword">
+										</div>
+									</div>
+								</div>
+							</div>
 
-						<div class="field is-horizontal">
-                            <label class="field-label is-normal"></label>
-                            <div class="field-body">
-                                <div class="field">
-									<p class="is-size-6 mb-2">
-										By registering you agree to upload only GPX files and photos that you own, and you agree to release all the content you upload into the <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">public domain</a>.
-									</p>
-                                </div>
-                            </div>
-                        </div>
+							<!-- REPASSWORD -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Re-enter password</label>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<input class="input"
+												:class="{ 'is-danger': errorField === 'regRepassword' }"
+												type="password"
+												placeholder="Re-enter password"
+												x-model="regRepassword">
+										</div>
+									</div>
+								</div>
+							</div>
 
-                        <div class="field is-horizontal">
-                            <div class="field-label"></div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <button class="button">Register</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+							<!-- REGISTER BUTTON -->
+							<div class="field is-horizontal">
+								<div class="field-label"></div>
+								<div class="field-body">
+									<div class="field">
+										<div class="control">
+											<button class="button"
+													@click="register()">
+												Register
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
 
-                    </div>
-                </div>
+						</div>
+					</div>
 
-            </section>
+				</section>
 
-            <footer class="modal-card-foot py-2">
-                <!-- ERROR MESSAGE -->
-                <div class="is-fullwidth" style="height: 68px;">
-                    <template x-if="$store.user.error">
-                        <ErrorMessage />
-                    </template>
-                </div>
+				<footer class="modal-card-foot py-2">
+					<!-- ERROR MESSAGE -->
+					<div class="is-fullwidth" style="height: 68px;">
+						<template x-if="$store.user.error">
+							<ErrorMessage />
+						</template>
+					</div>
 
-            </footer>
-        </div>
-    </div>
+				</footer>
+			</div>
+    	</div>
+	</div>
 </div>
 
 <style>
@@ -248,43 +262,6 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
 </style>
 
-<script is:inline>
-	function loginModal() {
-		return {
-			tab: 'login',
-			username: '',
-			password: '',
-			email: '', 
 
-			init() {
-				this.$watch('$store.ui.showLoginModal', value => {
-					if (value) {
-						this.clearForm()
-					}
-				})
-			},
 
-			clearForm() {
-				this.tab = 'login'
-				this.username = ''
-				this.password = ''
-				this.email = ''
-				this.$store.user.error = null
-			},
-
-			async login() {
-				const ok = await this.$store.user.login(this.username, this.password)
-
-				if (ok) {
-					this.$store.ui.showLoginModal = false
-				}
-			},
-
-			async reset() {
-				console.log('reset')
-			}
-		}
-	}
-
-</script>
 
