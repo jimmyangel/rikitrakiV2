@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components'
 import ErrorMessage from '../widgets/ErrorMessage.astro'
+import InfoMessage from '../widgets/InfoMessage.astro'
 ---
 
 <!-- Modal -->
@@ -244,14 +245,21 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 				</section>
 
 				<footer class="modal-card-foot py-2">
-					<!-- ERROR MESSAGE -->
 					<div class="is-fullwidth" style="height: 68px;">
+
+						<!-- ERROR -->
 						<template x-if="$store.user.error">
 							<ErrorMessage />
 						</template>
-					</div>
 
+						<!-- INFO -->
+						<template x-if="$store.ui.info">
+							<InfoMessage />
+						</template>
+
+					</div>
 				</footer>
+
 			</div>
     	</div>
 	</div>

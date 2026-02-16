@@ -60,10 +60,19 @@ export default function (Alpine) {
             if (ok) this.$store.ui.showLoginModal = false
         },
 
-        async reset() {
-            if (!validateAll('reset', this)) return
-            await this.$store.user.resetPassword(this.email)
-        },
+		async reset() {
+			if (!validateAll('reset', this)) return
+
+			const ok = await this.$store.user.reset(this.email)
+
+			if (ok) {
+				this.$store.ui.showInfo('Reset email sent')
+
+				setTimeout(() => {
+					this.$store.ui.showLoginModal = false
+				}, 2000)
+			}
+		},
 
         async register() {
             if (!validateAll('register', this)) return

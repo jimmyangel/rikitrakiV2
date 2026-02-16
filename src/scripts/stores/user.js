@@ -1,4 +1,5 @@
 import { getToken } from '../data/getToken.js'
+import { getResetToken } from '../data/getResetToken.js'
 import { setUsernamePath } from '../utils/history.js'
 
 export default function initUserStore(Alpine) {
@@ -8,6 +9,7 @@ export default function initUserStore(Alpine) {
         username: null,
         token: null,
         error: null,
+		info: null,
 
         //
         // Derived state
@@ -88,5 +90,19 @@ export default function initUserStore(Alpine) {
 		removeUsernameFromUrl() {
 			setUsernamePath(null)
 		},
+
+		async reset(email) {
+			this.error = null
+
+			const result = await getResetToken(email)
+
+			if (!result.ok) {
+				this.error = result.error
+				return false
+			}
+
+			return true
+		}
+
     })
 }
