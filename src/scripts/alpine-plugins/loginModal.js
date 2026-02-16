@@ -23,7 +23,6 @@ export default function (Alpine) {
 		errorField: null,
 
         init() {
-			console.log('loginModal plugin init')
             this.$watch('$store.ui.showLoginModal', value => {
                 if (value) this.clearForm()
             })
@@ -38,7 +37,7 @@ export default function (Alpine) {
             this.regEmail = ''
             this.regPassword = ''
             this.regRepassword = ''
-			
+
             this.$store.user.error = null
 			this.errorField = null
         },
