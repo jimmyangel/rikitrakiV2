@@ -2,7 +2,8 @@ import {
     validateEmail,
     validateUsername,
     validatePassword,
-    validateRepassword
+    validateRepassword,
+	validateAll
 } from '../utils/validation.js'
 
 export default function (Alpine) {
@@ -37,6 +38,7 @@ export default function (Alpine) {
             this.regEmail = ''
             this.regPassword = ''
             this.regRepassword = ''
+			
             this.$store.user.error = null
 			this.errorField = null
         },
@@ -53,25 +55,6 @@ export default function (Alpine) {
             }
         },
 
-		validateAll(formName) {
-			const rules = this.validators[formName]
-
-			for (const field in rules) {
-				const value = this[field]
-				const error = rules[field](value, this)
-
-				if (error) {
-					this.$store.user.error = error
-					this.errorField = field
-					return false
-				}
-			}
-
-			this.$store.user.error = null
-			this.errorField = null
-			return true
-		},
-
         async login() {
             this.$store.user.error = null
             const ok = await this.$store.user.login(this.username, this.password)
@@ -79,12 +62,12 @@ export default function (Alpine) {
         },
 
         async reset() {
-            if (!this.validateAll('reset')) return
+            if (!validateAll('reset', this)) return
             await this.$store.user.resetPassword(this.email)
         },
 
         async register() {
-            if (!this.validateAll('register')) return
+            if (!validateAll('register', this)) return
             await this.$store.user.register(
                 this.regUsername,
                 this.regEmail,

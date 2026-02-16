@@ -28,3 +28,22 @@ export function validateRepassword(value, form) {
     }
     return null
 }
+
+export function validateAll(formName, component) {
+    const rules = component.validators[formName]
+
+    for (const field in rules) {
+        const value = component[field]
+        const error = rules[field](value, component)
+
+        if (error) {
+            component.$store.user.error = error
+            component.errorField = field
+            return false
+        }
+    }
+
+    component.$store.user.error = null
+    component.errorField = null
+    return true
+}
