@@ -33,12 +33,12 @@ export default function initUserStore(Alpine) {
         // Actions
         //
         async login(username, password) {
-            this.error = null
+            Alpine.store('ui').error = null
 
             const { token, error } = await getToken(username, password)
 
             if (error) {
-                this.error = error
+                Alpine.store('ui').error = error
                 return false
             }
 
@@ -64,13 +64,13 @@ export default function initUserStore(Alpine) {
         // Change password (placeholder backend call)
         //
         async changePassword(newPassword) {
-            this.error = null
+            Alpine.store('ui').error = null
 
             // TODO: real backend call
             const ok = false // placeholder
 
             if (!ok) {
-                this.error = 'Password update failed'
+                Alpine.store('ui').error = 'Password update failed'
                 return false
             }
 
@@ -90,12 +90,12 @@ export default function initUserStore(Alpine) {
 		},
 
 		async reset(email) {
-			this.error = null
+			Alpine.store('ui').error = null
 
 			const result = await getResetToken(email)
 
 			if (!result.ok) {
-				this.error = result.error
+				Alpine.store('ui').error = result.error
 				return false
 			}
 
