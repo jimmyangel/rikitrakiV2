@@ -21,7 +21,7 @@ export default function (Alpine) {
             this.newPassword = ''
             this.confirmPassword = ''
 
-            this.$store.user.error = null
+            this.$store.ui.error = null
             this.errorField = null
         },
 

@@ -38,7 +38,7 @@ export default function (Alpine) {
             this.regPassword = ''
             this.regRepassword = ''
 
-            this.$store.user.error = null
+            this.$store.ui.error = null
 			this.errorField = null
         },
 
@@ -55,7 +55,7 @@ export default function (Alpine) {
         },
 
         async login() {
-            this.$store.user.error = null
+            this.$store.ui.error = null
             const ok = await this.$store.user.login(this.username, this.password)
             if (ok) this.$store.ui.showLoginModal = false
         },

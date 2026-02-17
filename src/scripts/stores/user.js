@@ -8,8 +8,6 @@ export default function initUserStore(Alpine) {
 
         username: null,
         token: null,
-        error: null,
-		info: null,
 
         //
         // Derived state

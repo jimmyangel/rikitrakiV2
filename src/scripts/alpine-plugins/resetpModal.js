@@ -55,7 +55,7 @@ export default function (Alpine) {
 
 			if (!this.username || !this.token) {
 				this.errorField = 'newPassword'
-				this.errors.newPassword = 'Invalid or missing reset token'
+				this.$store.ui.error  = 'Invalid or missing reset token'
 				return
 			}
 
@@ -66,8 +66,9 @@ export default function (Alpine) {
 			)
 
 			if (!result.ok) {
+				console.log('error detected', result.error)
 				this.errorField = 'newPassword'
-				this.errors.newPassword = result.error
+				this.$store.ui.error = result.error
 				return
 			}
 

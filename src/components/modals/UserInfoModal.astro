@@ -118,7 +118,7 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
             <!-- FOOTER ERROR SLOT -->
             <footer class="modal-card-foot py-2">
                 <div class="is-fullwidth" style="height: 68px;">
-                    <template x-if="$store.user.error">
+                    <template x-if="$store.ui.error">
                         <ErrorMessage />
                     </template>
                 </div>
