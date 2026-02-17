@@ -37,14 +37,10 @@ export default function (Alpine) {
 
 		validators: {
 			reset: {
-				newPassword(value) {
-					return validatePassword(value)
-				},
+				newPassword: validatePassword,
 
 				confirmPassword(value, state) {
-					return validateRepassword(value, {
-						regPassword: state.newPassword
-					})
+					return validateRepassword(value, { regPassword: state.newPassword })
 				}
 			}
 		},

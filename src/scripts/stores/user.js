@@ -1,6 +1,7 @@
 import { getToken } from '../data/getToken.js'
 import { getResetToken } from '../data/getResetToken.js'
 import { updateUserProfile } from '../data/updateUserProfile.js'
+import { createUser } from '../data/createUser.js'
 import { setUsernamePath } from '../utils/history.js'
 
 export default function initUserStore(Alpine) {
@@ -112,7 +113,26 @@ export default function initUserStore(Alpine) {
 			}
 
 			return true
-		}
+		},
 
+		async register(username, email, password) {
+			// Clear UI errors
+			Alpine.store('ui').error = null
+
+			// Build return URL (same as reset flow)
+			const rturl = window.location.origin + '/'
+
+			// Call backend
+			const result = await createUser(username, email, password, rturl)
+
+			// Handle failure
+			if (!result.ok) {
+				Alpine.store('ui').error = result.error
+				return false
+			}
+
+			// Success
+			return true
+		}
     })
 }

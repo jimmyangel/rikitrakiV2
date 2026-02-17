@@ -50,7 +50,9 @@ export default function (Alpine) {
                 regUsername: validateUsername,
                 regEmail: validateEmail,
                 regPassword: validatePassword,
-                regRepassword: validateRepassword
+				regRepassword(value, state) {
+					return validateRepassword(value, { regPassword: state.regPassword })
+				}
             }
         },
 
@@ -74,14 +76,26 @@ export default function (Alpine) {
 			}
 		},
 
-        async register() {
-            if (!validateAll('register', this)) return
-            await this.$store.user.register(
-                this.regUsername,
-                this.regEmail,
-                this.regPassword
-            )
-        }
+		async register() {
+			if (!validateAll('register', this)) return
+
+			const ok = await this.$store.user.register(
+				this.regUsername,
+				this.regEmail,
+				this.regPassword
+			)
+
+			if (ok) {
+				this.$store.ui.showInfo(
+					'Welcome to RikiTraki! Check your email to activate your account.'
+				)
+
+				setTimeout(() => {
+					this.$store.ui.showLoginModal = false
+				}, 3000)
+			}
+		}
+
 
     }))
 }

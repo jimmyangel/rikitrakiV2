@@ -19,6 +19,7 @@ export default function (Alpine) {
         },
 
         clearForm() {
+			this.currentPassword = ''
             this.newPassword = ''
             this.confirmPassword = ''
 
