@@ -1,6 +1,6 @@
 import { constants } from '../config.js'
 
-export async function updateUserProfile(username, token, newPassword) {
+export async function updateUserPassword(username, token, newPassword) {
     const url = `${constants.APIV2_BASE_URL}/users/${username}`
 
     try {

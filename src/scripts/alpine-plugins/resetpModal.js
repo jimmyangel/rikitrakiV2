@@ -1,6 +1,6 @@
 
 import { validatePassword, validateRepassword, validateAll } from '../utils/validation.js'
-import { updateUserProfile } from '../data/updateUserProfile.js'
+import { updateUserPassword } from '../data/updateUserPassword.js'
 
 const params = new URLSearchParams(window.location.search)
 const RESET_USERNAME = params.get('username')
@@ -59,7 +59,7 @@ export default function (Alpine) {
 				return
 			}
 
-			const result = await updateUserProfile(
+			const result = await updateUserPassword(
 				this.username,
 				this.token,
 				this.newPassword
