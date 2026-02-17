@@ -34,7 +34,11 @@ import '../styles/index.scss'
 				</header>
 
 				<!-- BODY -->
-				<section x-show="!success" class="modal-card-body">
+				<section x-show="invalidLink" class="modal-card-body" x-transition.opacity>
+					<p class="has-text-centered" style="font-size: 1.2rem; margin-top: 1rem;"> This password reset link is invalid.<br> Please request a new one from RikiTraki. 
+					</p> 
+				</section>
+				<section x-show="!invalidLink && !success" class="modal-card-body">
 
 					<!-- NEW PASSWORD -->
 					<div class="field is-horizontal">

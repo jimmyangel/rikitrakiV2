@@ -1,57 +1,79 @@
 
 import { validatePassword, validateRepassword, validateAll } from '../utils/validation.js'
+import { updateUserProfile } from '../data/updateUserProfile.js'
+
+const params = new URLSearchParams(window.location.search)
+const RESET_USERNAME = params.get('username')
+const RESET_TOKEN = params.get('token')
+
+const cleanUrl = window.location.origin + window.location.pathname
+window.history.replaceState({}, '', cleanUrl)
 
 export default function (Alpine) {
-		Alpine.data('resetpModal', () => ({
+    Alpine.data('resetpModal', () => ({
 
-			// STATE
-			modalOpen: true,
-			showCard: false,
+        modalOpen: true,
+        showCard: false,
 
-			newPassword: '',
-			confirmPassword: '',
-			errorField: null,
+        newPassword: '',
+        confirmPassword: '',
+        errorField: null,
+        success: false,
+		invalidLink: false,
 
-			success: false,
+        // Use the captured values
+        username: RESET_USERNAME,
+        token: RESET_TOKEN,
 
-			// These will eventually come from URL params
-			username: null,
-			token: null,
+		init() {
+			setTimeout(() => {
+				this.showCard = true
+			}, 10)
 
-			// INIT
-			init() {
-				// Trigger slide‑down animation
-				setTimeout(() => {
-					this.showCard = true
-				}, 10)
-
-				// Placeholder: parse URL params later
-				// const params = new URLSearchParams(window.location.search)
-				// this.username = params.get('username')
-				// this.token = params.get('token')
-			},
-
-			validators: {
-				reset: {
-					newPassword(value) {
-						return validatePassword(value)
-					},
-
-					confirmPassword(value, state) {
-						return validateRepassword(value, {
-							regPassword: state.newPassword
-						})
-					}
-				}
-			},
-
-			reset() {
-				console.log('validate first')
-				if (!validateAll('reset', this)) return
-				console.log('success')
-				this.success = true
+			if (!this.username || !this.token)	{ 
+				this.invalidLink = true 
 			}
 
-	}))
+			console.log('Reset params:', this.username, this.token)
+		},
 
+		validators: {
+			reset: {
+				newPassword(value) {
+					return validatePassword(value)
+				},
+
+				confirmPassword(value, state) {
+					return validateRepassword(value, {
+						regPassword: state.newPassword
+					})
+				}
+			}
+		},
+
+		async reset() {
+			if (this.invalidLink) return
+			if (!validateAll('reset', this)) return
+
+			if (!this.username || !this.token) {
+				this.errorField = 'newPassword'
+				this.errors.newPassword = 'Invalid or missing reset token'
+				return
+			}
+
+			const result = await updateUserProfile(
+				this.username,
+				this.token,
+				this.newPassword
+			)
+
+			if (!result.ok) {
+				this.errorField = 'newPassword'
+				this.errors.newPassword = result.error
+				return
+			}
+
+			this.success = true
+		}
+	}))
 }
