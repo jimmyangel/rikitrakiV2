@@ -33,8 +33,6 @@ export default function (Alpine) {
 			if (!this.username || !this.token)	{ 
 				this.invalidLink = true 
 			}
-
-			console.log('Reset params:', this.username, this.token)
 		},
 
 		validators: {
