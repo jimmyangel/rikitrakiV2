@@ -10,7 +10,7 @@ export default  function initStores(Alpine) {
 	Alpine.plugin(descWidth)
 	Alpine.plugin(loginModal)
 	Alpine.plugin(userInfoModal)
+	initUiStore(Alpine)
 	initTracksStore(Alpine)
 	initUserStore(Alpine)
-	initUiStore(Alpine)
 }

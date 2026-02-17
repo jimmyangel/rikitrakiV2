@@ -66,12 +66,12 @@ export default function (Alpine) {
 			)
 
 			if (!result.ok) {
-				console.log('error detected', result.error)
 				this.errorField = 'newPassword'
 				this.$store.ui.error = result.error
 				return
 			}
 
+			this.$store.ui.error = null
 			this.success = true
 		}
 	}))
