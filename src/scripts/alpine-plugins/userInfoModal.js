@@ -7,7 +7,8 @@ import {
 export default function (Alpine) {
     Alpine.data('userInfoModal', () => ({
 
-        newPassword: '',
+        currentPassword: '',
+		newPassword: '',
         confirmPassword: '',
         errorField: null,
 
@@ -25,26 +26,41 @@ export default function (Alpine) {
             this.errorField = null
         },
 
-        validators: {
-            update: {
-                newPassword: validatePassword,
+		validators: {
+			update: {
+				currentPassword(value) {
+					if (!value) return 'Current password is required'
+					return null
+				},
 
-                confirmPassword(value, state) {
-                    return validateRepassword(value, {
-                        regPassword: state.newPassword
-                    })
-                }
-            }
-        },
+				newPassword: validatePassword,
 
-        async update() {
-            if (!validateAll('update', this)) return
+				confirmPassword(value, state) {
+					return validateRepassword(value, {
+						regPassword: state.newPassword
+					})
+				}
+			}
+		},
 
-            const ok = await this.$store.user.changePassword(this.newPassword)
-            if (!ok) return
+		async update() {
+			if (!validateAll('update', this)) return
 
-            this.clearForm()
-        }
+			const result = await this.$store.user.changePassword(
+				this.currentPassword,
+				this.newPassword
+			)
+
+			if (!result.ok) return
+
+			this.$store.ui.showInfo('Your password has been updated')
+
+			this.clearForm()
+
+			setTimeout(() => {
+				this.$store.ui.showUserInfoModal = false
+			}, 2000)
+		}
 
     }))
 }

@@ -1,6 +1,8 @@
 ---
 import { Icon } from 'astro-icon/components'
 import ErrorMessage from '../widgets/ErrorMessage.astro'
+import InfoMessage from '../widgets/InfoMessage.astro'
+
 ---
 
 <div class="userinfo-modal" x-data="userInfoModal">
@@ -29,30 +31,45 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 
                 <!-- CHANGE PASSWORD -->
                 <div class="field is-horizontal">
-                    <label class="field-label is-normal">New password</label>
+                    <label class="field-label is-normal">Current password</label>
                     <div class="field-body">
                         <div class="field">
                             <div class="control">
                                 <input class="input"
-                                       :class="{ 'is-danger': errorField === 'newPassword' }"
-                                       type="password"
-                                       placeholder="Enter new password"
-                                       x-model="newPassword">
+                                    :class="{ 'is-danger': errorField === 'currentPassword' }"
+                                    type="password"
+                                    placeholder="Enter current password"
+                                    x-model="currentPassword">
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="field is-horizontal">
-                    <label class="field-label is-normal">Re-enter</label>
+                    <label class="field-label is-normal">New password</label>
                     <div class="field-body">
                         <div class="field">
                             <div class="control">
                                 <input class="input"
-                                       :class="{ 'is-danger': errorField === 'confirmPassword' }"
-                                       type="password"
-                                       placeholder="Re-enter new password"
-                                       x-model="confirmPassword">
+                                    :class="{ 'is-danger': errorField === 'newPassword' }"
+                                    type="password"
+                                    placeholder="Enter new password"
+                                    x-model="newPassword">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field is-horizontal">
+                    <label class="field-label is-normal">Re-enter password</label>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input"
+                                    :class="{ 'is-danger': errorField === 'confirmPassword' }"
+                                    type="password"
+                                    placeholder="Re-enter new password"
+                                    x-model="confirmPassword">
                             </div>
                         </div>
                     </div>
@@ -120,6 +137,9 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
                 <div class="is-fullwidth" style="height: 68px;">
                     <template x-if="$store.ui.error">
                         <ErrorMessage />
+                    </template>
+                    <template x-if="$store.ui.info">
+                        <InfoMessage />
                     </template>
                 </div>
             </footer>

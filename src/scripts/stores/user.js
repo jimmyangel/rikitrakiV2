@@ -1,5 +1,6 @@
 import { getToken } from '../data/getToken.js'
 import { getResetToken } from '../data/getResetToken.js'
+import { updateUserProfile } from '../data/updateUserProfile.js'
 import { setUsernamePath } from '../utils/history.js'
 
 export default function initUserStore(Alpine) {
@@ -60,22 +61,33 @@ export default function initUserStore(Alpine) {
             localStorage.removeItem('rikitraki-token')
         },
 
-        //
-        // Change password (placeholder backend call)
-        //
-        async changePassword(newPassword) {
-            Alpine.store('ui').error = null
+		async changePassword(currentPassword, newPassword) {
+			// Clear UI errors
+			Alpine.store('ui').error = null
 
-            // TODO: real backend call
-            const ok = false // placeholder
+			// Must be logged in
+			if (!this.username) {
+				const msg = 'Not logged in'
+				Alpine.store('ui').error = msg
+				return { ok: false, error: msg }
+			}
 
-            if (!ok) {
-                Alpine.store('ui').error = 'Password update failed'
-                return false
-            }
+			// Call backend
+			const result = await updateUserProfile(
+				this.username,
+				currentPassword,
+				newPassword
+			)
 
-            return true
-        },
+			// Handle failure
+			if (!result.ok) {
+				Alpine.store('ui').error = result.error
+				return result
+			}
+
+			// Success
+			return { ok: true }
+		},
 
         //
         // Canonical URL username handling
