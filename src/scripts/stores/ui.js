@@ -1,0 +1,14 @@
+export default function initUiStore(Alpine) {
+	Alpine.store('ui', {
+		showSearchCenterModal: false,
+		showLoginModal: false,
+		showUserInfoModal: false,
+		showInfo(message, duration = 2000) {
+			this.info = message
+
+			setTimeout(() => {
+				this.info = null
+			}, duration)
+		}
+	})
+}

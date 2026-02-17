@@ -1,0 +1,183 @@
+---
+import { Icon } from 'astro-icon/components'
+import ErrorMessage from '../components/widgets/ErrorMessage.astro'
+import InfoMessage from '../components/widgets/InfoMessage.astro'
+import Logo from '../components/widgets/Logo.astro'
+import '../styles/index.scss'
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Reset Password</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+
+	<body>
+		<div class="resetp-modal" x-cloak x-data="resetpModal" x-init="init()">
+			<div :class="{ modal: true, 'is-active': modalOpen, 'modal-top': true }">
+
+				<div class="modal-background"></div>
+
+				<div class="modal-card" :class="{ 'is-visible': showCard }">
+
+				<!-- HEADER -->
+				<header class="modal-card-head">
+					<div class="modal-card-title is-flex is-align-items-center">
+					<Logo style="height: 32px; margin-right: 0.75rem;" />
+					<div>
+						<p class="is-size-5 mb-1">Reset your password</p>
+						<p class="is-size-6">Enter your new password below…</p>
+					</div>
+					</div>
+				</header>
+
+				<!-- BODY -->
+				<section x-show="!success" class="modal-card-body">
+
+					<!-- NEW PASSWORD -->
+					<div class="field is-horizontal">
+					<label class="field-label is-normal">New password</label>
+					<div class="field-body">
+						<div class="field">
+						<div class="control">
+							<input class="input"
+								:class="{ 'is-danger': errorField === 'password' }"
+								type="password"
+								placeholder="Enter new password"
+								x-model="newPassword">
+						</div>
+						</div>
+					</div>
+					</div>
+
+					<!-- CONFIRM PASSWORD -->
+					<div class="field is-horizontal">
+					<label class="field-label is-normal">Re-enter</label>
+					<div class="field-body">
+						<div class="field">
+						<div class="control">
+							<input class="input"
+								:class="{ 'is-danger': errorField === 'confirm' }"
+								type="password"
+								placeholder="Re-enter new password"
+								x-model="confirmPassword">
+						</div>
+						</div>
+					</div>
+					</div>
+
+					<!-- SUBMIT BUTTON -->
+					<div class="field is-horizontal">
+					<div class="field-label"></div>
+					<div class="field-body">
+						<div class="field">
+						<div class="control">
+							<button class="button" @click="reset()">
+							Reset password
+							</button>
+						</div>
+						</div>
+					</div>
+					</div>
+
+				</section>
+				<section x-show="success" class="modal-card-body" x-transition.opacity>
+					<p class="has-text-centered" style="font-size: 1.2rem; margin-top: 1rem;">
+						Your password has been reset.<br>
+						You can now return to RikiTraki and log in using your new password.
+					</p>
+				</section>
+
+				<!-- FOOTER ERROR/INFO SLOT -->
+				<footer class="modal-card-foot py-2">
+					<div class="is-fullwidth" style="height: 68px;">
+
+					<!-- ERROR -->
+					<template x-if="$store.user.error">
+						<ErrorMessage />
+					</template>
+
+					<!-- INFO -->
+					<template x-if="$store.ui.info">
+						<InfoMessage />
+					</template>
+
+					</div>
+				</footer>
+
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+
+<script>
+	import resetpModalModal from '../scripts/alpine-plugins/resetpModal.js'
+	import initUserStore from '../scripts/stores/user.js'
+	import initUiStore from '../scripts/stores/ui.js'
+	document.addEventListener('alpine:init', () => {
+		initUserStore(Alpine)
+		initUiStore(Alpine)
+        Alpine.plugin(resetpModalModal)
+    })
+</script>
+
+<style>
+    .modal.modal-top.is-active {
+        display: flex !important;
+        align-items: flex-start;
+    }
+
+    .modal.modal-top .modal-card {
+        margin: 1.5rem auto 0 auto;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+
+    .modal-card-head .modal-card-title {
+        flex: 1 1 auto;
+        white-space: normal;
+    }
+
+    .resetp-modal .field-label {
+        flex-basis: 4rem;
+    }
+
+    .modal-card-foot .is-fullwidth {
+        flex: 1 1 100%;
+    }
+
+    /* slide‑down + fade‑in */
+    .modal.modal-top.is-active .modal-card {
+        transform: translateY(-40px);
+        opacity: 0;
+        transition: transform .5s ease, opacity .5s ease;
+    }
+
+    .modal.modal-top.is-active .modal-card.is-visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+	:global(.resetp-modal svg [style*="stroke:#fff"]) {
+		stroke: #000 !important;
+	}
+
+	:global(.resetp-modal svg [style*="fill:#fff"]) {
+		fill: #000 !important;
+	}
+
+	:global(.resetp-modal svg [style*="fill:#ffffff"]) {
+		fill: #000 !important;
+	}
+
+	:global(.resetp-modal .logo) {
+		max-height: 80px;
+		margin-top: -10px;
+		margin-left: -30px;
+	}
+
+</style>
+

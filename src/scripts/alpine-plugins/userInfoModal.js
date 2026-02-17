@@ -20,7 +20,7 @@ export default function (Alpine) {
         clearForm() {
             this.newPassword = ''
             this.confirmPassword = ''
-			
+
             this.$store.user.error = null
             this.errorField = null
         },
