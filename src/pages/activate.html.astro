@@ -1,0 +1,152 @@
+---
+import { Icon } from 'astro-icon/components'
+import ErrorMessage from '../components/widgets/ErrorMessage.astro'
+import InfoMessage from '../components/widgets/InfoMessage.astro'
+import Logo from '../components/widgets/Logo.astro'
+import '../styles/index.scss'
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Activate Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body>
+    <div class="activate-modal" x-cloak x-data="activateModal">
+        <div :class="{ modal: true, 'is-active': modalOpen, 'modal-top': true }">
+
+            <div class="modal-background"></div>
+
+            <div class="modal-card" :class="{ 'is-visible': showCard }">
+
+                <!-- HEADER -->
+                <header class="modal-card-head">
+                    <div class="modal-card-title is-flex is-align-items-center">
+                        <Logo style="height: 32px; margin-right: 0.75rem;" />
+                        <div>
+                            <p class="is-size-5 mb-3 has-text-weight-semibold">
+                                <span>Hi </span><span x-text="username"></span><span>!</span>
+                            </p>
+                            <p class="is-size-5">Activate your account...</p>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- INVALID LINK -->
+                <section x-show="invalidLink" class="modal-card-body" x-transition.opacity>
+                    <p class="has-text-centered" style="font-size: 1.2rem; margin-top: 1rem;">
+                        This activation link is invalid.
+                    </p>
+                </section>
+
+                <!-- ACTIVATION FORM -->
+                <section x-show="!invalidLink && !success" class="modal-card-body" x-transition.opacity>
+                    <p class="has-text-centered" style="font-size: 1.2rem; margin-bottom: 2rem;">
+                        Welcome to RikiTraki.<br>
+                        Press the button below to activate your account and log in.
+                    </p>
+
+                    <div class="is-flex is-justify-content-center">
+                        <button class="button is-medium" @click="activate()">
+                            Activate
+                        </button>
+                    </div>
+                </section>
+
+                <!-- SUCCESS -->
+                <section x-show="success" class="modal-card-body" x-transition.opacity>
+                    <p class="has-text-centered" style="font-size: 1.2rem; margin-top: 1rem;">
+                        Your account has been activated.<br>
+                        You are now logged in to RikiTraki.
+                    </p>
+                </section>
+
+                <!-- FOOTER ERROR/INFO SLOT -->
+                <footer class="modal-card-foot py-2">
+                    <div class="is-fullwidth" style="height: 68px;">
+
+                        <!-- ERROR -->
+                        <template x-if="$store.ui.error">
+                            <ErrorMessage />
+                        </template>
+
+                        <!-- INFO -->
+                        <template x-if="$store.ui.info">
+                            <InfoMessage />
+                        </template>
+
+                    </div>
+                </footer>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    import activateModalPlugin from '../scripts/alpine-plugins/activateModal.js'
+    import initUserStore from '../scripts/stores/user.js'
+    import initUiStore from '../scripts/stores/ui.js'
+
+    document.addEventListener('alpine:init', () => {
+        initUserStore(Alpine)
+        initUiStore(Alpine)
+        Alpine.plugin(activateModalPlugin)
+    })
+</script>
+
+<style>
+    .modal.modal-top.is-active {
+        display: flex !important;
+        align-items: flex-start;
+    }
+
+    .modal.modal-top .modal-card {
+        margin: 1.5rem auto 0 auto;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+
+    .modal-card-head .modal-card-title {
+        flex: 1 1 auto;
+        white-space: normal;
+    }
+
+    .modal-card-foot .is-fullwidth {
+        flex: 1 1 100%;
+    }
+
+    /* slide‑down + fade‑in */
+    .modal.modal-top.is-active .modal-card {
+        transform: translateY(-40px);
+        opacity: 0;
+        transition: transform .5s ease, opacity .5s ease;
+    }
+
+    .modal.modal-top.is-active .modal-card.is-visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    :global(.activate-modal svg [style*="stroke:#fff"]) {
+        stroke: #000 !important;
+    }
+
+    :global(.activate-modal svg [style*="fill:#fff"]) {
+        fill: #000 !important;
+    }
+
+    :global(.activate-modal svg [style*="fill:#ffffff"]) {
+        fill: #000 !important;
+    }
+
+    :global(.activate-modal .logo) {
+        max-height: 80px;
+        margin-top: -10px;
+        margin-left: -30px;
+    }
+</style>

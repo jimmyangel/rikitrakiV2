@@ -1,6 +1,7 @@
 import { constants } from '../config.js'
 
 export async function createUser(username, email, password, rturl) {
+	console.log('create user', username, email, password, rturl)
     const url = `${constants.APIV2_BASE_URL}/users`
 
     try {
