@@ -229,16 +229,6 @@ import InfoMessage from '../widgets/InfoMessage.astro'
                         </div>
                     </div>
 
-                    <!-- UPLOADING MESSAGE -->
-                    <div class="notification is-warning is-light mt-4" x-show="uploading">
-                        Uploading…
-                    </div>
-
-                    <!-- SUCCESS MESSAGE -->
-                    <div class="notification is-success is-light mt-4" x-show="uploaded">
-                        Track uploaded.
-                    </div>
-
                     <!-- UPLOAD BUTTON -->
                     <div class="field is-horizontal mt-4">
                         <div class="field-label"></div>
@@ -246,7 +236,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
                             <div class="field">
                                 <div class="control">
                                     <button class="button"
-                                            :disabled="uploading"
+                                            :disabled="$store.ui.uploading"
                                             @click="upload()">
                                         Upload
                                     </button>

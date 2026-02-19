@@ -3,18 +3,35 @@ import { Icon } from 'astro-icon/components'
 ---
 
 <div 
-    x-data 
-    class="notification is-info is-light is-flex is-align-items-center"
+    class="notification is-info is-light is-flex is-align-items-center is-justify-content-space-between"
     style="gap: 0.5rem"
     x-transition.opacity.duration.150ms
 >
-    <span class="is-flex is-align-items-center">
+    <!-- LEFT SIDE -->
+    <div class="is-flex is-align-items-center" style="gap: 0.5rem">
         <Icon name="fa7-solid:circle-info" size="24px" />
-    </span>
 
-    <span 
-        class="is-flex is-align-items-center"
-        style="line-height: 1.2"
-        x-text="$store.ui.info"
-    ></span>
+        <span 
+            class="is-flex is-align-items-center"
+            style="line-height: 1.2"
+            x-text="$store.ui.info"
+        ></span>
+    </div>
+
+    <!-- RIGHT SIDE SPINNER (Alpine-driven) -->
+    <span x-show="$store.ui.uploading" class="spinner"></span>
 </div>
+
+<style>
+	.spinner {
+		width: 20px;
+		height: 20px;
+		border: 3px solid rgba(0,0,0,0.2);
+		border-top-color: rgba(0,0,0,0.6);
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+	@keyframes spin { 
+		to { transform: rotate(360deg); } 
+	}
+</style>

@@ -1,3 +1,9 @@
+import {
+    validateTrackName,
+    validateDescription,
+    validateAll
+} from '../utils/validation.js'
+
 export default function (Alpine) {
     Alpine.data('uploadTrackModal', () => ({
 
@@ -11,7 +17,6 @@ export default function (Alpine) {
         difficulty: 'Easy',
         activity: 'Hiking',
 
-        // --- AUTO-DETECTED REGION ---
         detectedRegion: null,
 
         // --- PHOTOS TAB ---
@@ -20,18 +25,15 @@ export default function (Alpine) {
         timeOffset: 0,
 
         // --- STATE ---
-        uploading: false,
         uploaded: false,
         errorField: null,
 
-        // --- INIT ---
         init() {
             this.$watch('$store.ui.showUploadTrackModal', value => {
                 if (value) this.clearForm()
             })
         },
 
-        // --- RESET ---
         clearForm() {
             this.tab = 'info'
 
@@ -48,11 +50,20 @@ export default function (Alpine) {
             this.photoPreviews = []
             this.timeOffset = 0
 
-            this.uploading = false
             this.uploaded = false
 
             this.$store.ui.error = null
             this.errorField = null
+
+			this.$store.ui.uploading = false
+        },
+
+        // --- VALIDATORS ---
+        validators: {
+            info: {
+                name: validateTrackName,
+                description: validateDescription
+            }
         },
 
         // --- FILE HANDLERS ---
@@ -62,11 +73,7 @@ export default function (Alpine) {
 
             this.gpxFile = file
 
-            // Region detection will be wired here in the next step:
-            // 1. parseGPXtoGeoJSON
-            // 2. extractFirstLatLon
-            // 3. detectRegion(lat, lon)
-            // 4. this.detectedRegion = `${state}, ${country}`
+            // Region detection will be added later
         },
 
         selectPhotos(event) {
@@ -81,17 +88,35 @@ export default function (Alpine) {
             })
         },
 
-        // --- UPLOAD (stub) ---
-        async upload() {
-            this.$store.ui.error = null
-            this.uploading = true
-            this.uploaded = false
+        // --- UPLOAD ---
+		async upload() {
+			this.$store.ui.error = null
 
-            await new Promise(r => setTimeout(r, 800))
+			// Validate name + description
+			if (!validateAll('info', this)) return
 
-            this.uploading = false
-            this.uploaded = true
-        }
+			// Show uploading message
+			this.$store.ui.uploading = true
+			this.$store.ui.showInfo('Uploading…', 3000)
+
+			this.uploaded = false
+
+			// Simulate async upload
+			await new Promise(r => setTimeout(r, 800))
+
+			
+			this.$store.ui.uploading = false
+			this.uploaded = true
+
+			// Show success message
+			this.$store.ui.showInfo('Track uploaded.', 3000)
+
+			// Optional: auto-close modal after success
+			// setTimeout(() => {
+			//     this.$store.ui.showUploadTrackModal = false
+			// }, 2000)
+		}
+
 
     }))
 }

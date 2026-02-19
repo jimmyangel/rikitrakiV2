@@ -29,6 +29,20 @@ export function validateRepassword(value, form) {
     return null
 }
 
+export function validateTrackName(value) {
+    if (!value || value.trim().length < 20) {
+        return 'Track name must be at least 20 characters'
+    }
+    return null
+}
+
+export function validateDescription(value) {
+    if (!value || value.trim().length < 20) {
+        return 'Description must be at least 20 characters'
+    }
+    return null
+}
+
 export function validateAll(formName, component) {
     const rules = component.validators[formName]
 
