@@ -35,9 +35,14 @@ import { Icon } from 'astro-icon/components'
                     <a class="navbar-item" style="max-height: 62px;" x-cloak x-show="$store.user.isLoggedIn && $store.tracks.activeTrackId && $store.tracks.items[$store.tracks.activeTrackId].details.username === $store.user.username">
                         <Icon name="fa7-solid:edit" class="is-size-4"/>
                     </a>
-                   <a class="navbar-item mr-4" style="max-height: 62px;" x-cloak x-show="$store.user.isLoggedIn">
+                    <a class="navbar-item mr-4"
+                    style="max-height: 62px;"
+                    x-cloak
+                    x-show="$store.user.isLoggedIn"
+                    @click="$store.ui.showUploadTrackModal = true">
                         <Icon name="fa7-solid:cloud-arrow-up" class="is-size-4"/>
                     </a>
+
                     <a class="navbar-item"
                         style="max-height: 62px;"
                         @click="$store.user.isLoggedIn ? $store.ui.showUserInfoModal = true : $store.ui.showLoginModal = true">

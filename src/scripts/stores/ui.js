@@ -3,6 +3,7 @@ export default function initUiStore(Alpine) {
 		showSearchCenterModal: false,
 		showLoginModal: false,
 		showUserInfoModal: false,
+		showUploadTrackModal: false,
 		error: null,
 		info: null,
 		showInfo(message, duration = 2000) {

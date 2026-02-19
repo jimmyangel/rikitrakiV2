@@ -1,0 +1,311 @@
+---
+import '../../styles/vendor/bulma-switch-control/main.min.css' 
+import ErrorMessage from '../widgets/ErrorMessage.astro'
+import InfoMessage from '../widgets/InfoMessage.astro'
+---
+
+<div x-data>
+    <div class="upload-track-modal">
+        <div :class="{ modal: true, 'is-active': $store.ui.showUploadTrackModal, 'modal-top': true }">
+
+            <div class="modal-background" @click="$store.ui.showUploadTrackModal = false"></div>
+
+            <div class="modal-card" x-data="uploadTrackModal">
+
+                <!-- HEADER -->
+                <header class="modal-card-head">
+                    <div class="modal-card-title">
+                        <p class="is-size-5 mb-2">Upload a Track</p>
+                        <p class="is-size-6 mr-2">
+                            Provide track information and optional photos…
+                        </p>
+                    </div>
+                    <button class="delete" aria-label="close"
+                            @click="$store.ui.showUploadTrackModal = false"></button>
+                </header>
+
+                <!-- BODY -->
+                <section class="modal-card-body">
+
+                    <!-- TABS -->
+                    <div class="tabs is-boxed">
+                        <ul>
+                            <li :class="{ 'is-active': tab === 'info' }">
+                                <a @click="tab = 'info'">Info</a>
+                            </li>
+                            <li :class="{ 'is-active': tab === 'photos' }">
+                                <a @click="tab = 'photos'">Photos</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- INFO TAB -->
+                    <div x-show="tab === 'info'">
+                        <div>
+
+                            <!-- GPX FILE -->
+                            <div class="field is-horizontal">
+                                <label class="field-label is-normal">GPX file</label>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control">
+                                            <input class="input"
+                                                type="file"
+                                                accept=".gpx"
+                                                @change="selectGpxFile($event)">
+                                        </div>
+                                        <p class="help is-size-7">Up to 4MB</p>
+										<!-- AUTO-DETECTED REGION -->
+										<template x-if="detectedRegion">
+											<p class="help mt-1">
+												Detected region: <span x-text="detectedRegion"></span>
+											</p>
+										</template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TRACK NAME -->
+                            <div class="field is-horizontal">
+                                <label class="field-label is-normal">Name</label>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control">
+                                            <input class="input"
+                                                type="text"
+                                                maxlength="200"
+                                                placeholder="Track name"
+                                                x-model="name">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DESCRIPTION -->
+                            <div class="field is-horizontal">
+                                <label class="field-label is-normal">Description</label>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control">
+                                            <textarea class="textarea"
+                                                rows="5"
+                                                maxlength="5000"
+                                                placeholder="Track description"
+                                                x-model="description"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAVORITE -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Favorite?</label>
+								<div class="field-body">
+									<div class="field align-bottom">
+										<label class="switch is-rounded">
+											<input
+												type="checkbox"
+												x-model="favorite"
+											>
+											<span class="check is-info"></span>
+										</label>
+									</div>
+								</div>
+							</div>
+
+                            <!-- DIFFICULTY -->
+							<div class="field is-horizontal">
+								<label class="field-label is-normal">Difficulty</label>
+								<div class="field-body">
+									<div class="field align-bottom">
+										<div class="buttons has-addons">
+											<button
+												class="button"
+												:class="{ 'has-background-grey-light is-selected': difficulty === 'Easy' }"
+												@click="difficulty = 'Easy'">
+												Easy
+											</button>
+
+											<button
+												class="button"
+												:class="{ 'has-background-grey-light is-selected': difficulty === 'Moderate' }"
+												@click="difficulty = 'Moderate'">
+												Moderate
+											</button>
+
+											<button
+												class="button"
+												:class="{ 'has-background-grey-light is-selected': difficulty === 'Difficult' }"
+												@click="difficulty = 'Difficult'">
+												Difficult
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+
+                            <!-- ACTIVITY -->
+                            <div class="field is-horizontal">
+                                <label class="field-label is-normal">Activity</label>
+                                <div class="field-body">
+                                    <div class="field">
+                                        <div class="control">
+                                            <div class="select">
+                                                <select x-model="activity">
+                                                    <option>Hiking</option>
+                                                    <option>Biking</option>
+                                                    <option>Boating</option>
+                                                    <option>Offroad</option>
+                                                    <option>Motorcycling</option>
+                                                    <option>Flying</option>
+                                                    <option>Skiing</option>
+                                                    <option>Snowshoeing</option>
+                                                    <option>Getting There</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- PHOTOS TAB -->
+                    <div x-show="tab === 'photos'">
+                        <div>
+
+                            <!-- PHOTO UPLOAD -->
+                            <div class="field is-horizontal">
+                                <label class="field-label is-normal">Photos</label>
+                                <div class="field-body">
+
+                                    <div class="field">
+                                        <div class="control">
+                                            <input type="file"
+                                                multiple
+                                                accept="image/*"
+                                                class="is-hidden"
+                                                x-ref="photoInput"
+                                                @change="selectPhotos($event)">
+                                            <button class="button" @click="$refs.photoInput.click()">
+                                                <span class="icon"><i class="fas fa-image"></i></span>
+                                            </button>
+                                        </div>
+                                        <p class="help is-size-7">Up to 8 JPEG images</p>
+                                    </div>
+
+                                    <!-- TIME OFFSET -->
+                                    <div class="field">
+                                        <label class="label is-small">Time offset (hrs)</label>
+                                        <div class="control">
+                                            <input class="input"
+                                                type="number"
+                                                min="-14"
+                                                max="14"
+                                                step="0.5"
+                                                x-model="timeOffset">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- PHOTO PREVIEW -->
+                            <div class="field">
+                                <div class="control">
+                                    <div class="columns is-multiline" id="track-photos-container">
+                                        <template x-for="(p, idx) in photoPreviews" :key="idx">
+                                            <div class="column is-one-quarter">
+                                                <figure class="image is-128x128">
+                                                    <img :src="p">
+                                                </figure>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- UPLOADING MESSAGE -->
+                    <div class="notification is-warning is-light mt-4" x-show="uploading">
+                        Uploading…
+                    </div>
+
+                    <!-- SUCCESS MESSAGE -->
+                    <div class="notification is-success is-light mt-4" x-show="uploaded">
+                        Track uploaded.
+                    </div>
+
+                    <!-- UPLOAD BUTTON -->
+                    <div class="field is-horizontal mt-4">
+                        <div class="field-label"></div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="control">
+                                    <button class="button"
+                                            :disabled="uploading"
+                                            @click="upload()">
+                                        Upload
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- FOOTER -->
+                <footer class="modal-card-foot py-2">
+                    <div class="is-fullwidth" style="height: 68px;">
+
+                        <template x-if="$store.ui.error">
+                            <ErrorMessage />
+                        </template>
+
+                        <template x-if="$store.ui.info">
+                            <InfoMessage />
+                        </template>
+
+                    </div>
+                </footer>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    .modal.modal-top.is-active {
+        display: block !important;
+    }
+
+    .modal.modal-top .modal-card {
+        margin: 1.5rem auto 0 auto;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+
+    .modal-card-head .modal-card-title {
+        flex: 1 1 auto;
+        white-space: normal;
+    }
+
+    .upload-track-modal .field-label {
+        flex-basis: 4rem;
+    }
+
+    .modal-card-foot .is-fullwidth {
+        flex: 1 1 100%;
+    }
+
+	.align-bottom {
+		display: flex;
+		align-items: flex-end;
+	}
+
+
+</style>
