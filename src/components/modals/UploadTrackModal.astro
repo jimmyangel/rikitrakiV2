@@ -1,5 +1,5 @@
 ---
-import '../../styles/vendor/bulma-switch-control/main.min.css' 
+import '../../styles/vendor/bulma-switch-control/main.min.css'
 import ErrorMessage from '../widgets/ErrorMessage.astro'
 import InfoMessage from '../widgets/InfoMessage.astro'
 ---
@@ -55,13 +55,14 @@ import InfoMessage from '../widgets/InfoMessage.astro'
                                                 @change="selectGpxFile($event)">
                                         </div>
                                         <p class="help is-size-7">Up to 4MB</p>
-										<!-- AUTO-DETECTED REGION -->
-										<template x-if="detectedRegion">
-											<p class="help mt-1">
-												Detected region:
-												<span x-text="detectedRegion.join(', ')"></span>
-											</p>
-										</template>
+
+                                        <!-- AUTO-DETECTED REGION -->
+                                        <template x-if="trackRegionTags">
+                                            <p class="help mt-1">
+                                                Detected region:
+                                                <span x-text="trackRegionTags.join(', ')"></span>
+                                            </p>
+                                        </template>
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +77,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
                                                 type="text"
                                                 maxlength="200"
                                                 placeholder="Track name"
-                                                x-model="name">
+                                                x-model="trackName">
                                         </div>
                                     </div>
                                 </div>
@@ -92,58 +93,58 @@ import InfoMessage from '../widgets/InfoMessage.astro'
                                                 rows="5"
                                                 maxlength="5000"
                                                 placeholder="Track description"
-                                                x-model="description"></textarea>
+                                                x-model="trackDescription"></textarea>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- FAVORITE -->
-							<div class="field is-horizontal">
-								<label class="field-label is-normal">Favorite?</label>
-								<div class="field-body">
-									<div class="field align-bottom">
-										<label class="switch is-rounded">
-											<input
-												type="checkbox"
-												x-model="favorite"
-											>
-											<span class="check is-info"></span>
-										</label>
-									</div>
-								</div>
-							</div>
+                            <div class="field is-horizontal">
+                                <label class="field-label is-normal">Favorite?</label>
+                                <div class="field-body">
+                                    <div class="field align-bottom">
+                                        <label class="switch is-rounded">
+                                            <input
+                                                type="checkbox"
+                                                x-model="trackFav"
+                                            >
+                                            <span class="check is-info"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- DIFFICULTY -->
-							<div class="field is-horizontal">
-								<label class="field-label is-normal">Difficulty</label>
-								<div class="field-body">
-									<div class="field align-bottom">
-										<div class="buttons has-addons">
-											<button
-												class="button"
-												:class="{ 'has-background-grey-light is-selected': difficulty === 'Easy' }"
-												@click="difficulty = 'Easy'">
-												Easy
-											</button>
+                            <div class="field is-horizontal">
+                                <label class="field-label is-normal">Difficulty</label>
+                                <div class="field-body">
+                                    <div class="field align-bottom">
+                                        <div class="buttons has-addons">
+                                            <button
+                                                class="button"
+                                                :class="{ 'has-background-grey-light is-selected': trackLevel === 'Easy' }"
+                                                @click="trackLevel = 'Easy'">
+                                                Easy
+                                            </button>
 
-											<button
-												class="button"
-												:class="{ 'has-background-grey-light is-selected': difficulty === 'Moderate' }"
-												@click="difficulty = 'Moderate'">
-												Moderate
-											</button>
+                                            <button
+                                                class="button"
+                                                :class="{ 'has-background-grey-light is-selected': trackLevel === 'Moderate' }"
+                                                @click="trackLevel = 'Moderate'">
+                                                Moderate
+                                            </button>
 
-											<button
-												class="button"
-												:class="{ 'has-background-grey-light is-selected': difficulty === 'Difficult' }"
-												@click="difficulty = 'Difficult'">
-												Difficult
-											</button>
-										</div>
-									</div>
-								</div>
-							</div>
+                                            <button
+                                                class="button"
+                                                :class="{ 'has-background-grey-light is-selected': trackLevel === 'Difficult' }"
+                                                @click="trackLevel = 'Difficult'">
+                                                Difficult
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- ACTIVITY -->
                             <div class="field is-horizontal">
@@ -152,7 +153,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
                                     <div class="field">
                                         <div class="control">
                                             <div class="select">
-                                                <select x-model="activity">
+                                                <select x-model="trackType">
                                                     <option>Hiking</option>
                                                     <option>Biking</option>
                                                     <option>Boating</option>
@@ -269,14 +270,13 @@ import InfoMessage from '../widgets/InfoMessage.astro'
 </div>
 
 <style>
-
     .modal.modal-top.is-active {
         display: block !important;
     }
 
     .modal.modal-top .modal-card {
         margin: 1.5rem auto 0 auto;
-        max-height: calc(100vh - 4rem);
+        max-height: calc(100vh - 7rem);
         overflow-y: auto;
     }
 
@@ -293,10 +293,8 @@ import InfoMessage from '../widgets/InfoMessage.astro'
         flex: 1 1 100%;
     }
 
-	.align-bottom {
-		display: flex;
-		align-items: flex-end;
-	}
-
-
+    .align-bottom {
+        display: flex;
+        align-items: flex-end;
+    }
 </style>
