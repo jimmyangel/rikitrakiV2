@@ -4,6 +4,13 @@ import {
     validateAll
 } from '../utils/validation.js'
 
+import {
+    parseGPXtoGeoJSON,
+    extractSingleLineString,
+    computeBounds,
+	detectRegion
+} from '../utils/geoUtils.js'
+
 export default function (Alpine) {
     Alpine.data('uploadTrackModal', () => ({
 
@@ -55,7 +62,7 @@ export default function (Alpine) {
             this.$store.ui.error = null
             this.errorField = null
 
-			this.$store.ui.uploading = false
+            this.$store.ui.uploading = false
         },
 
         // --- VALIDATORS ---
@@ -66,15 +73,70 @@ export default function (Alpine) {
             }
         },
 
+        // --- GPX VALIDATION ---
+		async validateGpx(file) {
+			this.$store.ui.error = null
+			this.$store.ui.info = null
+
+			// 1. Parse GPX → GeoJSON
+			let fc
+			try {
+				fc = await parseGPXtoGeoJSON(file)
+			} catch (e) {
+				this.$store.ui.error = 'This GPX file is invalid or unreadable.'
+				return false
+			}
+
+			// 2. Extract normalized single LineString
+			let single
+			try {
+				single = extractSingleLineString(fc)
+			} catch (e) {
+				this.$store.ui.error = 'This GPX file contains no valid track.'
+				return false
+			}
+
+			// 3. Must have at least 2 coordinates
+			if (!single.geometry.coordinates ||
+				single.geometry.coordinates.length < 2) {
+				this.$store.ui.error = 'This GPX file contains no valid track.'
+				return false
+			}
+
+			// 4. Optional: sanity check bounds
+			const bounds = computeBounds({ features: [single] })
+			if (!isFinite(bounds.west) || !isFinite(bounds.east)) {
+				this.$store.ui.error = 'Track bounds could not be computed.'
+				return false
+			}
+
+			// 5. Success
+			this.$store.ui.info = 'GPX loaded successfully.'
+			return single
+		},
+
         // --- FILE HANDLERS ---
-        async selectGpxFile(event) {
-            const file = event.target.files?.[0]
-            if (!file) return
+		async selectGpxFile(event) {
+			const file = event.target.files?.[0]
+			if (!file) return
 
-            this.gpxFile = file
+			this.gpxFile = file
 
-            // Region detection will be added later
-        },
+			const single = await this.validateGpx(file)
+			if (!single) {
+				this.gpxFile = null
+				this.detectedRegion = null
+				return
+			}
+
+			console.log(single)
+			try {
+				const [lon, lat] = single.geometry.coordinates[0]
+				this.detectedRegion = await detectRegion(lat, lon)
+			} catch (e) {
+				this.detectedRegion = null
+			}
+		},
 
         selectPhotos(event) {
             const files = Array.from(event.target.files || [])
@@ -89,34 +151,27 @@ export default function (Alpine) {
         },
 
         // --- UPLOAD ---
-		async upload() {
-			this.$store.ui.error = null
+        async upload() {
+            this.$store.ui.error = null
 
-			// Validate name + description
-			if (!validateAll('info', this)) return
+            // Validate name + description
+            if (!validateAll('info', this)) return
 
-			// Show uploading message
-			this.$store.ui.uploading = true
-			this.$store.ui.showInfo('Uploading…', 3000)
+            // Show uploading message
+            this.$store.ui.uploading = true
+            this.$store.ui.showInfo('Uploading…', 3000)
 
-			this.uploaded = false
+            this.uploaded = false
 
-			// Simulate async upload
-			await new Promise(r => setTimeout(r, 800))
+            // Simulate async upload
+            await new Promise(r => setTimeout(r, 800))
 
-			
-			this.$store.ui.uploading = false
-			this.uploaded = true
+            this.$store.ui.uploading = false
+            this.uploaded = true
 
-			// Show success message
-			this.$store.ui.showInfo('Track uploaded.', 3000)
-
-			// Optional: auto-close modal after success
-			// setTimeout(() => {
-			//     this.$store.ui.showUploadTrackModal = false
-			// }, 2000)
-		}
-
+            // Show success message
+            this.$store.ui.showInfo('Track uploaded.', 3000)
+        }
 
     }))
 }

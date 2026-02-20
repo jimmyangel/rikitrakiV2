@@ -58,7 +58,8 @@ import InfoMessage from '../widgets/InfoMessage.astro'
 										<!-- AUTO-DETECTED REGION -->
 										<template x-if="detectedRegion">
 											<p class="help mt-1">
-												Detected region: <span x-text="detectedRegion"></span>
+												Detected region:
+												<span x-text="detectedRegion.join(', ')"></span>
 											</p>
 										</template>
                                     </div>

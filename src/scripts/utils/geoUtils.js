@@ -302,6 +302,39 @@ export function computeProfileArrays(geojson) {
     return { distancesKm, elevationsM }
 }
 
+export async function detectRegion(lat, lon) {
+    try {
+        const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=5&addressdetails=1`
+
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Rikitraki/1.0 (https://rikitraki.com)'
+            }
+        })
+
+        if (!res.ok) throw new Error()
+
+        const data = await res.json()
+        const addr = data.address || {}
+
+        const country = addr.country || null
+        const state =
+            addr.state ||
+            addr.region ||
+            addr.province ||
+            addr.state_district ||
+            null
+
+        if (country && state) return [country, state]
+        if (country) return [country]
+        return null
+
+    } catch (e) {
+        return null
+    }
+}
+
+
 
 
 
