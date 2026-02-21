@@ -55,10 +55,16 @@ export default function (Alpine) {
         },
 
         clearForm() {
+			console.log('clear')
             this.tab = 'info'
 
-            this.trackGPXBlob = null
-            this.trackGPX = ''
+			this.trackGPXBlob = null
+			this.trackGPX = ''
+
+			if (this.$refs.gpxInput) {
+				this.$refs.gpxInput.value = ''
+			}
+
             this.trackName = ''
             this.trackDescription = ''
             this.trackFav = false
@@ -78,6 +84,8 @@ export default function (Alpine) {
             this.$store.ui.error = null
             this.errorField = null
             this.$store.ui.uploading = false
+
+
         },
 
         // --- VALIDATORS ---
@@ -97,7 +105,6 @@ export default function (Alpine) {
             let fc
             try {
                 fc = await parseGPXtoGeoJSON(file)
-				console.log(fc)
             } catch (e) {
                 this.$store.ui.error = 'This GPX file is invalid or unreadable.'
                 return null
@@ -123,7 +130,12 @@ export default function (Alpine) {
                 return null
             }
 
-            this.$store.ui.info = 'GPX loaded successfully.'
+			this.$store.ui.info = 'GPX loaded successfully'
+
+			setTimeout(() => {
+				this.$store.ui.info = ''
+			}, 2500)
+
             return single
         },
 
@@ -293,9 +305,6 @@ export default function (Alpine) {
             for (let i = 0; i < this.trackPhotos.length; i++) {
                 const meta = this.photoMeta[i]
                 const photo = this.trackPhotos[i]
-				console.log('EXIF ts:', new Date(meta.timestamp).toISOString())
-				console.log('GPX first:', new Date(this.trackCoordinates[0].timestamp).toISOString())
-				console.log('GPX last:', new Date(this.trackCoordinates.at(-1).timestamp).toISOString())
 
                 if (meta.hasExifGps) continue
                 if (!meta.timestamp) continue
