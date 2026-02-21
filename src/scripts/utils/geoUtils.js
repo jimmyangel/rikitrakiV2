@@ -60,7 +60,11 @@ export async function getApproxLocation() {
 export async function parseGPXtoGeoJSON(gpxBlob) {
     const text = await gpxBlob.text()
     const xml = new DOMParser().parseFromString(text, 'application/xml')
-    return gpx(xml)
+    return gpx(xml, {
+        styles: true,
+        trackPoints: true,
+        time: true
+    })
 }
 
 export function computeBounds(geojson) {
@@ -83,7 +87,7 @@ export function computeBounds(geojson) {
     return { west, south, east, north }
 }
 
-export function extractSingleLineString(fc) {
+export function extractSingleLineString(fc, { useRealTimestamps = false } = {}) {
     const out = {
         type: 'Feature',
         geometry: {
@@ -95,7 +99,9 @@ export function extractSingleLineString(fc) {
         }
     }
 
-    // synthetic timestamp generator (10s increments)
+    //
+    // Synthetic timestamp generator (10s increments)
+    //
     let synthetic = new Date(2015, 0, 1)
 
     function nextSynthetic() {
@@ -104,6 +110,9 @@ export function extractSingleLineString(fc) {
         return t
     }
 
+    //
+    // Helpers
+    //
     function normalizeCoord(c) {
         if (c.length === 2) return [c[0], c[1], 0]
         if (c.length === 3 && (c[2] == null || isNaN(c[2]))) return [c[0], c[1], 0]
@@ -116,13 +125,17 @@ export function extractSingleLineString(fc) {
         return !isNaN(d.getTime())
     }
 
+    //
+    // Merge a single segment (LineString)
+    //
     function mergeSegment(coords, times) {
         for (let i = 0; i < coords.length; i++) {
             const c = normalizeCoord(coords[i])
             out.geometry.coordinates.push(c)
 
-            const t = times && times[i]
-            if (isValidISO(t)) {
+            const t = times?.[i]
+
+            if (useRealTimestamps && isValidISO(t)) {
                 out.properties.coordTimes.push(t)
             } else {
                 out.properties.coordTimes.push(nextSynthetic())
@@ -130,29 +143,38 @@ export function extractSingleLineString(fc) {
         }
     }
 
+    //
+    // Main feature loop
+    //
     for (const f of fc.features) {
-        if (!out.properties.time && f.properties && f.properties.time) {
+        if (!f.geometry) continue
+
+        // Preserve the track-level time if present
+        if (!out.properties.time && f.properties?.time) {
             out.properties.time = f.properties.time
         }
 
-        if (!f.geometry) continue
+        const coords = f.geometry.coordinates
+        const times = f.properties?.coordinateProperties?.times
 
         if (f.geometry.type === 'LineString') {
-            const coords = f.geometry.coordinates
             if (coords.length >= 2) {
-                mergeSegment(coords, f.properties && f.properties.coordTimes)
+                mergeSegment(coords, times)
             }
         }
 
         if (f.geometry.type === 'MultiLineString') {
-            const segments = f.geometry.coordinates
-            for (let i = 0; i < segments.length; i++) {
-                const seg = segments[i]
+            if (!Array.isArray(coords)) continue
+
+            let offset = 0
+            for (const seg of coords) {
                 if (seg.length >= 2) {
-                    const times = f.properties &&
-                                  Array.isArray(f.properties.coordTimes) &&
-                                  f.properties.coordTimes[i]
-                    mergeSegment(seg, times)
+                    const segTimes = Array.isArray(times)
+                        ? times.slice(offset, offset + seg.length)
+                        : null
+
+                    mergeSegment(seg, segTimes)
+                    offset += seg.length
                 }
             }
         }

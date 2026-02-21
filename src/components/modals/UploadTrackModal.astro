@@ -230,7 +230,8 @@ import { Icon } from 'astro-icon/components'
 										placeholder="Caption"
 										x-model="photo.picCaption">
 
-									<figure class="image is-4by3 mb-1 photo-figure">
+									<figure class="image is-4by3 mb-1 photo-figure"
+											:class="({ 'geo-exif': photoMeta[idx].hasExifGps, 'geo-interp': !photoMeta[idx].hasExifGps && trackPhotos[idx].picLatLng, 'geo-none': !photoMeta[idx].hasExifGps && !trackPhotos[idx].picLatLng })">
 
 										<button
 											class="delete photo-delete-btn"
@@ -367,6 +368,18 @@ import { Icon } from 'astro-icon/components'
 		cursor: pointer;
 	}
 
+	/* Geotagging feedback borders */
+	.geo-exif {
+		border: 2px solid #2ecc71; /* green */
+	}
+
+	.geo-interp {
+		border: 2px solid #f39c12; /* orange */
+	}
+
+	.geo-none {
+		border: 2px solid transparent;
+	}
 
 </style>
 

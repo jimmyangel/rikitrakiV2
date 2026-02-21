@@ -12,7 +12,7 @@ import {
     detectRegion
 } from '../utils/geoUtils.js'
 
-import EXIF from 'exif-js'
+import { parse } from 'exifr'
 
 export default function (Alpine) {
     Alpine.data('uploadTrackModal', () => ({
@@ -97,6 +97,7 @@ export default function (Alpine) {
             let fc
             try {
                 fc = await parseGPXtoGeoJSON(file)
+				console.log(fc)
             } catch (e) {
                 this.$store.ui.error = 'This GPX file is invalid or unreadable.'
                 return null
@@ -104,7 +105,7 @@ export default function (Alpine) {
 
             let single
             try {
-                single = extractSingleLineString(fc)
+                single = extractSingleLineString(fc, { useRealTimestamps: true })
             } catch (e) {
                 this.$store.ui.error = 'This GPX file contains no valid track.'
                 return null
@@ -211,57 +212,33 @@ export default function (Alpine) {
         },
 
 		async extractExif(file) {
-			return new Promise(resolve => {
-				const reader = new FileReader()
+			try {
+				const data = await parse(file, {
+					gps: true,
+					tiff: true,
+					exif: true
+				})
 
-				reader.onload = e => {
-					const img = new Image()
+				let gps = null
+				let timestamp = null
 
-					img.onload = () => {
-						try {
-							EXIF.getData(img, function () {
-								let gps = null
-								let timestamp = null
-
-								// GPS
-								let lat = EXIF.getTag(this, 'GPSLatitude')
-								let lon = EXIF.getTag(this, 'GPSLongitude')
-
-								if (lat && lon) {
-									const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N'
-									const lonRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'W'
-
-									const latDD = lat[0] + lat[1] / 60 + lat[2] / 3600
-									const lonDD = lon[0] + lon[1] / 60 + lon[2] / 3600
-
-									gps = [
-										lonRef === 'W' ? -lonDD : lonDD,
-										latRef === 'N' ?  latDD : -latDD
-									]
-								}
-
-								// Timestamp
-								const date = EXIF.getTag(this, 'DateTimeOriginal')
-								if (date && /^[0-9]{4}:[0-9]{2}:[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/.test(date)) {
-									const p = date.split(/ |:/)
-									timestamp = new Date(
-										p[0], parseInt(p[1]) - 1, p[2], p[3], p[4], p[5]
-									).getTime()
-								}
-
-								resolve({ gps, timestamp })
-							})
-						} catch (e) {
-							resolve({ gps: null, timestamp: null })
-						}
-					}
-
-					img.src = e.target.result
+				// GPS
+				if (data && data.latitude != null && data.longitude != null) {
+					gps = [data.longitude, data.latitude]
 				}
 
-				reader.readAsDataURL(file)
-			})
-		},
+				// Timestamp
+				if (data && data.DateTimeOriginal instanceof Date) {
+					timestamp = data.DateTimeOriginal.getTime()
+				}
+
+				return { gps, timestamp }
+
+			} catch (err) {
+				console.warn('EXIF parsing failed:', err)
+				return { gps: null, timestamp: null }
+			}
+		},	
 
 		async addPhotos(files) {
 			const MAX = 8
@@ -309,12 +286,16 @@ export default function (Alpine) {
 		},
 
         assignLatLngToPhotos() {
+
             if (!this.trackCoordinates.length) return
             if (!this.trackPhotos.length) return
 
             for (let i = 0; i < this.trackPhotos.length; i++) {
                 const meta = this.photoMeta[i]
                 const photo = this.trackPhotos[i]
+				console.log('EXIF ts:', new Date(meta.timestamp).toISOString())
+				console.log('GPX first:', new Date(this.trackCoordinates[0].timestamp).toISOString())
+				console.log('GPX last:', new Date(this.trackCoordinates.at(-1).timestamp).toISOString())
 
                 if (meta.hasExifGps) continue
                 if (!meta.timestamp) continue
