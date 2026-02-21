@@ -11,7 +11,7 @@ import { Icon } from 'astro-icon/components'
         <div class="modal-background"
              @click="$store.ui.showUploadTrackModal = false"></div>
 
-        <div class="modal-card" x-data="uploadTrackModal">
+        <div class="modal-card upload-track-modal-card" x-data="uploadTrackModal">
 
             <!-- HEADER -->
             <header class="modal-card-head">
@@ -186,7 +186,7 @@ import { Icon } from 'astro-icon/components'
                                 <div class="mr-4 mb-2">
                                     <input type="file"
                                         multiple
-                                        accept="image/*"
+                                        accept="image/jpeg"
                                         class="is-hidden"
                                         x-ref="photoInput"
                                         @change="selectPhotos($event)">
@@ -211,28 +211,40 @@ import { Icon } from 'astro-icon/components'
                             </div>
                         </div>
 
-                        <!-- PHOTO GRID -->
-                        <div class="columns is-multiline" id="track-photos-container">
-                            <template x-for="(photo, idx) in trackPhotos" :key="idx">
-                                <div class="column is-one-quarter"
-                                    draggable="true"
-                                    @dragstart="startDrag(idx)"
-                                    @dragover.prevent
-                                    @drop="dropOn(idx)">
+						<!-- PHOTO GRID -->
+						<div class="columns is-multiline" id="track-photos-container">
+							<template x-for="(photo, idx) in trackPhotos" :key="idx">
+								<div class="column
+											is-full-mobile
+											is-half-tablet
+											is-one-third-desktop
+											is-one-quarter-widescreen"
+									draggable="true"
+									@dragstart="startDrag(idx)"
+									@dragover.prevent
+									@drop="dropOn(idx)">
 
-                                    <input class="input is-small mb-2"
-                                        type="text"
-                                        maxlength="200"
-                                        placeholder="Caption"
-                                        x-model="photo.picCaption">
+									<input class="input is-small mb-1"
+										type="text"
+										maxlength="200"
+										placeholder="Caption"
+										x-model="photo.picCaption">
 
-                                    <figure class="image is-4by3 mb-1" style="overflow:hidden;">
-                                        <img :src="photoMeta[idx].preview"
-                                            style="width:100%; height:100%; object-fit:cover;">
-                                    </figure>
-                                </div>
-                            </template>
-                        </div>
+									<figure class="image is-4by3 mb-1 photo-figure">
+
+										<button
+											class="delete photo-delete-btn"
+											@click="deletePhoto(idx)"
+											title="Remove photo"
+										></button>
+
+										<img :src="photoMeta[idx].preview"
+											style="width:100%; height:100%; object-fit:cover;">
+									</figure>
+
+								</div>
+							</template>
+						</div>
 
                     </div>
 				</div>
@@ -273,43 +285,89 @@ import { Icon } from 'astro-icon/components'
 </div>
 
 <style>
-	/* Header wrapping fix */
-	.modal-card-head {
-		align-items: flex-start;
+    /* Header wrapping fix */
+    .modal-card-head {
+        align-items: flex-start;
+    }
+
+    .modal-card-head .modal-card-title {
+        flex: 1 1 0;
+        min-width: 0;
+        white-space: normal;
+    }
+
+    /* A — Footer reserved space */
+    .modal-card-foot .is-fullwidth {
+        flex: 1 1 100%;
+    }
+
+    /* B — Align-bottom utility */
+    .align-bottom {
+        display: flex;
+        align-items: flex-end;
+    }
+
+    /* C — Modal max-height for mobile */
+    .modal .modal-card {
+        max-height: calc(100vh - 7rem);
+        overflow-y: auto;
+    }
+
+    /* Label alignment */
+    .field-label {
+        flex-basis: 4rem;
+    }
+
+    /* Top-align modal */
+    .modal.modal-top .modal-card {
+        margin-top: 1.5rem;
+        margin-bottom: auto;
+    }
+
+    /* Default: mobile (1 per row) */
+    .upload-track-modal-card {
+        width: 90vw !important;
+        max-width: 90vw !important;
+    }
+
+    /* ≥ 768px: wider modal */
+    @media screen and (min-width: 768px) {
+        .upload-track-modal-card {
+            width: 60rem !important;
+            max-width: 90vw !important;
+        }
+    }
+
+    /* ≥ 1024px: widest modal */
+    @media screen and (min-width: 1024px) {
+        .upload-track-modal-card {
+            width: 80rem !important;
+            max-width: 90vw !important;
+        }
+    }
+
+	/* Reduce column gap inside the upload modal */
+	.upload-track-modal-card .columns {
+		--bulma-column-gap: 0.3rem;
 	}
 
-	.modal-card-head .modal-card-title {
-		flex: 1 1 0;
-		min-width: 0;
-		white-space: normal;
+	/* Make the figure the positioning container */
+	.photo-figure {
+		position: relative;
+		overflow: hidden; /* keep image clipped, not the button */
 	}
 
-	/* A — Footer reserved space */
-	.modal-card-foot .is-fullwidth {
-		flex: 1 1 100%;
+	/* Position Bulma delete button in top-right */
+	.photo-delete-btn {
+		position: absolute;
+		top: 0.35rem;
+		right: 0.35rem;
+		z-index: 10;        /* <-- THIS is the key */
+		transform: scale(0.8);
+		cursor: pointer;
 	}
 
-	/* B — Align-bottom utility */
-	.align-bottom {
-		display: flex;
-		align-items: flex-end;
-	}
-
-	/* C — Modal max-height for mobile */
-	.modal .modal-card {
-		max-height: calc(100vh - 7rem);
-		overflow-y: auto;
-	}
-
-	/* Label alignment */
-	.field-label {
-		flex-basis: 4rem;
-	}
-
-	/* Top-align modal */
-	.modal.modal-top .modal-card {
-		margin-top: 1.5rem;
-		margin-bottom: auto;
-	}
 
 </style>
+
+

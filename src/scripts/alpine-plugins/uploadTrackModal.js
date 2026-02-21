@@ -263,37 +263,50 @@ export default function (Alpine) {
 			})
 		},
 
+		async addPhotos(files) {
+			const MAX = 8
+
+			for (const file of files) {
+				if (this.trackPhotos.length >= MAX) {
+					this.$store.ui.error = `Maximum of ${MAX} photos allowed`
+					break
+				}
+
+				// Resize for preview
+				const preview = await this.resizeImage(file)
+
+				// Extract EXIF
+				const { gps, timestamp } = await this.extractExif(file)
+
+				// --- SCHEMA OBJECT ---
+				this.trackPhotos.push({
+					picName: file.name,
+					picThumb: '',        // filled after upload
+					picLatLng: gps,      // EXIF GPS or null
+					picCaption: ''
+				})
+
+				// --- UI METADATA ---
+				this.photoMeta.push({
+					preview,
+					timestamp,
+					hasExifGps: !!gps
+				})
+			}
+
+			this.hasPhotos = this.trackPhotos.length > 0
+
+			// Recompute interpolated GPS if needed
+			if (this.trackCoordinates.length) {
+				this.assignLatLngToPhotos()
+			}
+		},
+
         // --- PHOTO SELECTION ---
-        async selectPhotos(event) {
-            const files = Array.from(event.target.files || []).slice(0, 8)
-
-            this.trackPhotos = []
-            this.photoMeta = []
-
-            for (const file of files) {
-                const preview = await this.resizeImage(file)
-                const { gps, timestamp } = await this.extractExif(file)
-
-                this.trackPhotos.push({
-                    picName: file.name,
-                    picThumb: '',
-                    picLatLng: gps,
-                    picCaption: ''
-                })
-
-                this.photoMeta.push({
-                    preview,
-                    timestamp,
-                    hasExifGps: !!gps
-                })
-            }
-
-            this.hasPhotos = this.trackPhotos.length > 0
-
-            if (this.trackCoordinates.length) {
-                this.assignLatLngToPhotos()
-            }
-        },
+		async selectPhotos(event) {
+			const files = Array.from(event.target.files || [])
+			await this.addPhotos(files)
+		},
 
         assignLatLngToPhotos() {
             if (!this.trackCoordinates.length) return
@@ -348,6 +361,12 @@ export default function (Alpine) {
 
             this.dragIndex = null
         },
+
+		deletePhoto(index) {
+			this.trackPhotos.splice(index, 1)
+			this.photoMeta.splice(index, 1)
+			this.hasPhotos = this.trackPhotos.length > 0
+		},
 
         // --- UPLOAD ---
         async upload() {
