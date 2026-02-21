@@ -40,135 +40,138 @@ import { Icon } from 'astro-icon/components'
                     </ul>
                 </div>
 
-                <!-- INFO TAB -->
-                <div x-show="tab === 'info'">
-                    <div>
+				<!-- INFO TAB -->
+				<div x-show="tab === 'info'">
+					<div>
 
-                        <!-- GPX FILE -->
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">GPX file</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input"
-                                            type="file"
-                                            accept=".gpx"
-                                            @change="selectGpxFile($event)">
-                                    </div>
-                                    <p class="help is-size-7">Up to 4MB</p>
+						<!-- GPX FILE -->
+						<div class="field is-horizontal">
+							<label class="field-label is-normal">GPX file</label>
+							<div class="field-body">
+								<div class="field">
+									<div class="control">
+										<input class="input"
+											type="file"
+											accept=".gpx"
+											@change="selectGpxFile($event)"
+											:class="{ 'is-danger': errorField === 'gpxFile' }">
+									</div>
+									<p class="help is-size-7">Up to 4MB</p>
 
-                                    <template x-if="trackRegionTags">
-                                        <p class="help mt-1">
-                                            Detected region:
-                                            <span x-text="trackRegionTags.join(', ')"></span>
-                                        </p>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
+									<template x-if="trackRegionTags">
+										<p class="help mt-1">
+											Detected region:
+											<span x-text="trackRegionTags.join(', ')"></span>
+										</p>
+									</template>
+								</div>
+							</div>
+						</div>
 
-                        <!-- TRACK NAME -->
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Name</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input"
-                                            type="text"
-                                            maxlength="200"
-                                            placeholder="Track name"
-                                            x-model="trackName">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+						<!-- TRACK NAME -->
+						<div class="field is-horizontal">
+							<label class="field-label is-normal">Name</label>
+							<div class="field-body">
+								<div class="field">
+									<div class="control">
+										<input class="input"
+											type="text"
+											maxlength="200"
+											placeholder="Track name"
+											x-model="trackName"
+											:class="{ 'is-danger': errorField === 'trackName' }">
+									</div>
+								</div>
+							</div>
+						</div>
 
-                        <!-- DESCRIPTION -->
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Description</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <textarea class="textarea"
-                                            rows="5"
-                                            maxlength="5000"
-                                            placeholder="Track description"
-                                            x-model="trackDescription"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+						<!-- DESCRIPTION -->
+						<div class="field is-horizontal">
+							<label class="field-label is-normal">Description</label>
+							<div class="field-body">
+								<div class="field">
+									<div class="control">
+										<textarea class="textarea"
+												rows="5"
+												maxlength="5000"
+												placeholder="Track description"
+												x-model="trackDescription"
+												:class="{ 'is-danger': errorField === 'trackDescription' }"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                        <!-- FAVORITE -->
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Favorite?</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <label class="switch is-rounded">
-                                        <input type="checkbox" x-model="trackFav">
-                                        <span class="check is-info"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+						<!-- FAVORITE -->
+						<div class="field is-horizontal">
+							<label class="field-label is-normal">Favorite?</label>
+							<div class="field-body">
+								<div class="field">
+									<label class="switch is-rounded">
+										<input type="checkbox" x-model="trackFav">
+										<span class="check is-info"></span>
+									</label>
+								</div>
+							</div>
+						</div>
 
-                        <!-- DIFFICULTY -->
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Difficulty</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="buttons has-addons">
-                                        <button
-                                            class="button"
-                                            :class="{ 'has-background-grey-light is-selected': trackLevel === 'Easy' }"
-                                            @click="trackLevel = 'Easy'">
-                                            Easy
-                                        </button>
+						<!-- DIFFICULTY -->
+						<div class="field is-horizontal">
+							<label class="field-label is-normal">Difficulty</label>
+							<div class="field-body">
+								<div class="field">
+									<div class="buttons has-addons">
+										<button
+											class="button"
+											:class="{ 'has-background-grey-light is-selected': trackLevel === 'Easy' }"
+											@click="trackLevel = 'Easy'">
+											Easy
+										</button>
 
-                                        <button
-                                            class="button"
-                                            :class="{ 'has-background-grey-light is-selected': trackLevel === 'Moderate' }"
-                                            @click="trackLevel = 'Moderate'">
-                                            Moderate
-                                        </button>
+										<button
+											class="button"
+											:class="{ 'has-background-grey-light is-selected': trackLevel === 'Moderate' }"
+											@click="trackLevel = 'Moderate'">
+											Moderate
+										</button>
 
-                                        <button
-                                            class="button"
-                                            :class="{ 'has-background-grey-light is-selected': trackLevel === 'Difficult' }"
-                                            @click="trackLevel = 'Difficult'">
-                                            Difficult
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+										<button
+											class="button"
+											:class="{ 'has-background-grey-light is-selected': trackLevel === 'Difficult' }"
+											@click="trackLevel = 'Difficult'">
+											Difficult
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                        <!-- ACTIVITY -->
-                        <div class="field is-horizontal">
-                            <label class="field-label is-normal">Activity</label>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control">
-                                        <div class="select">
-                                            <select x-model="trackType">
-                                                <option>Hiking</option>
-                                                <option>Biking</option>
-                                                <option>Boating</option>
-                                                <option>Offroad</option>
-                                                <option>Motorcycling</option>
-                                                <option>Flying</option>
-                                                <option>Skiing</option>
-                                                <option>Snowshoeing</option>
-                                                <option>Getting There</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+						<!-- ACTIVITY -->
+						<div class="field is-horizontal">
+							<label class="field-label is-normal">Activity</label>
+							<div class="field-body">
+								<div class="field">
+									<div class="control">
+										<div class="select">
+											<select x-model="trackType">
+												<option>Hiking</option>
+												<option>Biking</option>
+												<option>Boating</option>
+												<option>Offroad</option>
+												<option>Motorcycling</option>
+												<option>Flying</option>
+												<option>Skiing</option>
+												<option>Snowshoeing</option>
+												<option>Getting There</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                    </div>
-                </div>
+					</div>
+				</div>
 
                 <!-- PHOTOS TAB -->
                 <div x-show="tab === 'photos'">
