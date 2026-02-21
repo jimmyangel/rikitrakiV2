@@ -43,6 +43,13 @@ export function validateDescription(value) {
     return null
 }
 
+export function validateFileRequired(file, fieldLabel = 'File') {
+    if (!file) {
+        return `${fieldLabel} is required`
+    }
+    return null
+}
+
 export function validateAll(formName, component) {
     const rules = component.validators[formName]
 

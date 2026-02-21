@@ -1,6 +1,7 @@
 import {
     validateTrackName,
     validateDescription,
+	validateFileRequired,
     validateAll
 } from '../utils/validation.js'
 
@@ -80,12 +81,13 @@ export default function (Alpine) {
         },
 
         // --- VALIDATORS ---
-        validators: {
-            info: {
-                trackName: validateTrackName,
-                trackDescription: validateDescription
-            }
-        },
+		validators: {
+			info: {
+				gpxFile: (value, ctx) => validateFileRequired(ctx.trackGPXBlob, 'GPX file'),
+				trackName: validateTrackName,
+				trackDescription: validateDescription
+			}
+		},
 
         // --- GPX VALIDATION ---
         async validateGpx(file) {
