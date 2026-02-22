@@ -184,7 +184,7 @@ export default function (Alpine) {
         },
 
         // --- IMAGE RESIZING (300x225 center-crop) ---
-        async resizeImage(file) {
+        async createThumbnail(file) {
             const W = 300
             const H = 225
 
@@ -215,6 +215,55 @@ export default function (Alpine) {
                 reader.readAsDataURL(file)
             })
         },
+
+		async normalizeImage(file) {
+			const maxBytes = 1_000_000
+			const maxWidth = 2048
+
+			// If already small enough, skip everything
+			if (file.size <= maxBytes) {
+				return file
+			}
+
+			// Load image
+			const img = await new Promise((resolve, reject) => {
+				const i = new Image()
+				i.onload = () => resolve(i)
+				i.onerror = reject
+				i.src = URL.createObjectURL(file)
+			})
+
+			// Determine target dimensions
+			let targetWidth = img.naturalWidth
+			let targetHeight = img.naturalHeight
+
+			if (img.naturalWidth > maxWidth) {
+				targetWidth = maxWidth
+				targetHeight = img.naturalHeight * (maxWidth / img.naturalWidth)
+			}
+
+			// Draw resized image to canvas
+			const canvas = document.createElement('canvas')
+			canvas.width = targetWidth
+			canvas.height = targetHeight
+			const ctx = canvas.getContext('2d')
+			ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
+
+			// Iteratively compress until <= 1MB
+			let quality = 0.92
+			let blob = await new Promise(resolve =>
+				canvas.toBlob(resolve, 'image/jpeg', quality)
+			)
+
+			while (blob.size > maxBytes && quality > 0.5) {
+				quality -= 0.05
+				blob = await new Promise(resolve =>
+					canvas.toBlob(resolve, 'image/jpeg', quality)
+				)
+			}
+
+			return new File([blob], file.name, { type: 'image/jpeg' })
+		},
 
         // --- EXIF HELPERS ---
         convertDMSToDD(dms) {
@@ -261,15 +310,18 @@ export default function (Alpine) {
 					break
 				}
 
-				// Resize for preview
-				const preview = await this.resizeImage(file)
-
-				// Extract EXIF
+				// 1) EXIF from original file (keeps GPS + timestamp working)
 				const { gps, timestamp } = await this.extractExif(file)
+
+				// 2) Normalize for size/resolution
+				const normalized = await this.normalizeImage(file)
+
+				// 3) Thumbnail from normalized file
+				const preview = await this.createThumbnail(normalized)
 
 				// --- SCHEMA OBJECT ---
 				this.trackPhotos.push({
-					picName: file.name,
+					picName: normalized.name,
 					picThumb: '',        // filled after upload
 					picLatLng: gps,      // EXIF GPS or null
 					picCaption: ''
@@ -285,7 +337,6 @@ export default function (Alpine) {
 
 			this.hasPhotos = this.trackPhotos.length > 0
 
-			// Recompute interpolated GPS if needed
 			if (this.trackCoordinates.length) {
 				this.assignLatLngToPhotos()
 			}
