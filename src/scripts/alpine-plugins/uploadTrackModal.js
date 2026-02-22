@@ -55,7 +55,6 @@ export default function (Alpine) {
         },
 
         clearForm() {
-			console.log('clear')
             this.tab = 'info'
 
 			this.trackGPXBlob = null
