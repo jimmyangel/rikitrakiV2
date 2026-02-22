@@ -346,6 +346,7 @@ export default function (Alpine) {
 		async selectPhotos(event) {
 			const files = Array.from(event.target.files || [])
 			await this.addPhotos(files)
+			event.target.value = ''
 		},
 
         assignLatLngToPhotos() {
