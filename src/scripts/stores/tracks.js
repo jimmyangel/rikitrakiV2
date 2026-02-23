@@ -203,7 +203,6 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
 
 async function loadMotd(store) {
-    console.log("loadMotd called with", getUsernameFromUrl())
     const username = getUsernameFromUrl() 
 
     const { motdTracks } = await getMotd(username)

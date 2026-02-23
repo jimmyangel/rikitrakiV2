@@ -17,11 +17,11 @@ import { Icon } from 'astro-icon/components'
 
         <nav class="navbar is-fixed-top is-dark" role="navigation" aria-label="main navigation" x-data="{ open: false }">
             <div class="navbar-brand">
-                <a class="navbar-item" style="padding: 0px;">
+                <a class="navbar-item" style="padding: 0px;" href="/">
                     <Logo />
                 </a>
                 <p class="navbar-item is-size-4">
-                    <span class="username" x-text="$store.user.usernameFromUrl"></span>
+                    <span class="username" :class="{ 'user-icon-logged-in': $store.user.isLoggedIn }" x-text="$store.user.usernameFromUrl"></span>
                 </p>
                 <a role="button" class="navbar-burger has-text-white" :class="{ 'is-active': open }" @click="open = !open" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
