@@ -35,6 +35,8 @@ export default function (Alpine) {
         hasPhotos: false,
         trackPhotos: [],   // schema objects only
 
+		photos: [], // File objects
+
         // --- UI-ONLY FIELDS ---
         photoMeta: [],     // { preview, timestamp, hasExifGps }
         timeOffset: 0,
@@ -203,38 +205,38 @@ export default function (Alpine) {
             this.assignLatLngToPhotos()
         },
 
-        // --- IMAGE RESIZING (300x225 center-crop) ---
-        async createThumbnail(file) {
-            const W = 300
-            const H = 225
+		// --- IMAGE RESIZING (300x225 center-crop) ---
+		async createThumbnail(file) {
+			const W = 300
+			const H = 225
 
-            return new Promise(resolve => {
-                const reader = new FileReader()
-                reader.onload = e => {
-                    const img = new Image()
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas')
-                        canvas.width = W
-                        canvas.height = H
+			return new Promise(resolve => {
+				const reader = new FileReader()
+				reader.onload = e => {
+					const img = new Image()
+					img.onload = () => {
+						const canvas = document.createElement('canvas')
+						canvas.width = W
+						canvas.height = H
 
-                        const ctx = canvas.getContext('2d')
+						const ctx = canvas.getContext('2d')
 
-                        const scale = Math.max(W / img.width, H / img.height)
-                        const scaledWidth = img.width * scale
-                        const scaledHeight = img.height * scale
+						const scale = Math.max(W / img.width, H / img.height)
+						const scaledWidth = img.width * scale
+						const scaledHeight = img.height * scale
 
-                        const offsetX = (W - scaledWidth) / 2
-                        const offsetY = (H - scaledHeight) / 2
+						const offsetX = (W - scaledWidth) / 2
+						const offsetY = (H - scaledHeight) / 2
 
-                        ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight)
+						ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight)
 
-                        resolve(canvas.toDataURL('image/jpeg', 0.85))
-                    }
-                    img.src = e.target.result
-                }
-                reader.readAsDataURL(file)
-            })
-        },
+						resolve(canvas.toDataURL('image/jpeg', 0.85))
+					}
+					img.src = e.target.result
+				}
+				reader.readAsDataURL(file)
+			})
+		},
 
 		async normalizeImage(file) {
 			const maxBytes = 1_000_000
@@ -285,12 +287,12 @@ export default function (Alpine) {
 			return new File([blob], file.name, { type: 'image/jpeg' })
 		},
 
-        // --- EXIF HELPERS ---
-        convertDMSToDD(dms) {
-            if (!Array.isArray(dms) || dms.length !== 3) return null
-            const [deg, min, sec] = dms
-            return deg + (min / 60) + (sec / 3600)
-        },
+		// --- EXIF HELPERS ---
+		convertDMSToDD(dms) {
+			if (!Array.isArray(dms) || dms.length !== 3) return null
+			const [deg, min, sec] = dms
+			return deg + (min / 60) + (sec / 3600)
+		},
 
 		async extractExif(file) {
 			try {
@@ -319,14 +321,14 @@ export default function (Alpine) {
 				console.warn('EXIF parsing failed:', err)
 				return { gps: null, timestamp: null }
 			}
-		},	
+		},  
 
 		async addPhotos(files) {
 			const MAX = 8
 
 			for (const file of files) {
 				if (this.trackPhotos.length >= MAX) {
-					this.$store.ui.error = `Maximum of ${MAX} photos allowed`
+					Alpine.store('ui').error = `Maximum of ${MAX} photos allowed`
 					break
 				}
 
@@ -337,22 +339,26 @@ export default function (Alpine) {
 				const normalized = await this.normalizeImage(file)
 
 				// 3) Thumbnail from normalized file
-				const preview = await this.createThumbnail(normalized)
+				const thumbDataUrl = await this.createThumbnail(normalized)
 
 				// --- SCHEMA OBJECT ---
 				this.trackPhotos.push({
 					picName: normalized.name,
 					picThumb: '',        // filled after upload
 					picLatLng: gps,      // EXIF GPS or null
-					picCaption: ''
+					picCaption: '',
+					picThumbDataUrl: thumbDataUrl
 				})
 
 				// --- UI METADATA ---
 				this.photoMeta.push({
-					preview,
+					preview: thumbDataUrl,
 					timestamp,
 					hasExifGps: !!gps
 				})
+
+				// Keep normalized file for upload
+				this.photos.push(normalized)
 			}
 
 			this.hasPhotos = this.trackPhotos.length > 0
@@ -362,50 +368,50 @@ export default function (Alpine) {
 			}
 		},
 
-        // --- PHOTO SELECTION ---
+		// --- PHOTO SELECTION ---
 		async selectPhotos(event) {
 			const files = Array.from(event.target.files || [])
 			await this.addPhotos(files)
 			event.target.value = ''
 		},
 
-        assignLatLngToPhotos() {
+		assignLatLngToPhotos() {
 
-            if (!this.trackCoordinates.length) return
-            if (!this.trackPhotos.length) return
+			if (!this.trackCoordinates.length) return
+			if (!this.trackPhotos.length) return
 
-            for (let i = 0; i < this.trackPhotos.length; i++) {
-                const meta = this.photoMeta[i]
-                const photo = this.trackPhotos[i]
+			for (let i = 0; i < this.trackPhotos.length; i++) {
+				const meta = this.photoMeta[i]
+				const photo = this.trackPhotos[i]
 
-                if (meta.hasExifGps) continue
-                if (!meta.timestamp) continue
+				if (meta.hasExifGps) continue
+				if (!meta.timestamp) continue
 
-                const shifted = meta.timestamp + this.timeOffset * 3600 * 1000
-                photo.picLatLng = this.interpolateTrackLatLng(shifted)
-            }
-        },
+				const shifted = meta.timestamp + this.timeOffset * 3600 * 1000
+				photo.picLatLng = this.interpolateTrackLatLng(shifted)
+			}
+		},
 
-        interpolateTrackLatLng(ts) {
-            const coords = this.trackCoordinates
-            if (!coords.length) return null
+		interpolateTrackLatLng(ts) {
+			const coords = this.trackCoordinates
+			if (!coords.length) return null
 
-            for (let i = 0; i < coords.length - 1; i++) {
-                const a = coords[i]
-                const b = coords[i + 1]
+			for (let i = 0; i < coords.length - 1; i++) {
+				const a = coords[i]
+				const b = coords[i + 1]
 
-                if (!a.timestamp || !b.timestamp) continue
+				if (!a.timestamp || !b.timestamp) continue
 
-                if (ts >= a.timestamp && ts <= b.timestamp) {
-                    const ratio = (ts - a.timestamp) / (b.timestamp - a.timestamp)
-                    const lat = a.lat + ratio * (b.lat - a.lat)
-                    const lon = a.lon + ratio * (b.lon - a.lon)
-                    return [lon, lat]
-                }
-            }
+				if (ts >= a.timestamp && ts <= b.timestamp) {
+					const ratio = (ts - a.timestamp) / (b.timestamp - a.timestamp)
+					const lat = a.lat + ratio * (b.lat - a.lat)
+					const lon = a.lon + ratio * (b.lon - a.lon)
+					return [lon, lat]
+				}
+			}
 
-            return null
-        },
+			return null
+		},
 
         // --- DRAG/DROP REORDER ---
         startDrag(i) {
@@ -431,23 +437,53 @@ export default function (Alpine) {
 		},
 
         // --- UPLOAD ---
-        async upload() {
-            this.$store.ui.error = null
+		async upload() {
+			// Validate name + description (info tab)
+			if (!validateAll('info', this)) return
 
-            if (!validateAll('info', this)) return
+			// Assign picThumb based on final order
+			for (let i = 0; i < this.trackPhotos.length; i++) {
+				this.trackPhotos[i].picThumb = i.toString()
+			}
 
-            this.$store.ui.uploading = true
-            this.$store.ui.showInfo('Uploading…', 3000)
+			// Delegate to the tracks store
+			const result = await Alpine.store('tracks').uploadTrack({
+				trackLatLng: this.trackLatLng,
+				trackRegionTags: this.trackRegionTags,
+				trackLevel: this.trackLevel,
+				trackType: this.trackType,
+				trackFav: this.trackFav,
+				trackGPX: this.trackGPX,
+				trackGPXBlob: this.trackGPXBlob,
+				trackName: this.trackName,
+				trackDescription: this.trackDescription,
+				hasPhotos: this.hasPhotos,
+				trackPhotos: this.trackPhotos,
+				photos: this.photos
+			})
 
-            this.uploaded = false
+			// Fake trackId for now (replace with result.trackId later)
+			const trackId = "T0001"
 
-            await new Promise(r => setTimeout(r, 800))
+			this.uploaded = true
 
-            this.$store.ui.uploading = false
-            this.uploaded = true
+			// ------------------------------------------------------------
+			// POST‑UPLOAD FLOW
+			// ------------------------------------------------------------
 
-            this.$store.ui.showInfo('Track uploaded.', 3000)
-        }
+			// 1. Set search center to the track’s trailhead
+			const [lat, lon] = this.trackLatLng
+			this.$store.tracks.setSearchCenter(lat, lon, {
+				fly: false,
+				skipHistory: true
+			})
+
+			// 2. Open the track (reading from DB later)
+			//    For now, this uses the fake trackId above.
+			this.$store.tracks.openTrack(trackId)
+
+			this.$store.ui.showUploadTrackModal = false
+		}
 
     }))
 }

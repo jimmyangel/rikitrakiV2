@@ -3,6 +3,7 @@ import { getTracksByLoc } from '../data/getTracksByLoc'
 import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
+import { uploadTrack } from '../data/uploadTrack.js'
 import {
     parseGPXtoGeoJSON,
     computeBounds,
@@ -437,8 +438,42 @@ export default function initTracksStore(Alpine) {
             const activeTrackId = this.activeTrackId
             map.showAllSearchMarkersExcept(activeTrackId)
             map.showSearchCenter()
-        }
+        },
 
+        async uploadTrack(payload) {
+            // Reset UI state
+            Alpine.store('ui').error = null
+            Alpine.store('ui').uploading = true
+            Alpine.store('ui').showInfo('Uploading…', 3000)
+
+            try {
+                // Delegate to data layer
+                const result = await uploadTrack(payload)
+
+                Alpine.store('ui').uploading = false
+
+                if (!result.ok) {
+                    Alpine.store('ui').error = 'Upload failed.'
+                    return
+                }
+
+                // Success
+                Alpine.store('ui').showInfo('Track uploaded.', 3000)
+
+                // Optionally: refresh track list here
+                // await this.loadTracks()
+
+                return result.trackId
+
+            } catch (err) {
+                console.error('uploadTrack() store error:', err)
+
+                Alpine.store('ui').uploading = false
+                Alpine.store('ui').error = 'Unexpected upload error.'
+
+                return null
+            }
+        }
     })
 
     Alpine.store('tracks').openTrack = openTrack
