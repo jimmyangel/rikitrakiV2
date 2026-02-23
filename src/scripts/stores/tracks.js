@@ -15,6 +15,7 @@ import {
 } from '../utils/geoUtils.js'
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 import { pushHistory } from '../utils/history.js'
+import { getUsernameFromUrl } from '../utils/env.js'
 
 //
 // Helpers (must be ABOVE Alpine.store)
@@ -42,11 +43,6 @@ function filterTracks(all, filter) {
         const haystack = buildHaystack(track)
         return tokens.every(token => haystack.includes(token))
     })
-}
-
-function getUsernameFromUrl() {
-    const seg = window.location.pathname.split('/').filter(Boolean)
-    return seg.length === 1 ? seg[0] : null
 }
 
 async function reloadTracks(store, { fly = true } = {}) {
@@ -207,6 +203,7 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
 
 async function loadMotd(store) {
+    console.log("loadMotd called with", getUsernameFromUrl())
     const username = getUsernameFromUrl() 
 
     const { motdTracks } = await getMotd(username)
@@ -217,7 +214,6 @@ async function loadMotd(store) {
         title
     }))
 }
-
 
 //
 // Alpine store

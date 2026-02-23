@@ -3,6 +3,7 @@ import { getResetToken } from '../data/getResetToken.js'
 import { updateUserProfile } from '../data/updateUserProfile.js'
 import { createUser } from '../data/createUser.js'
 import { setUsernamePath } from '../utils/history.js'
+import { getUsernameFromUrl } from '../utils/env.js'
 
 export default function initUserStore(Alpine) {
 
@@ -10,6 +11,7 @@ export default function initUserStore(Alpine) {
 
         username: null,
         token: null,
+		usernameFromUrl: null,
 
         //
         // Derived state
@@ -29,6 +31,8 @@ export default function initUserStore(Alpine) {
                 this.username = u
                 this.token = t
             }
+
+			this.usernameFromUrl = getUsernameFromUrl()
         },
 
         //
@@ -96,10 +100,14 @@ export default function initUserStore(Alpine) {
 		applyUsernameToUrl() {
 			if (!this.username) return
 			setUsernamePath(this.username)
+			this.usernameFromUrl = getUsernameFromUrl()
+			Alpine.store('tracks').loadMotd()
 		},
 
 		removeUsernameFromUrl() {
 			setUsernamePath(null)
+			this.usernameFromUrl = null
+			Alpine.store('tracks').loadMotd()
 		},
 
 		async reset(email) {

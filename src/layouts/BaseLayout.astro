@@ -20,7 +20,9 @@ import { Icon } from 'astro-icon/components'
                 <a class="navbar-item" style="padding: 0px;">
                     <Logo />
                 </a>
-
+                <p class="navbar-item is-size-4">
+                    <span class="username" x-text="$store.user.usernameFromUrl"></span>
+                </p>
                 <a role="button" class="navbar-burger has-text-white" :class="{ 'is-active': open }" @click="open = !open" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
@@ -89,6 +91,30 @@ import { Icon } from 'astro-icon/components'
 
     .user-icon-logged-in {
         color: #8fd48f;
+    }
+
+    .username {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 136px; /* default for 320px */
+    }
+
+    @media (min-width: 360px) {
+        .username { max-width: 153px; }
+    }
+
+    @media (min-width: 375px) {
+        .username { max-width: 159px; }
+    }
+
+    @media (min-width: 768px) {
+        .username { max-width: 326px; }
+    }
+
+    @media (min-width: 1024px) {
+        .username { max-width: 435px; }
     }
 
 </style>

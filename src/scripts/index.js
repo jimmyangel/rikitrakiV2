@@ -3,7 +3,7 @@ import * as map from './mapper/map'
 import { getApproxLocation } from './utils/geoUtils'
 import { sanitizeUrl } from './utils/sanitizeUrl'
 import { initFromUrl } from './utils/history'
-import { isIOS, isChromeOniPad } from './utils/env'
+import { isIOS, isChromeOniPad, getUsernameFromUrl } from './utils/env'
 import { constants } from './config'
 
 // ------------------------------------------------------------
@@ -84,12 +84,19 @@ export default async function initApp() {
 	let lastPathname = window.location.pathname
 
 	window.addEventListener('popstate', async e => {
-
 		const state = e.state || {}
 		const tracks = Alpine.store('tracks')
+		const user = Alpine.store('user')
 
 		const currentPath = window.location.pathname
 		lastPathname = currentPath
+
+		// Restore username from URL
+		const newUsername = getUsernameFromUrl()
+		if (user.usernameFromUrl !== newUsername) {
+			user.usernameFromUrl = newUsername
+			tracks.loadMotd()
+		}
 
 		// 1. Track restoration always wins if state has a trackId
 		if (state.trackId) {
