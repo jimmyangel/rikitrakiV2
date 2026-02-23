@@ -110,9 +110,6 @@ export default function (Alpine) {
 			}
 
 			// Reject GPX files that contain routes (<rte>)
-			// This is the earliest, cheapest check.
-			console.log(fc)
-			// Reject GPX files that contain routes (<rte>)
 			if (fc.features.some(f => f.properties?._gpxType === 'rte')) {
 				this.$store.ui.error = 'Routes are not supported. Please upload a GPX track.'
 				return null
