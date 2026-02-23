@@ -96,38 +96,62 @@ export default function (Alpine) {
 			}
 		},
 
-        // --- GPX VALIDATION ---
-        async validateGpx(file) {
-            this.$store.ui.error = null
-            this.$store.ui.info = null
+		// --- GPX VALIDATION ---
+		async validateGpx(file) {
+			this.$store.ui.error = null
+			this.$store.ui.info = null
 
-            let fc
-            try {
-                fc = await parseGPXtoGeoJSON(file)
-            } catch (e) {
-                this.$store.ui.error = 'This GPX file is invalid or unreadable.'
-                return null
-            }
+			let fc
+			try {
+				fc = await parseGPXtoGeoJSON(file)
+			} catch (e) {
+				this.$store.ui.error = 'This GPX file is invalid or unreadable.'
+				return null
+			}
 
-            let single
-            try {
-                single = extractSingleLineString(fc, { useRealTimestamps: true })
-            } catch (e) {
-                this.$store.ui.error = 'This GPX file contains no valid track.'
-                return null
-            }
+			// Reject GPX files that contain routes (<rte>)
+			// This is the earliest, cheapest check.
+			console.log(fc)
+			// Reject GPX files that contain routes (<rte>)
+			if (fc.features.some(f => f.properties?._gpxType === 'rte')) {
+				this.$store.ui.error = 'Routes are not supported. Please upload a GPX track.'
+				return null
+			}
 
-            if (!single.geometry.coordinates ||
-                single.geometry.coordinates.length < 2) {
-                this.$store.ui.error = 'This GPX file contains no valid track.'
-                return null
-            }
+			let single
+			try {
+				single = extractSingleLineString(fc, { useRealTimestamps: true })
+			} catch (e) {
+				this.$store.ui.error = 'This GPX file contains no valid track.'
+				return null
+			}
 
-            const bounds = computeBounds({ features: [single] })
-            if (!isFinite(bounds.west) || !isFinite(bounds.east)) {
-                this.$store.ui.error = 'Track bounds could not be computed.'
-                return null
-            }
+			if (!single.geometry.coordinates ||
+				single.geometry.coordinates.length < 2) {
+				this.$store.ui.error = 'This GPX file contains no valid track.'
+				return null
+			}
+
+			// Reject missing timestamps
+			const times = single.properties.coordTimes
+			if (!times || times.length < 2 || times.some(t => !t)) {
+				this.$store.ui.error = 'This GPX track does not contain timestamps.'
+				return null
+			}
+
+			// Reject missing elevation
+			const coords = single.geometry.coordinates
+			const hasElevation = coords.every(c => c.length >= 3 && typeof c[2] === 'number')
+			if (!hasElevation) {
+				this.$store.ui.error = 'This GPX track does not contain elevation data.'
+				return null
+			}
+
+			const bounds = computeBounds({ features: [single] })
+			if (!isFinite(bounds.west) || !isFinite(bounds.east)) {
+				this.$store.ui.error = 'Track bounds could not be computed.'
+				return null
+			}
 
 			this.$store.ui.info = 'GPX loaded successfully'
 
@@ -135,8 +159,8 @@ export default function (Alpine) {
 				this.$store.ui.info = ''
 			}, 2500)
 
-            return single
-        },
+			return single
+		},
 
         // --- FILE HANDLERS ---
         async selectGpxFile(event) {
