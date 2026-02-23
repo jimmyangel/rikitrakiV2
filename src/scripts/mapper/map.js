@@ -5,6 +5,7 @@ import { constants } from '../config.js'
 export let viewer = null
 let searchCenterEntity = null
 let searchCenterRingEntity = null
+let searchCenterFillEntity = null
 
 // Permanent search‑area DataSource (created once)
 let trackDataSource = null
@@ -267,13 +268,54 @@ export function waitForTerrainTiles() {
     })
 }
 
+function computeOffset(center, bearing, distance) {
+    const ellipsoid = Cesium.Ellipsoid.WGS84
+
+    const geodesic = new Cesium.EllipsoidGeodesic()
+    geodesic.setEndPoints(center, center)
+
+    // Cesium doesn't expose forward geodesic directly,
+    // so we compute using spherical approximation (accurate enough for km-scale)
+    const R = ellipsoid.maximumRadius
+    const δ = distance / R
+
+    const φ1 = center.latitude
+    const λ1 = center.longitude
+
+    const φ2 = Math.asin(
+        Math.sin(φ1) * Math.cos(δ) +
+        Math.cos(φ1) * Math.sin(δ) * Math.cos(bearing)
+    )
+
+    const λ2 = λ1 + Math.atan2(
+        Math.sin(bearing) * Math.sin(δ) * Math.cos(φ1),
+        Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2)
+    )
+
+    return new Cesium.Cartographic(λ2, φ2)
+}
+
+function makeTrueCircle(lon, lat, radiusMeters, segments = 128) {
+    const center = Cesium.Cartographic.fromDegrees(lon, lat)
+    const positions = []
+
+    for (let i = 0; i < segments; i++) {
+        const bearing = (i / segments) * 2 * Math.PI
+        const dest = computeOffset(center, bearing, radiusMeters)
+        positions.push(dest.longitude, dest.latitude)
+    }
+
+    return Cesium.Cartesian3.fromRadiansArray(positions)
+}
+
 export function updateSearchCenterMarker(lat, lon, radiusKm = null) {
     if (!viewer) return
+    if (lat == null || lon == null) return
 
     const position = Cesium.Cartesian3.fromDegrees(lon, lat)
 
     //
-    // 1. Create or update the POINT
+    // Create or update the POINT
     //
     if (!searchCenterEntity) {
         searchCenterEntity = viewer.entities.add({
@@ -294,30 +336,42 @@ export function updateSearchCenterMarker(lat, lon, radiusKm = null) {
     }
 
     //
-    // 2. Create or update the RING
+    // Create or update the donut (outer circle with inner hole)
     //
     if (radiusKm !== null) {
         const radiusMeters = radiusKm * 1000
 
-        if (!searchCenterRingEntity) {
-            searchCenterRingEntity = viewer.entities.add({
-                id: 'search-center-ring',
-                position,
-                ellipse: {
-                    semiMajorAxis: radiusMeters,
-                    semiMinorAxis: radiusMeters,
+        // Outer circle
+        const outerRadius = radiusMeters + 10000
+        const outerPositions = makeTrueCircle(lon, lat, outerRadius)
+
+        // Inner circle: search radius
+        const innerPositions = makeTrueCircle(lon, lat, radiusMeters)
+
+        const hierarchy = {
+            positions: outerPositions,
+            holes: [
+                { positions: innerPositions }
+            ]
+        }
+
+        if (!searchCenterFillEntity) {
+            searchCenterFillEntity = viewer.entities.add({
+                id: 'search-center-fill',
+                polygon: {
+                    hierarchy,
+                    material: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.4),
+                    outline: false,
                     height: 0,
-                    material: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.0),
-                    outline: true,
-                    outlineColor: Cesium.Color.fromCssColorString('#e38b2c')
+                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
                 }
             })
         } else {
-            searchCenterRingEntity.position = position
-            searchCenterRingEntity.ellipse.semiMajorAxis = radiusMeters
-            searchCenterRingEntity.ellipse.semiMinorAxis = radiusMeters
+            searchCenterFillEntity.polygon.hierarchy = hierarchy
         }
     }
+
+
 }
 
 export function flyToBounds(bounds) {
