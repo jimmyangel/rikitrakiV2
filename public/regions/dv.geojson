@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-50.026235,28.125],[-45,28.125],[-45,33.75],[-50.405453,33.75],[-50.026235,32.341476],[-50.026235,28.125]]]},"properties":{"country":"Ocean","region":"North Atlantic Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-50.405453,33.75],[-56.25,33.75],[-56.25,28.125],[-50.026235,28.125],[-50.026235,32.341476],[-50.405453,33.75]]]},"properties":{"country":"Ocean","region":"Sargasso Sea","type":"ocean"}}
+]}

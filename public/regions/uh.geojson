@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[0,72.988144],[0,67.5],[11.25,67.5],[11.25,73.125],[0.61784,73.125],[0,72.988144]]]},"properties":{"country":"Ocean","region":"Norwegian Sea","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[0.61784,73.125],[0,73.125],[0,72.988144],[0.61784,73.125]]]},"properties":{"country":"Ocean","region":"Greenland Sea","type":"ocean"}}
+]}

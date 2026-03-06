@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[153.972992,24.2897],[153.972016,24.284817],[153.978282,24.282416],[153.983653,24.282945],[153.985606,24.291083],[153.981212,24.295356],[153.972992,24.2897]]],[[[153.966238,24.308661],[153.953705,24.315823],[153.940684,24.311469],[153.953461,24.292507],[153.966238,24.308661]]]]},"properties":{"country":"Japan","region":"Tokyo","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[157.5,22.5],[157.5,28.125],[146.25,28.125],[146.25,22.5],[157.5,22.5]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}}
+]}

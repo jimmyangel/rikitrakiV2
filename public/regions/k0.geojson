@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[0,-45],[11.25,-45],[11.25,-39.375],[0,-39.375],[0,-45]]]},"properties":{"country":"Ocean","region":"South Atlantic Ocean","type":"ocean"}}
+]}

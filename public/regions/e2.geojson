@@ -1,0 +1,5 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-29.40803,0.884833],[-29.423411,0.871568],[-29.426381,0.858547],[-29.421213,0.844713],[-29.410268,0.834866],[-29.390126,0.831732],[-29.369374,0.833564],[-29.357737,0.841132],[-29.349029,0.852607],[-29.345326,0.866645],[-29.356191,0.882758],[-29.381459,0.891343],[-29.40803,0.884833]]]},"properties":{"country":"Brazil","region":"Rio Grande do Norte","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-22.5,0.027364],[-22.5,5.625],[-33.75,5.625],[-33.75,0.025234],[-22.5,0.027364]]]},"properties":{"country":"Ocean","region":"North Atlantic Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-33.75,0.025234],[-33.75,0],[-22.5,0],[-22.5,0.027364],[-33.75,0.025234]]]},"properties":{"country":"Ocean","region":"South Atlantic Ocean","type":"ocean"}}
+]}

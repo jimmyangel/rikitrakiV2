@@ -1,0 +1,5 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-67.5,-60.533462],[-67.5,-61.875],[-57.252872,-61.875],[-56.25,-61.552122],[-56.25,-60.533462],[-67.5,-60.533462]]]},"properties":{"country":"Ocean","region":"SOUTHERN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-56.25,-60.533462],[-56.25,-56.25],[-67.5,-56.25],[-67.5,-60.533462],[-56.25,-60.533462]]]},"properties":{"country":"Ocean","region":"South Atlantic Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-57.252872,-61.875],[-56.25,-61.875],[-56.25,-61.552122],[-57.252872,-61.875]]]},"properties":{"country":"Ocean","region":"Bransfield Strait","type":"ocean"}}
+]}

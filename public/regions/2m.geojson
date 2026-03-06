@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-168.16157,-14.532892],[-168.160471,-14.520929],[-168.163523,-14.519789],[-168.173085,-14.523696],[-168.16157,-14.532892]]]},"properties":{"country":"American Samoa","region":"Rose Atoll","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-168.75,-16.875],[-157.5,-16.875],[-157.5,-11.25],[-168.75,-11.25],[-168.75,-16.875]]]},"properties":{"country":"Ocean","region":"South Pacific Ocean","type":"ocean"}}
+]}

@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[179.999897,45],[168.75,45],[168.75,39.375],[179.999897,39.375],[179.999897,45]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}}
+]}

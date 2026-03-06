@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-160.029978,-0.376153],[-160.02477,-0.388767],[-160.012441,-0.382094],[-160.008901,-0.372491],[-160.029978,-0.376153]]]},"properties":{"country":"United States Minor Outlying Islands","region":"Jarvis Island","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-168.75,-5.625],[-157.5,-5.625],[-157.5,0],[-168.75,0],[-168.75,-5.625]]]},"properties":{"country":"Ocean","region":"South Pacific Ocean","type":"ocean"}}
+]}

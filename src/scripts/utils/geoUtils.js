@@ -1,4 +1,5 @@
 import { gpx } from '@tmcw/togeojson'
+import { reverseGeocode } from './revgeo/reverseGeocode.js'
 
 export function haversineKm(lat1, lon1, lat2, lon2) {
     const R = 6371 // km
@@ -325,36 +326,21 @@ export function computeProfileArrays(geojson) {
 }
 
 export async function detectRegion(lat, lon) {
-    try {
-        const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=5&addressdetails=1`
+    const result = await reverseGeocode(lat, lon)
 
-        const res = await fetch(url, {
-            headers: {
-                'User-Agent': 'Rikitraki/1.0 (https://rikitraki.com)'
-            }
-        })
-
-        if (!res.ok) throw new Error()
-
-        const data = await res.json()
-        const addr = data.address || {}
-
-        const country = addr.country || null
-        const state =
-            addr.state ||
-            addr.region ||
-            addr.province ||
-            addr.state_district ||
-            null
-
-        if (country && state) return [country, state]
-        if (country) return [country]
-        return null
-
-    } catch (e) {
+    if (result === null) {
         return null
     }
+
+    const { country, region } = result
+
+    // Preserve legacy behavior: return [country, region] or [country]
+    if (country && region) return [country, region]
+    if (country) return [country]
+
+    return null
 }
+
 
 
 

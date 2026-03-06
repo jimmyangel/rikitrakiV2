@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-11.25,-60.533462],[-11.25,-61.875],[0,-61.875],[0,-60.533462],[-11.25,-60.533462]]]},"properties":{"country":"Ocean","region":"SOUTHERN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[0,-60.533462],[0,-56.25],[-11.25,-56.25],[-11.25,-60.533462],[0,-60.533462]]]},"properties":{"country":"Ocean","region":"South Atlantic Ocean","type":"ocean"}}
+]}

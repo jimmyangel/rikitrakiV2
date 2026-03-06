@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[165.540212,11.633775],[165.553722,11.619818],[165.550629,11.626939],[165.546886,11.631008],[165.542817,11.633002],[165.540212,11.633775]]],[[[165.282237,11.695787],[165.28891,11.705959],[165.286794,11.710883],[165.282237,11.708441],[165.282237,11.695787]]]]},"properties":{"country":"Marshall Islands","region":"Railik Chain","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[157.5,11.25],[168.75,11.25],[168.75,16.875],[157.5,16.875],[157.5,11.25]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}}
+]}

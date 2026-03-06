@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-112.5,0.259881],[-112.5,5.625],[-123.75,5.625],[-123.75,0.259881],[-112.5,0.259881]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-123.75,0.259881],[-123.75,0],[-112.5,0],[-112.5,0.259881],[-123.75,0.259881]]]},"properties":{"country":"Ocean","region":"South Pacific Ocean","type":"ocean"}}
+]}

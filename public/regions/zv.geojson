@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[172.965771,73.125],[179.999897,73.125],[179.999897,78.75],[168.75,78.75],[168.75,74.207393],[172.965771,73.125]]]},"properties":{"country":"Ocean","region":"Arctic Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[168.75,74.207393],[168.75,73.125],[172.965771,73.125],[168.75,74.207393]]]},"properties":{"country":"Ocean","region":"East Siberian Sea","type":"ocean"}}
+]}

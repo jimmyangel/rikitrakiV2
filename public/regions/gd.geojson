@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-13.690419,57.596259],[-13.688588,57.596259],[-13.687652,57.596869],[-13.687652,57.597154],[-13.688588,57.597805],[-13.690419,57.597805],[-13.691314,57.597154],[-13.691314,57.596503],[-13.690419,57.596259]]]},"properties":{"country":"United Kingdom","region":"Eilean Siar","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-22.5,56.25],[-11.25,56.25],[-11.25,61.875],[-22.5,61.875],[-22.5,56.25]]]},"properties":{"country":"Ocean","region":"North Atlantic Ocean","type":"ocean"}}
+]}

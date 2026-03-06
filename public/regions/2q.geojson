@@ -1,0 +1,7 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-157.940745,-8.980727],[-157.940745,-8.974542],[-158.002878,-8.94671],[-158.00829,-8.952895],[-157.997141,-8.964614],[-157.978627,-8.976007],[-157.961863,-8.980727],[-157.940745,-8.980727]]]},"properties":{"country":"Cook Islands","region":"Penrhyn","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-165.824534,-10.881768],[-165.822092,-10.889093],[-165.818715,-10.891534],[-165.814036,-10.889093],[-165.807688,-10.88128],[-165.811757,-10.880141],[-165.815867,-10.880304],[-165.824534,-10.881768]]]},"properties":{"country":"Cook Islands","region":"Pukapuka","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-160.986236,-10.382094],[-160.9381,-10.422784],[-160.979929,-10.380955],[-160.996409,-10.371515],[-160.994333,-10.374688],[-160.986236,-10.382094]]]},"properties":{"country":"Cook Islands","region":"Manihiki","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-161.088002,-10.035089],[-161.08727,-10.04461],[-161.075551,-10.036391],[-161.070058,-10.027439],[-161.088002,-10.035089]]]},"properties":{"country":"Cook Islands","region":"Rakahanga","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-157.5,-11.25],[-157.5,-5.625],[-168.75,-5.625],[-168.75,-11.25],[-157.5,-11.25]]]},"properties":{"country":"Ocean","region":"South Pacific Ocean","type":"ocean"}}
+]}

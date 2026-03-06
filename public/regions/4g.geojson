@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-45,-71.13266],[-45,-67.5],[-56.25,-67.5],[-56.25,-71.13266],[-45,-71.13266]]]},"properties":{"country":"Ocean","region":"SOUTHERN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-56.25,-71.13266],[-56.25,-73.125],[-45,-73.125],[-45,-71.13266],[-56.25,-71.13266]]]},"properties":{"country":"Ocean","region":"Weddell Sea","type":"ocean"}}
+]}

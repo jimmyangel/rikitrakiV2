@@ -1,0 +1,6 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"MultiPolygon","coordinates":[[[[-176.485829,0.196519],[-176.4829,0.194322],[-176.481272,0.191474],[-176.479319,0.190334],[-176.47529,0.193101],[-176.476877,0.197455],[-176.479115,0.197903],[-176.482126,0.196682],[-176.485829,0.196519]]],[[[-176.459543,0.225898],[-176.463938,0.221869],[-176.459177,0.219224],[-176.459543,0.225898]]]]},"properties":{"country":"United States Minor Outlying Islands","region":"Baker Island","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-176.636179,0.790188],[-176.636098,0.803412],[-176.639027,0.806952],[-176.639638,0.804958],[-176.640045,0.803534],[-176.640492,0.801988],[-176.636179,0.790188]]]},"properties":{"country":"United States Minor Outlying Islands","region":"Howland Island","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-168.75,0.259881],[-168.75,5.625],[-180,5.625],[-180,0.259881],[-179.97844,0.259881],[-168.75,0.259881]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-180,0],[-168.75,0],[-168.75,0.259881],[-179.97844,0.259881],[-180,0.259881],[-180,0]]]},"properties":{"country":"Ocean","region":"South Pacific Ocean","type":"ocean"}}
+]}

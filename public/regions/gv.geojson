@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-11.25,73.125],[0,73.125],[0,78.75],[-11.25,78.75],[-11.25,73.125]]]},"properties":{"country":"Ocean","region":"Greenland Sea","type":"ocean"}}
+]}

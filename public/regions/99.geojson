@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-109.212026,10.30268],[-109.225942,10.311021],[-109.234242,10.307929],[-109.228017,10.292141],[-109.218577,10.281562],[-109.210357,10.288723],[-109.212026,10.30268]]]},"properties":{"country":"Clipperton Island","region":"Clipperton Island","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-112.5,5.625],[-101.25,5.625],[-101.25,11.25],[-112.5,11.25],[-112.5,5.625]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}}
+]}

@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[101.25,-16.875],[112.5,-16.875],[112.5,-11.25],[101.25,-11.25],[101.25,-16.875]]]},"properties":{"country":"Ocean","region":"INDIAN OCEAN","type":"ocean"}}
+]}

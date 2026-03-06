@@ -1,0 +1,5 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-78.75,-60.533462],[-78.75,-61.875],[-67.5,-61.875],[-67.5,-60.533462],[-68.04858,-60.533462],[-68.077674,-60.533462],[-78.75,-60.533462]]]},"properties":{"country":"Ocean","region":"SOUTHERN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-68.077674,-60.533462],[-68.077674,-56.25],[-78.75,-56.25],[-78.75,-60.533462],[-68.077674,-60.533462]]]},"properties":{"country":"Ocean","region":"South Pacific Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-67.5,-60.533462],[-67.5,-56.25],[-68.077674,-56.25],[-68.077674,-60.533462],[-68.04858,-60.533462],[-67.5,-60.533462]]]},"properties":{"country":"Ocean","region":"South Atlantic Ocean","type":"ocean"}}
+]}

@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-135,74.542203],[-135,78.75],[-146.25,78.75],[-146.25,73.125],[-144.655334,73.125],[-135,74.542203]]]},"properties":{"country":"Ocean","region":"Arctic Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-144.655334,73.125],[-135,73.125],[-135,74.542203],[-144.655334,73.125]]]},"properties":{"country":"Ocean","region":"Beaufort Sea","type":"ocean"}}
+]}

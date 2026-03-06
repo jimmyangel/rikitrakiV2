@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[169.010753,14.610175],[168.998302,14.599026],[168.987315,14.586859],[168.996918,14.593085],[169.007335,14.602769],[169.013682,14.6105],[169.010753,14.610175]]]},"properties":{"country":"Marshall Islands","region":"Ratak Chain","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[179.999897,16.875],[168.75,16.875],[168.75,11.25],[179.999897,11.25],[179.999897,16.875]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}}
+]}

@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[117.607,78.75],[123.75,78.75],[123.75,84.375],[112.5,84.375],[112.5,79.350464],[117.607,78.75]]]},"properties":{"country":"Ocean","region":"Arctic Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[112.5,79.350464],[112.5,78.75],[117.607,78.75],[112.5,79.350464]]]},"properties":{"country":"Ocean","region":"Laptev Sea","type":"ocean"}}
+]}

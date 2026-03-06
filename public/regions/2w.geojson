@@ -1,0 +1,3 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-155.859862,-5.625],[-155.9251,-5.625],[-155.922475,-5.629978],[-155.906443,-5.635349],[-155.867991,-5.630304],[-155.859812,-5.625095],[-155.859862,-5.625]]]},"properties":{"country":"Kiribati","region":"","type":"land"}}
+]}

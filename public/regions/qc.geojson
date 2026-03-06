@@ -1,0 +1,5 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[134.508891,-33.75],[134.477905,-33.75],[134.471365,-33.766778],[134.479015,-33.783624],[134.490489,-33.775649],[134.508891,-33.75]]]},"properties":{"country":"Australia","region":"South Australia","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[123.75,-36.766352],[123.75,-39.375],[132.470377,-39.375],[123.75,-36.766352]]]},"properties":{"country":"Ocean","region":"INDIAN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[132.470377,-39.375],[135,-39.375],[135,-33.75],[134.508891,-33.75],[134.477905,-33.75],[123.75,-33.75],[123.75,-36.766352],[132.470377,-39.375]]]},"properties":{"country":"Ocean","region":"Great Australian Bight","type":"ocean"}}
+]}

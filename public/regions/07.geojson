@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-157.5,-71.939123],[-157.5,-67.5],[-168.75,-67.5],[-168.75,-71.939123],[-157.5,-71.939123]]]},"properties":{"country":"Ocean","region":"SOUTHERN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[-168.75,-71.939123],[-168.75,-73.125],[-157.5,-73.125],[-157.5,-71.939123],[-168.75,-71.939123]]]},"properties":{"country":"Ocean","region":"Ross Sea","type":"ocean"}}
+]}

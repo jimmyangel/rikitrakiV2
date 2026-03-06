@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[170.358375,-33.75],[179.999897,-33.75],[179.999897,-28.125],[168.75,-28.125],[168.75,-33.443196],[170.358375,-33.75]]]},"properties":{"country":"Ocean","region":"South Pacific Ocean","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[168.75,-33.443196],[168.75,-33.75],[170.358375,-33.75],[168.75,-33.443196]]]},"properties":{"country":"Ocean","region":"Tasman Sea","type":"ocean"}}
+]}

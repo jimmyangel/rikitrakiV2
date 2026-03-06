@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[101.25,-60.533462],[101.25,-61.875],[112.5,-61.875],[112.5,-60.533462],[101.25,-60.533462]]]},"properties":{"country":"Ocean","region":"SOUTHERN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[112.5,-60.533462],[112.5,-56.25],[101.25,-56.25],[101.25,-60.533462],[112.5,-60.533462]]]},"properties":{"country":"Ocean","region":"INDIAN OCEAN","type":"ocean"}}
+]}

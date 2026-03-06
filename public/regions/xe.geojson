@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[166.619395,19.281643],[166.644216,19.27558],[166.652354,19.284247],[166.648123,19.297756],[166.634776,19.305732],[166.64088,19.294013],[166.638194,19.286444],[166.629731,19.282416],[166.619395,19.281643]]]},"properties":{"country":"United States Minor Outlying Islands","region":"Wake Atoll","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[157.5,16.875],[168.75,16.875],[168.75,22.5],[157.5,22.5],[157.5,16.875]]]},"properties":{"country":"Ocean","region":"North Pacific Ocean","type":"ocean"}}
+]}

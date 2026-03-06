@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[132.470377,-39.375],[123.75,-39.375],[123.75,-45],[135,-45],[135,-40.131722],[132.470377,-39.375]]]},"properties":{"country":"Ocean","region":"INDIAN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[135,-40.131722],[135,-39.375],[132.470377,-39.375],[135,-40.131722]]]},"properties":{"country":"Ocean","region":"Great Australian Bight","type":"ocean"}}
+]}

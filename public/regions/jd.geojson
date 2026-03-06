@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[67.5,-73.263289],[67.5,-78.75],[78.75,-78.75],[78.75,-73.125],[68.026738,-73.125],[68.022309,-73.146742],[67.987966,-73.144627],[67.959158,-73.14658],[67.931651,-73.154392],[67.901052,-73.17018],[67.876964,-73.179132],[67.821788,-73.18377],[67.5,-73.263289]]]},"properties":{"country":"Antarctica","region":"Antarctica","type":"land"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[67.865837,-73.125],[67.5,-73.125],[67.5,-73.245127],[67.748816,-73.16835],[67.865837,-73.125]]]},"properties":{"country":"Ocean","region":"Prydz Bay","type":"ocean"}}
+]}

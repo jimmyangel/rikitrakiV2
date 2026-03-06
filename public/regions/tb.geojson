@@ -1,0 +1,4 @@
+{"type":"FeatureCollection", "features": [
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[78.75,4.661343],[78.75,0],[90,0],[90,5.625],[79.765101,5.625],[78.75,4.661343]]]},"properties":{"country":"Ocean","region":"INDIAN OCEAN","type":"ocean"}},
+{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[79.765101,5.625],[78.75,5.625],[78.75,4.661343],[79.765101,5.625]]]},"properties":{"country":"Ocean","region":"Laccadive Sea","type":"ocean"}}
+]}
