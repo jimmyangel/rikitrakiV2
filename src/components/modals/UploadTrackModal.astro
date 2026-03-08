@@ -45,10 +45,15 @@ import { Icon } from 'astro-icon/components'
 				<div x-show="tab === 'info'">
 					<div>
 
-						<!-- GPX FILE -->
+						<!-- GPX FILE + REGION OVERRIDE IN ONE ROW -->
 						<div class="field is-horizontal">
+
+							<!-- LEFT LABEL FOR GPX -->
 							<label class="field-label is-normal">GPX file</label>
+
 							<div class="field-body">
+
+								<!-- GPX FILE INPUT -->
 								<div class="field">
 									<div class="control">
 										<input class="input"
@@ -59,14 +64,34 @@ import { Icon } from 'astro-icon/components'
 											:class="{ 'is-danger': errorField === 'gpxFile' }">
 									</div>
 									<p class="help is-size-7">Up to 4MB</p>
-
-									<template x-if="trackRegionTags">
-										<p class="help mt-1">
-											Detected region:
-											<span x-text="trackRegionTags.join(', ')"></span>
-										</p>
-									</template>
 								</div>
+
+								<!-- REGION SELECTOR (NESTED HORIZONTAL FIELD) -->
+								<div class="field is-horizontal" x-show="regionOverrideOptions && regionOverrideOptions.length > 0">
+
+									<!-- REGION LABEL -->
+									<label class="field-label is-normal">Region</label>
+
+									<!-- REGION PULLDOWN -->
+									<div class="field-body">
+										<div class="field">
+											<div class="control">
+												<div class="select"
+													:class="{ 'is-disabled': regionOverrideOptions.length <= 1 }">
+													<select x-model="selectedRegionOverride"
+														@change="trackRegionTags = selectedRegionOverride.split('|')"
+														:disabled="regionOverrideOptions.length <= 1">
+														<template x-for="opt in regionOverrideOptions" :key="opt.join('-')">
+															<option :value="opt.join('|')" x-text="opt.join(', ')"></option>
+														</template>
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+
 							</div>
 						</div>
 
@@ -337,9 +362,9 @@ import { Icon } from 'astro-icon/components'
     }
 
     /* Label alignment */
-    .field-label {
+    /*.field-label {
         flex-basis: 4rem;
-    }
+    }*/
 
     /* Top-align modal */
     .modal.modal-top .modal-card {

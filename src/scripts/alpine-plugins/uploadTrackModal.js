@@ -9,7 +9,8 @@ import {
     parseGPXtoGeoJSON,
     extractSingleLineString,
     computeBounds,
-    detectRegion
+    detectRegion,
+	sampleNearbyLocs
 } from '../utils/geoUtils.js'
 
 import { parse } from 'exifr'
@@ -42,6 +43,8 @@ export default function (Alpine) {
         timeOffset: 0,
         uploaded: false,
         errorField: null,
+		regionOverrideOptions: [],
+		selectedRegionOverride: null,
 
         // Drag/drop
         dragIndex: null,
@@ -186,13 +189,37 @@ export default function (Alpine) {
                 return
             }
 
-            try {
-                const [lon, lat] = single.geometry.coordinates[0]
-                this.trackLatLng = [lat, lon]
-                this.trackRegionTags = await detectRegion(lat, lon)
-            } catch (e) {
-                this.trackRegionTags = null
-            }
+			try {
+				const [lon, lat] = single.geometry.coordinates[0]
+				this.trackLatLng = [lat, lon]
+
+				// 1. Detect the primary region
+				const detected = await detectRegion(lat, lon)
+
+				// 2. Sample nearby regions (1km)
+				const nearby = await sampleNearbyLocs(lat, lon, 1000)
+
+				// 3. Force-include the detected region even if nearby doesn't contain it
+				const all = detected ? [detected, ...nearby] : nearby
+
+				// 4. Deduplicate by "country|region"
+				this.regionOverrideOptions = [...new Map(
+					all.map(r => [r.join('|'), r])
+				).values()]
+
+				// 5. Set default selection to detected region (or null)
+				this.selectedRegionOverride = detected ? detected.join('|') : null
+
+				// 6. Legacy requirement: trackRegionTags must reflect the *selected* region
+				this.trackRegionTags = this.selectedRegionOverride
+					? this.selectedRegionOverride.split('|')
+					: null
+
+			} catch (e) {
+				this.regionOverrideOptions = []
+				this.selectedRegionOverride = null
+				this.trackRegionTags = null
+			}
 
             this.trackCoordinates = single.geometry.coordinates.map(([lon, lat], i) => ({
                 lon,

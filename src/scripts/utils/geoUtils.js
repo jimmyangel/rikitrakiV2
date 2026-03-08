@@ -341,6 +341,39 @@ export async function detectRegion(lat, lon) {
     return null
 }
 
+export function metersToDegreesLat(m) {
+  return m / 111320
+}
+
+export function metersToDegreesLon(m, lat) {
+  return m / (111320 * Math.cos(lat * Math.PI / 180))
+}
+
+export async function sampleNearbyLocs(lat, lon, meters = 1000) {
+  const dLat = metersToDegreesLat(meters)
+  const dLon = metersToDegreesLon(meters, lat)
+
+  const offsets = [
+    [ dLat, 0    ],
+    [-dLat, 0    ],
+    [ 0,    dLon ],
+    [ 0,   -dLon ]
+  ]
+
+  const results = new Map()
+
+  for (const [dLa, dLo] of offsets) {
+    const r = await detectRegion(lat + dLa, lon + dLo)
+    if (r) {
+      const key = r.join('|')
+      results.set(key, r)
+    }
+  }
+
+  return Array.from(results.values())
+}
+
+
 
 
 
