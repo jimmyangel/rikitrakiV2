@@ -47,7 +47,7 @@ import '../styles/index.scss'
 						<div class="field">
 						<div class="control">
 							<input class="input"
-								:class="{ 'is-danger': errorField === 'password' }"
+								:class="{ 'is-danger': $store.ui.errorField === 'password' }"
 								type="password"
 								placeholder="Enter new password"
 								x-model="newPassword">
@@ -63,7 +63,7 @@ import '../styles/index.scss'
 						<div class="field">
 						<div class="control">
 							<input class="input"
-								:class="{ 'is-danger': errorField === 'confirm' }"
+								:class="{ 'is-danger': $store.ui.errorField === 'confirm' }"
 								type="password"
 								placeholder="Re-enter new password"
 								x-model="confirmPassword">

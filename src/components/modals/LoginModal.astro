@@ -108,7 +108,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
-												:class="{ 'is-danger': errorField === 'email' }"
+												:class="{ 'is-danger': $store.ui.errorField === 'email' }"
 												x-model="email">
 										</div>
 									</div>
@@ -145,7 +145,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
-												:class="{ 'is-danger': errorField === 'regUsername' }"
+												:class="{ 'is-danger': $store.ui.errorField === 'regUsername' }"
 												type="text"
 												placeholder="Choose a username"
 												x-model="regUsername">
@@ -161,7 +161,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
-												:class="{ 'is-danger': errorField === 'regEmail' }"
+												:class="{ 'is-danger': $store.ui.errorField === 'regEmail' }"
 												type="email"
 												placeholder="Your email"
 												x-model="regEmail">
@@ -188,7 +188,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
-												:class="{ 'is-danger': errorField === 'regPassword' }"
+												:class="{ 'is-danger': $store.ui.errorField === 'regPassword' }"
 												type="password"
 												placeholder="Choose a password"
 												x-model="regPassword">
@@ -204,7 +204,7 @@ import InfoMessage from '../widgets/InfoMessage.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
-												:class="{ 'is-danger': errorField === 'regRepassword' }"
+												:class="{ 'is-danger': $store.ui.errorField === 'regRepassword' }"
 												type="password"
 												placeholder="Re-enter password"
 												x-model="regRepassword">

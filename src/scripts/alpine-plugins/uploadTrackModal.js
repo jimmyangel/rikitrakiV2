@@ -42,7 +42,6 @@ export default function (Alpine) {
         photoMeta: [],     // { preview, timestamp, hasExifGps }
         timeOffset: 0,
         uploaded: false,
-        errorField: null,
 		regionOverrideOptions: [],
 		selectedRegionOverride: null,
 
@@ -86,9 +85,8 @@ export default function (Alpine) {
             this.uploaded = false
 
             this.$store.ui.error = null
-            this.errorField = null
+			this.$store.ui.errorField = ''
             this.$store.ui.uploading = false
-
 
         },
 

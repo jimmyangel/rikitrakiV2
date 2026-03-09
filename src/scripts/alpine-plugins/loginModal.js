@@ -20,8 +20,6 @@ export default function (Alpine) {
         regPassword: '',
         regRepassword: '',
 
-		errorField: null,
-
         init() {
             this.$watch('$store.ui.showLoginModal', value => {
                 if (value) this.clearForm()
@@ -39,7 +37,7 @@ export default function (Alpine) {
             this.regRepassword = ''
 
             this.$store.ui.error = null
-			this.errorField = null
+			this.$store.ui.errorField = ''
         },
 
         validators: {

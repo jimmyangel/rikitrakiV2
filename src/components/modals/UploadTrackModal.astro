@@ -3,6 +3,7 @@ import '../../styles/vendor/bulma-switch-control/main.min.css'
 import ErrorMessage from '../widgets/ErrorMessage.astro'
 import InfoMessage from '../widgets/InfoMessage.astro'
 import { Icon } from 'astro-icon/components'
+import FieldText from './fields/FieldText.astro'
 ---
 
 <div x-data>
@@ -61,7 +62,7 @@ import { Icon } from 'astro-icon/components'
 											accept=".gpx"
 											x-ref="gpxInput"
 											@change="selectGpxFile($event)"
-											:class="{ 'is-danger': errorField === 'gpxFile' }">
+											:class="{ 'is-danger': $store.ui.errorField === 'gpxFile' }">
 									</div>
 									<p class="help is-size-7">Up to 4MB</p>
 								</div>
@@ -96,22 +97,12 @@ import { Icon } from 'astro-icon/components'
 						</div>
 
 						<!-- TRACK NAME -->
-						<div class="field is-horizontal">
-							<label class="field-label is-normal">Name</label>
-							<div class="field-body">
-								<div class="field">
-									<div class="control">
-										<input class="input"
-											type="text"
-											maxlength="200"
-											placeholder="Track name"
-											x-model="trackName"
-											:class="{ 'is-danger': errorField === 'trackName' }">
-									</div>
-								</div>
-							</div>
-						</div>
-
+						<FieldText
+							label="Name"
+							model="trackName"
+							errorName="trackName"
+							placeholder="Track name"
+						/>
 						<!-- DESCRIPTION -->
 						<div class="field is-horizontal">
 							<label class="field-label is-normal">Description</label>
@@ -123,7 +114,7 @@ import { Icon } from 'astro-icon/components'
 												maxlength="5000"
 												placeholder="Track description"
 												x-model="trackDescription"
-												:class="{ 'is-danger': errorField === 'trackDescription' }"></textarea>
+												:class="{ 'is-danger': $store.ui.errorField === 'trackDescription' }"></textarea>
 									</div>
 								</div>
 							</div>

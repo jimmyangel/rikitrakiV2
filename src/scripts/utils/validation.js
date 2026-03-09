@@ -58,13 +58,14 @@ export function validateAll(formName, component) {
         const error = rules[field](value, component)
 
         if (error) {
-			component.$store.ui.error = error
-            component.errorField = field
+            component.$store.ui.error = error
+            component.$store.ui.errorField = field
             return false
         }
     }
 
-    component.error = null
-    component.errorField = null
+    component.$store.ui.error = null
+    component.$store.ui.errorField = ''
     return true
 }
+

@@ -5,6 +5,7 @@ export default function initUiStore(Alpine) {
 		showUserInfoModal: false,
 		showUploadTrackModal: false,
 		error: null,
+		errorField: '',
 		info: null,
 		showInfo(message, duration = 2000) {
 			this.info = message

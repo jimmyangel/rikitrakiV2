@@ -17,7 +17,6 @@ export default function (Alpine) {
 
         newPassword: '',
         confirmPassword: '',
-        errorField: null,
         success: false,
 		invalidLink: false,
 
@@ -50,7 +49,7 @@ export default function (Alpine) {
 			if (!validateAll('reset', this)) return
 
 			if (!this.username || !this.token) {
-				this.errorField = 'newPassword'
+				this.$store.ui.errorField = 'newPassword'
 				this.$store.ui.error  = 'Invalid or missing reset token'
 				return
 			}
@@ -62,12 +61,13 @@ export default function (Alpine) {
 			)
 
 			if (!result.ok) {
-				this.errorField = 'newPassword'
+				this.$store.ui.errorField = 'newPassword'
 				this.$store.ui.error = result.error
 				return
 			}
 
 			this.$store.ui.error = null
+			this.$store.ui.errorField = ''
 			this.success = true
 		}
 	}))
