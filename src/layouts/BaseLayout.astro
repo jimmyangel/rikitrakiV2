@@ -14,7 +14,6 @@ import { Icon } from 'astro-icon/components'
     </head>
 
     <body class="has-navbar-fixed-top">
-
         <nav class="navbar is-fixed-top is-dark" role="navigation" aria-label="main navigation" x-data="{ open: false }">
             <div class="navbar-brand">
                 <a class="navbar-item" style="padding: 0px;" href="/">
@@ -34,13 +33,11 @@ import { Icon } from 'astro-icon/components'
             <div class="navbar-menu" :class="{ 'is-active': open }">
                 <div class="navbar-start"></div>
                 <div class="navbar-end">
-                    <a class="navbar-item" style="max-height: 62px;" x-cloak x-show="$store.user.isLoggedIn && $store.tracks.activeTrackId && $store.tracks.items[$store.tracks.activeTrackId].details.username === $store.user.username">
+                    <a class="navbar-item" style="max-height: 62px;" x-cloak x-show="$store.user.isLoggedIn && $store.tracks.activeTrackId && $store.tracks.items[$store.tracks.activeTrackId].details.username === $store.user.username"
+                        @click="$store.ui.showEditTrackModal = true">
                         <Icon name="fa7-solid:edit" class="is-size-4"/>
                     </a>
-                    <a class="navbar-item mr-4"
-                    style="max-height: 62px;"
-                    x-cloak
-                    x-show="$store.user.isLoggedIn"
+                    <a class="navbar-item mr-4" style="max-height: 62px;" x-cloak x-show="$store.user.isLoggedIn"
                     @click="$store.ui.showUploadTrackModal = true">
                         <Icon name="fa7-solid:cloud-arrow-up" class="is-size-4"/>
                     </a>
@@ -64,6 +61,11 @@ import { Icon } from 'astro-icon/components'
 
         <div class="app-root">
             <slot />
+        </div>
+        
+        <!-- Force astro to render certain icons -->
+        <div style="display:none">
+            <Icon name="fa7-solid:images" />
         </div>
 
     </body>

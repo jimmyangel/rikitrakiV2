@@ -1,0 +1,193 @@
+---
+import '../../styles/vendor/bulma-switch-control/main.min.css'
+import ModalHeader from './parts/ModalHeader.astro'
+import ModalFooterMessages from './parts/ModalFooterMessages.astro'
+import FieldText from './fields/FieldText.astro'
+import FieldTextarea from './fields/FieldTextarea.astro'
+import FieldSwitch from './fields/FieldSwitch.astro'
+import FieldDifficulty from './fields/FieldDifficulty.astro'
+import FieldSelectActivity from './fields/FieldSelectActivity.astro'
+import FieldSelectRegion from './fields/FieldSelectRegion.astro'
+import PhotosPanel from './parts/PhotosPanel.astro'
+---
+
+<div x-data>
+    <div class="modal modal-top" :class="{ 'is-active': $store.ui.showEditTrackModal }">
+
+        <div class="modal-background"
+             @click="$store.ui.showEditTrackModal = false"></div>
+
+        <div class="modal-card edit-track-modal-card" x-data="editTrackModal">
+
+            <ModalHeader closeAction="$store.ui.showEditTrackModal = false">
+                <p slot="title" class="is-size-5 mb-2">Edit Track</p>
+                <p slot="subtitle" class="is-size-6 mr-2">
+                    Update track information, manage photos, or remove the track…
+                </p>
+            </ModalHeader>
+
+            <!-- BODY -->
+            <section class="modal-card-body">
+
+                <!-- TABS -->
+                <div class="tabs is-boxed">
+                    <ul>
+                        <li :class="{ 'is-active': tab === 'info' }">
+                            <a @click="tab = 'info'">Info</a>
+                        </li>
+                        <li :class="{ 'is-active': tab === 'photos' }">
+                            <a @click="tab = 'photos'">Photos</a>
+                        </li>
+                        <li :class="{ 'is-active': tab === 'remove' }">
+                            <a @click="tab = 'remove'">Remove track</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- INFO TAB -->
+                <div x-show="tab === 'info'">
+                    <div>
+
+                        <!-- REGION SELECTOR -->
+                        <FieldSelectRegion
+                            label="Region"
+                            model="selectedRegionOverride"
+                            options="regionOverrideOptions"
+                        />
+
+                        <!-- TRACK NAME -->
+                        <FieldText label="Name" model="trackName" errorName="trackName" placeholder="Track name" />
+
+                        <!-- DESCRIPTION -->
+                        <FieldTextarea label="Description" model="trackDescription" errorName="trackDescription" placeholder="Track description" />
+
+                        <!-- FAVORITE -->
+                        <FieldSwitch label="Favorite?" model="trackFav" />
+
+                        <!-- DIFFICULTY -->
+                        <FieldDifficulty label="Difficulty" model="trackLevel" />
+
+                        <!-- ACTIVITY -->
+                        <FieldSelectActivity label="Activity" model="trackType" />
+
+                    </div>
+                </div>
+
+                <!-- PHOTOS TAB -->
+                <template x-if="tab === 'photos'">
+                    <PhotosPanel />
+                </template>
+
+                <!-- REMOVE TAB -->
+                <div x-show="tab === 'remove'">
+                    <div class="content">
+                        <p class="is-size-6">
+                            Removing this track will permanently delete:
+                        </p>
+                        <ul>
+                            <li>The track metadata</li>
+                            <li>The GPX file</li>
+                            <li>All associated photos</li>
+                        </ul>
+                        <p class="has-text-danger mt-3">
+                            This action cannot be undone.
+                        </p>
+                    </div>
+
+                    <div class="field is-horizontal mt-4">
+                        <div class="field-label"></div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="control">
+                                    <button class="button is-danger"
+                                            :disabled="$store.ui.uploading"
+                                            @click="removeTrack()">
+                                        Remove track
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SAVE BUTTON -->
+                <div class="field is-horizontal mt-4" x-show="tab !== 'remove'">
+                    <div class="field-label"></div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <button class="button"
+                                        :disabled="$store.ui.uploading"
+                                        @click="update()">
+                                    Save changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <ModalFooterMessages />
+
+        </div>
+    </div>
+</div>
+
+<style>
+	/* Header wrapping fix */
+	.modal-card-head {
+		align-items: flex-start;
+	}
+
+	.modal-card-head .modal-card-title {
+		flex: 1 1 0;
+		min-width: 0;
+		white-space: normal;
+	}
+
+	/* Align-bottom utility */
+	.align-bottom {
+		display: flex;
+		align-items: flex-end;
+	}
+
+	/* Modal max-height for mobile */
+	.modal .modal-card {
+		max-height: calc(100vh - 7rem);
+		overflow-y: auto;
+	}
+
+	/* Top-align modal */
+	.modal.modal-top .modal-card {
+		margin-top: 1.5rem;
+		margin-bottom: auto;
+	}
+
+	/* Sizing rules */
+	.edit-track-modal-card {
+		width: 90vw !important;
+		max-width: 90vw !important;
+	}
+
+	@media screen and (min-width: 768px) {
+		.edit-track-modal-card {
+			width: 60rem !important;
+			max-width: 90vw !important;
+		}
+	}
+
+	@media screen and (min-width: 1024px) {
+		.edit-track-modal-card {
+			width: 60rem !important;
+			max-width: 90vw !important;
+		}
+	}
+
+	/* Optional: reduce column gap if needed */
+	.edit-track-modal-card .columns {
+		--bulma-column-gap: 0.3rem;
+	}
+
+</style>
