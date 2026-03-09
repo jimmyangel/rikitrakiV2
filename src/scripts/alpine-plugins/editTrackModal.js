@@ -28,11 +28,12 @@ export default function (Alpine) {
         // -----------------------------------------------------
         // PHOTOS PANEL REQUIRED FIELDS
         // -----------------------------------------------------
-        trackGPXBlob: true,   // required so PhotosPanel always mounts
         photos: [],           // File objects (unused in edit mode but required)
         photoMeta: [],        // { preview, timestamp, hasExifGps }
         timeOffset: 0,        // required by PhotosPanel
         dragIndex: null,      // required by PhotosPanel
+
+		confirmRemoval: false,
 
         // -----------------------------------------------------
         // INIT
