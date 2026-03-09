@@ -1,0 +1,23 @@
+---
+import ErrorMessage from '../../widgets/ErrorMessage.astro'
+import InfoMessage from '../../widgets/InfoMessage.astro'
+---
+<footer class="modal-card-foot py-2">
+	<div class="is-fullwidth" style="height: 68px;">
+
+		<template x-if="$store.ui.error">
+			<ErrorMessage />
+		</template>
+
+		<template x-if="$store.ui.info">
+			<InfoMessage />
+		</template>
+
+	</div>
+</footer>
+
+<style>
+    .modal-card-foot .is-fullwidth {
+        flex: 1 1 100%;
+    }
+</style>

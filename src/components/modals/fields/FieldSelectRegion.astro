@@ -1,0 +1,32 @@
+---
+const { label, model, options } = Astro.props
+---
+
+<div class="field is-horizontal"
+     x-data={`{ optionsName: '${options}' }`}
+     x-show="!!$data[optionsName] && $data[optionsName].length > 0">
+
+  <label class="field-label is-normal">{label}</label>
+
+  <div class="field-body">
+    <div class="field">
+      <div class="control">
+
+        <div class="select"
+             :class="{ 'is-disabled': $data[optionsName].length <= 1 }">
+
+          <select
+            x-model={model}
+            :disabled="$data[optionsName].length <= 1"
+          >
+            <template x-for="opt in $data[optionsName]" :key="opt.join('-')">
+              <option :value="opt.join('|')" x-text="opt.join(', ')"></option>
+            </template>
+          </select>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

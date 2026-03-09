@@ -1,13 +1,12 @@
 ---
 import '../../styles/vendor/bulma-switch-control/main.min.css'
-import ErrorMessage from '../widgets/ErrorMessage.astro'
-import InfoMessage from '../widgets/InfoMessage.astro'
-import { Icon } from 'astro-icon/components'
+import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 import FieldText from './fields/FieldText.astro'
 import FieldTextarea from './fields/FieldTextarea.astro'
 import FieldSwitch from './fields/FieldSwitch.astro'
 import FieldDifficulty from './fields/FieldDifficulty.astro'
 import FieldSelectActivity from './fields/FieldSelectActivity.astro'
+import FieldSelectRegion from './fields/FieldSelectRegion.astro'
 import PhotosPanel from './parts/PhotosPanel.astro'
 ---
 
@@ -73,30 +72,11 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 								</div>
 
 								<!-- REGION SELECTOR (NESTED HORIZONTAL FIELD) -->
-								<div class="field is-horizontal" x-show="regionOverrideOptions && regionOverrideOptions.length > 0">
-
-									<!-- REGION LABEL -->
-									<label class="field-label is-normal">Region</label>
-
-									<!-- REGION PULLDOWN -->
-									<div class="field-body">
-										<div class="field">
-											<div class="control">
-												<div class="select"
-													:class="{ 'is-disabled': regionOverrideOptions.length <= 1 }">
-													<select x-model="selectedRegionOverride"
-														@change="trackRegionTags = selectedRegionOverride.split('|')"
-														:disabled="regionOverrideOptions.length <= 1">
-														<template x-for="opt in regionOverrideOptions" :key="opt.join('-')">
-															<option :value="opt.join('|')" x-text="opt.join(', ')"></option>
-														</template>
-													</select>
-												</div>
-											</div>
-										</div>
-									</div>
-
-								</div>
+								<FieldSelectRegion
+									label="Region"
+									model="selectedRegionOverride"
+									options="regionOverrideOptions"
+								/>
 
 							</div>
 						</div>
@@ -135,20 +115,8 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 
             </section>
 
-            <!-- FOOTER -->
-            <footer class="modal-card-foot py-2">
-                <div class="is-fullwidth" style="height: 68px;">
+			<ModalFooterMessages />
 
-                    <template x-if="$store.ui.error">
-                        <ErrorMessage />
-                    </template>
-
-                    <template x-if="$store.ui.info">
-                        <InfoMessage />
-                    </template>
-
-                </div>
-            </footer>
         </div>
     </div>
 </div>
@@ -163,11 +131,6 @@ import PhotosPanel from './parts/PhotosPanel.astro'
         flex: 1 1 0;
         min-width: 0;
         white-space: normal;
-    }
-
-    /* A — Footer reserved space */
-    .modal-card-foot .is-fullwidth {
-        flex: 1 1 100%;
     }
 
     /* B — Align-bottom utility */

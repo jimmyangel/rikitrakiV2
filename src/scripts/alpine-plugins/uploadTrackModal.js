@@ -46,7 +46,7 @@ export default function (Alpine) {
         trackFav: false,
         trackLevel: 'Easy',
         trackType: 'Hiking',
-        trackRegionTags: null,
+        trackRegionTags: [],
         trackLatLng: null,
         hasPhotos: false,
         trackPhotos: [],   // schema objects only
@@ -58,7 +58,7 @@ export default function (Alpine) {
         timeOffset: 0,
         uploaded: false,
 		regionOverrideOptions: [],
-		selectedRegionOverride: null,
+		selectedRegionOverride: '',
 
         // Drag/drop
         dragIndex: null,
@@ -71,6 +71,10 @@ export default function (Alpine) {
             this.$watch('timeOffset', () => {
                 assignLatLngToPhotos(this)
             })
+
+			this.$watch('selectedRegionOverride', value => {
+				this.trackRegionTags = value ? value.split('|') : []
+			})
         },
 
         clearForm() {
