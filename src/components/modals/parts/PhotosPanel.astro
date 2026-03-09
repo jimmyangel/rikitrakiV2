@@ -8,7 +8,7 @@ const { show } = Astro.props
 	<div class="field">
 		<div class="control is-flex is-flex-wrap-wrap is-align-items-center">
 
-		<p class="mr-3 mb-2">Up to 8 JPEG images</p>
+		<p class="mr-3 mb-2">Add up to 8 JPEG images</p>
 
 		<div class="mr-4 mb-2">
 			<input
@@ -20,11 +20,11 @@ const { show } = Astro.props
 				@change="selectPhotos($event)"
 			>
 			<button class="button" @click="$refs.photoInput.click()">
-			<Icon name="fa7-solid:image" class="is-size-4" />
+			<Icon name="fa7-solid:images" class="is-size-4" />
 			</button>
 		</div>
 
-		<p class="mr-4 mb-2">Images larger than 1MB will be resized</p>
+		<p class="mr-4 mb-2 is-size-7">(Images larger than 1MB will be resized)</p>
 
 		<div class="is-flex is-align-items-center mb-2">
 			<label class="label mr-2 mb-0">Time offset (hrs)</label>
