@@ -56,12 +56,27 @@ export default async function initApp() {
     tracks.defaultLat = initialLat
     tracks.defaultLon = initialLon
 
-    await tracks.setSearchCenter(initialLat, initialLon, { fromInit: true })
+    // --------------------------------------------------------
+    // Helpers for clean deterministic init
+    // --------------------------------------------------------
+    async function initWorldMode(lat, lon) {
+        await tracks.setSearchCenter(lat, lon, { fromInit: true })
+        await map.whenViewerReady()
+        tracks.loadingCesium = false
 
-    // Wait for Cesium viewer
-    await map.whenViewerReady()
+        history.replaceState(
+            { trackId: null, center: { lat, lon } },
+            ''
+        )
+    }
 
-	tracks.loadingCesium = false
+    async function initTrackMode(trackId) {
+        await map.whenViewerReady()
+        tracks.loadingCesium = false
+
+        await tracks.openTrack(trackId, { fromInit: true })
+        history.replaceState({ trackId }, '')
+    }
 
     // --------------------------------------------------------
     // Restore track/world mode from URL
@@ -69,62 +84,57 @@ export default async function initApp() {
     const { trackId } = initFromUrl()
 
     if (trackId) {
-        await tracks.openTrack(trackId, { fromInit: true })
-        history.replaceState({ trackId }, '')
+        await initTrackMode(trackId)
     } else {
-        history.replaceState(
-            { trackId: null, center: { lat: initialLat, lon: initialLon } },
-            ''
-        )
+        await initWorldMode(initialLat, initialLon)
     }
 
-	// ---------------------------------------------
-	// popstate handler
-	// ---------------------------------------------
-	let lastPathname = window.location.pathname
+    // ---------------------------------------------
+    // popstate handler
+    // ---------------------------------------------
+    let lastPathname = window.location.pathname
 
-	window.addEventListener('popstate', async e => {
-		const state = e.state || {}
-		const tracks = Alpine.store('tracks')
-		const user = Alpine.store('user')
+    window.addEventListener('popstate', async e => {
+        const state = e.state || {}
+        const tracks = Alpine.store('tracks')
+        const user = Alpine.store('user')
 
-		const currentPath = window.location.pathname
-		lastPathname = currentPath
+        const currentPath = window.location.pathname
+        lastPathname = currentPath
 
-		// Restore username from URL
-		const newUsername = getUsernameFromUrl()
-		if (user.usernameFromUrl !== newUsername) {
-			user.usernameFromUrl = newUsername
-			tracks.loadMotd()
-		}
+        // Restore username from URL
+        const newUsername = getUsernameFromUrl()
+        if (user.usernameFromUrl !== newUsername) {
+            user.usernameFromUrl = newUsername
+            tracks.loadMotd()
+        }
 
-		// 1. Track restoration always wins if state has a trackId
-		if (state.trackId) {
-			await tracks.openTrack(state.trackId, { fromHistory: true })
-			return
-		}
+        // 1. Track restoration always wins if state has a trackId
+        if (state.trackId) {
+            await tracks.openTrack(state.trackId, { fromHistory: true })
+            return
+        }
 
-		// 2. If we're in track mode but state has no trackId, exit track mode
-		if (tracks.activeTrackId) {
-			tracks.exitActiveTrack({ fromHistory: true })
-		}
+        // 2. If we're in track mode but state has no trackId, exit track mode
+        if (tracks.activeTrackId) {
+            tracks.exitActiveTrack({ fromHistory: true })
+        }
 
-		// 3. Restore center if present
-		if (state.center) {
-			await tracks.setSearchCenter(
-				state.center.lat,
-				state.center.lon,
-				{ fromHistory: true }
-			)
-			return
-		}
+        // 3. Restore center if present
+        if (state.center) {
+            await tracks.setSearchCenter(
+                state.center.lat,
+                state.center.lon,
+                { fromHistory: true }
+            )
+            return
+        }
 
-		// 4. Default center
-		await tracks.setSearchCenter(
-			tracks.defaultLat,
-			tracks.defaultLon,
-			{ fromHistory: true }
-		)
-	})
-
+        // 4. Default center
+        await tracks.setSearchCenter(
+            tracks.defaultLat,
+            tracks.defaultLon,
+            { fromHistory: true }
+        )
+    })
 }
