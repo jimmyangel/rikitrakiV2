@@ -13,6 +13,21 @@ import {
 	sampleNearbyLocs
 } from '../utils/geoUtils.js'
 
+import { 
+	addPhotos,
+	createThumbnail, 
+	normalizeImage,
+	extractExif,
+	interpolateTrackLatLng,
+	assignLatLngToPhotos
+} from '../utils/photoUtils.js'
+
+import {
+    startDrag,
+    dropOn,
+    deletePhoto
+} from '../utils/photoStateUtils.js'
+
 import { parse } from 'exifr'
 
 export default function (Alpine) {
@@ -54,7 +69,7 @@ export default function (Alpine) {
             })
 
             this.$watch('timeOffset', () => {
-                this.assignLatLngToPhotos()
+                assignLatLngToPhotos(this)
             })
         },
 
@@ -230,90 +245,8 @@ export default function (Alpine) {
                     : null
             }))
 
-            this.assignLatLngToPhotos()
+            assignLatLngToPhotos(this)
         },
-
-		// --- IMAGE RESIZING (300x225 center-crop) ---
-		async createThumbnail(file) {
-			const W = 300
-			const H = 225
-
-			return new Promise(resolve => {
-				const reader = new FileReader()
-				reader.onload = e => {
-					const img = new Image()
-					img.onload = () => {
-						const canvas = document.createElement('canvas')
-						canvas.width = W
-						canvas.height = H
-
-						const ctx = canvas.getContext('2d')
-
-						const scale = Math.max(W / img.width, H / img.height)
-						const scaledWidth = img.width * scale
-						const scaledHeight = img.height * scale
-
-						const offsetX = (W - scaledWidth) / 2
-						const offsetY = (H - scaledHeight) / 2
-
-						ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight)
-
-						resolve(canvas.toDataURL('image/jpeg', 0.85))
-					}
-					img.src = e.target.result
-				}
-				reader.readAsDataURL(file)
-			})
-		},
-
-		async normalizeImage(file) {
-			const maxBytes = 1_000_000
-			const maxWidth = 2048
-
-			// If already small enough, skip everything
-			if (file.size <= maxBytes) {
-				return file
-			}
-
-			// Load image
-			const img = await new Promise((resolve, reject) => {
-				const i = new Image()
-				i.onload = () => resolve(i)
-				i.onerror = reject
-				i.src = URL.createObjectURL(file)
-			})
-
-			// Determine target dimensions
-			let targetWidth = img.naturalWidth
-			let targetHeight = img.naturalHeight
-
-			if (img.naturalWidth > maxWidth) {
-				targetWidth = maxWidth
-				targetHeight = img.naturalHeight * (maxWidth / img.naturalWidth)
-			}
-
-			// Draw resized image to canvas
-			const canvas = document.createElement('canvas')
-			canvas.width = targetWidth
-			canvas.height = targetHeight
-			const ctx = canvas.getContext('2d')
-			ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
-
-			// Iteratively compress until <= 1MB
-			let quality = 0.92
-			let blob = await new Promise(resolve =>
-				canvas.toBlob(resolve, 'image/jpeg', quality)
-			)
-
-			while (blob.size > maxBytes && quality > 0.5) {
-				quality -= 0.05
-				blob = await new Promise(resolve =>
-					canvas.toBlob(resolve, 'image/jpeg', quality)
-				)
-			}
-
-			return new File([blob], file.name, { type: 'image/jpeg' })
-		},
 
 		// --- EXIF HELPERS ---
 		convertDMSToDD(dms) {
@@ -322,146 +255,34 @@ export default function (Alpine) {
 			return deg + (min / 60) + (sec / 3600)
 		},
 
-		async extractExif(file) {
-			try {
-				const data = await parse(file, {
-					gps: true,
-					tiff: true,
-					exif: true
-				})
-
-				let gps = null
-				let timestamp = null
-
-				// GPS
-				if (data && data.latitude != null && data.longitude != null) {
-					gps = [data.longitude, data.latitude]
-				}
-
-				// Timestamp
-				if (data && data.DateTimeOriginal instanceof Date) {
-					timestamp = data.DateTimeOriginal.getTime()
-				}
-
-				return { gps, timestamp }
-
-			} catch (err) {
-				console.warn('EXIF parsing failed:', err)
-				return { gps: null, timestamp: null }
-			}
-		},  
-
-		async addPhotos(files) {
-			const MAX = 8
-
-			for (const file of files) {
-				if (this.trackPhotos.length >= MAX) {
-					Alpine.store('ui').error = `Maximum of ${MAX} photos allowed`
-					break
-				}
-
-				// 1) EXIF from original file (keeps GPS + timestamp working)
-				const { gps, timestamp } = await this.extractExif(file)
-
-				// 2) Normalize for size/resolution
-				const normalized = await this.normalizeImage(file)
-
-				// 3) Thumbnail from normalized file
-				const thumbDataUrl = await this.createThumbnail(normalized)
-
-				// --- SCHEMA OBJECT ---
-				this.trackPhotos.push({
-					picName: normalized.name,
-					picThumb: '',        // filled after upload
-					picLatLng: gps,      // EXIF GPS or null
-					picCaption: '',
-					picThumbDataUrl: thumbDataUrl
-				})
-
-				// --- UI METADATA ---
-				this.photoMeta.push({
-					preview: thumbDataUrl,
-					timestamp,
-					hasExifGps: !!gps
-				})
-
-				// Keep normalized file for upload
-				this.photos.push(normalized)
-			}
-
-			this.hasPhotos = this.trackPhotos.length > 0
-
-			if (this.trackCoordinates.length) {
-				this.assignLatLngToPhotos()
-			}
-		},
-
 		// --- PHOTO SELECTION ---
 		async selectPhotos(event) {
 			const files = Array.from(event.target.files || [])
-			await this.addPhotos(files)
+
+			await addPhotos(
+				files,
+				this, // Alpine component state
+				{
+					extractExif,
+					normalizeImage,
+					createThumbnail
+				}
+			)
+
 			event.target.value = ''
 		},
 
-		assignLatLngToPhotos() {
-
-			if (!this.trackCoordinates.length) return
-			if (!this.trackPhotos.length) return
-
-			for (let i = 0; i < this.trackPhotos.length; i++) {
-				const meta = this.photoMeta[i]
-				const photo = this.trackPhotos[i]
-
-				if (meta.hasExifGps) continue
-				if (!meta.timestamp) continue
-
-				const shifted = meta.timestamp + this.timeOffset * 3600 * 1000
-				photo.picLatLng = this.interpolateTrackLatLng(shifted)
-			}
-		},
-
-		interpolateTrackLatLng(ts) {
-			const coords = this.trackCoordinates
-			if (!coords.length) return null
-
-			for (let i = 0; i < coords.length - 1; i++) {
-				const a = coords[i]
-				const b = coords[i + 1]
-
-				if (!a.timestamp || !b.timestamp) continue
-
-				if (ts >= a.timestamp && ts <= b.timestamp) {
-					const ratio = (ts - a.timestamp) / (b.timestamp - a.timestamp)
-					const lat = a.lat + ratio * (b.lat - a.lat)
-					const lon = a.lon + ratio * (b.lon - a.lon)
-					return [lon, lat]
-				}
-			}
-
-			return null
-		},
-
         // --- DRAG/DROP REORDER ---
-        startDrag(i) {
-            this.dragIndex = i
-        },
+		startDrag(i) {
+			startDrag(this, i)
+		},
 
-        dropOn(i) {
-            if (this.dragIndex === null || this.dragIndex === i) return
+		dropOn(i) {
+			dropOn(this, i)
+		},
 
-            const movedPhoto = this.trackPhotos.splice(this.dragIndex, 1)[0]
-            const movedMeta = this.photoMeta.splice(this.dragIndex, 1)[0]
-
-            this.trackPhotos.splice(i, 0, movedPhoto)
-            this.photoMeta.splice(i, 0, movedMeta)
-
-            this.dragIndex = null
-        },
-
-		deletePhoto(index) {
-			this.trackPhotos.splice(index, 1)
-			this.photoMeta.splice(index, 1)
-			this.hasPhotos = this.trackPhotos.length > 0
+		deletePhoto(i) {
+			deletePhoto(this, i)
 		},
 
         // --- UPLOAD ---
