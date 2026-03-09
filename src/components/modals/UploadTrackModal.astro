@@ -114,7 +114,9 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 					</div>
 				</div>
                 <!-- PHOTOS TAB -->
-				<PhotosPanel show="tab === 'photos' && trackGPXBlob" />
+				 <template x-if="tab === 'photos' && trackGPXBlob">
+					<PhotosPanel />
+				 </template>
 
 				<div class="field is-horizontal mt-4">
 					<div class="field-label"></div>

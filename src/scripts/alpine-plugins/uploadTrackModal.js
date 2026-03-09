@@ -80,6 +80,9 @@ export default function (Alpine) {
             this.trackPhotos = []
             this.photoMeta = []
             this.timeOffset = 0
+			this.regionOverrideOptions = []
+			this.selectedRegionOverride = null
+
             this.hasPhotos = false
 
             this.uploaded = false
