@@ -1,5 +1,6 @@
 ---
 import '../../styles/vendor/bulma-switch-control/main.min.css'
+import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 import FieldText from './fields/FieldText.astro'
 import FieldTextarea from './fields/FieldTextarea.astro'
@@ -18,17 +19,12 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 
         <div class="modal-card upload-track-modal-card" x-data="uploadTrackModal">
 
-            <!-- HEADER -->
-            <header class="modal-card-head">
-                <div class="modal-card-title">
-                    <p class="is-size-5 mb-2">Upload a Track</p>
-                    <p class="is-size-6 mr-2">
-                        Provide track information and optional photos…
-                    </p>
-                </div>
-                <button class="delete" aria-label="close"
-                        @click="$store.ui.showUploadTrackModal = false"></button>
-            </header>
+			<ModalHeader closeAction="$store.ui.showUploadTrackModal = false">
+				<p slot="title" class="is-size-5 mb-2">Upload a Track</p>
+				<p slot="subtitle" class="is-size-6 mr-2">
+					Provide track information and optional photos…
+				</p>
+			</ModalHeader>
 
             <!-- BODY -->
             <section class="modal-card-body">

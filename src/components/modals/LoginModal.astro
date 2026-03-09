@@ -1,4 +1,5 @@
 ---
+import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 ---
 
@@ -11,16 +12,12 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 
 			<div class="modal-card" x-data="loginModal">
 
-				<header class="modal-card-head">
-					<div class="modal-card-title"> 
-						<p class="is-size-5 mb-2">Welcome to RikiTraki</p>
-						<p class="is-size-6 mr-2">
-							Please login if you wish to upload your own tracks and photos...
-						</p>
-					</div>
-					<button class="delete" aria-label="close"
-							@click="$store.ui.showLoginModal = false"></button>
-				</header>
+				<ModalHeader closeAction="$store.ui.showLoginModal = false">
+					<p slot="title" class="is-size-5 mb-2">Welcome to RikiTraki</p>
+					<p slot="subtitle" class="is-size-6 mr-2">
+						Please login if you wish to upload your own tracks and photos...
+					</p>
+				</ModalHeader>
 
 				<section class="modal-card-body">
 

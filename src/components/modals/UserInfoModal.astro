@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components'
+import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 ---
 
@@ -10,19 +11,14 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 
         <div class="modal-card">
 
-            <!-- HEADER -->
-            <header class="modal-card-head">
-                <div class="modal-card-title">
-                    <p class="is-size-5 mb-2">
-                        <span>Hi </span><span x-text="$store.user.username"></span><span>!</span>
-                    </p>
-                    <p class="is-size-6 mr-2">
-                        Update your password, change the page URL, or logout…
-                    </p>
-                </div>
-                <button class="delete" aria-label="close"
-                        @click="$store.ui.showUserInfoModal = false"></button>
-            </header>
+            <ModalHeader closeAction="$store.ui.showUserInfoModal = false">
+                <p slot="title" class="is-size-5 mb-2">
+                    <span>Hi </span><span x-text="$store.user.username"></span><span>!</span>
+                </p>
+                <p slot="subtitle" class="is-size-6 mr-2">
+                    Update your password, change the page URL, or logout…
+                </p>
+            </ModalHeader>
 
             <!-- BODY -->
             <section class="modal-card-body">
@@ -154,9 +150,5 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 
     .userinfo-modal .field-label {
         flex-basis: 4rem;
-    }
-
-    .modal-card-foot .is-fullwidth {
-        flex: 1 1 100%;
     }
 </style>

@@ -1,0 +1,11 @@
+---
+const { closeAction } = Astro.props
+---
+<header class="modal-card-head">
+  <div class="modal-card-title">
+    <slot name="title" />
+    <slot name="subtitle" />
+  </div>
+
+  <button class="delete" aria-label="close" @click={closeAction}></button>
+</header>
