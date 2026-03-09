@@ -1,0 +1,22 @@
+---
+const { label, model } = Astro.props
+const activities = [
+  'Hiking', 'Biking', 'Boating', 'Offroad', 'Motorcycling',
+  'Flying', 'Skiing', 'Snowshoeing', 'Getting There'
+]
+---
+
+<div class="field is-horizontal">
+  <label class="field-label is-normal">{label}</label>
+  <div class="field-body">
+    <div class="field">
+      <div class="control">
+        <div class="select">
+          <select x-model={model}>
+            {activities.map(a => <option>{a}</option>)}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

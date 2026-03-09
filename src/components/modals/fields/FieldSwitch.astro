@@ -1,0 +1,15 @@
+---
+const { label, model } = Astro.props
+---
+
+<div class="field is-horizontal">
+  <label class="field-label is-normal">{label}</label>
+  <div class="field-body">
+    <div class="field">
+      <label class="switch is-rounded">
+        <input type="checkbox" x-model={model}>
+        <span class="check is-info"></span>
+      </label>
+    </div>
+  </div>
+</div>

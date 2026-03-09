@@ -1,0 +1,23 @@
+---
+const { label, model } = Astro.props
+const levels = ['Easy', 'Moderate', 'Difficult']
+---
+
+<div class="field is-horizontal">
+  <label class="field-label is-normal">{label}</label>
+  <div class="field-body">
+    <div class="field">
+      <div class="buttons has-addons">
+        {levels.map(level => (
+          <button
+            class="button"
+            x-bind:class={`{ 'has-background-grey-light is-selected': ${model} === '${level}' }`}
+            x-on:click={`${model} = '${level}'`}
+          >
+            {level}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

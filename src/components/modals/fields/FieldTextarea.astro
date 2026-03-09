@@ -1,0 +1,24 @@
+---
+const { label, model, errorName, placeholder = "", rows = 5, maxlength = 5000 } = Astro.props;
+---
+
+<div class="field is-horizontal"
+     x-data={`{ errorName: '${errorName}' }`}>
+
+  <label class="field-label is-normal">{label}</label>
+
+  <div class="field-body">
+    <div class="field">
+      <div class="control">
+        <textarea
+          class="textarea"
+          x-model={model}
+          rows={rows}
+          maxlength={maxlength}
+          placeholder={placeholder}
+          :class="{ 'is-danger': $store.ui.errorField === errorName }"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+</div>

@@ -4,6 +4,10 @@ import ErrorMessage from '../widgets/ErrorMessage.astro'
 import InfoMessage from '../widgets/InfoMessage.astro'
 import { Icon } from 'astro-icon/components'
 import FieldText from './fields/FieldText.astro'
+import FieldTextarea from './fields/FieldTextarea.astro'
+import FieldSwitch from './fields/FieldSwitch.astro'
+import FieldDifficulty from './fields/FieldDifficulty.astro'
+import FieldSelectActivity from './fields/FieldSelectActivity.astro'
 ---
 
 <div x-data>
@@ -97,100 +101,17 @@ import FieldText from './fields/FieldText.astro'
 						</div>
 
 						<!-- TRACK NAME -->
-						<FieldText
-							label="Name"
-							model="trackName"
-							errorName="trackName"
-							placeholder="Track name"
-						/>
+						<FieldText label="Name" model="trackName" errorName="trackName" placeholder="Track name" />
 						<!-- DESCRIPTION -->
-						<div class="field is-horizontal">
-							<label class="field-label is-normal">Description</label>
-							<div class="field-body">
-								<div class="field">
-									<div class="control">
-										<textarea class="textarea"
-												rows="5"
-												maxlength="5000"
-												placeholder="Track description"
-												x-model="trackDescription"
-												:class="{ 'is-danger': $store.ui.errorField === 'trackDescription' }"></textarea>
-									</div>
-								</div>
-							</div>
-						</div>
-
+						<FieldTextarea label="Description" model="trackDescription" errorName="trackDescription" placeholder="Track description" />
 						<!-- FAVORITE -->
-						<div class="field is-horizontal">
-							<label class="field-label is-normal">Favorite?</label>
-							<div class="field-body">
-								<div class="field">
-									<label class="switch is-rounded">
-										<input type="checkbox" x-model="trackFav">
-										<span class="check is-info"></span>
-									</label>
-								</div>
-							</div>
-						</div>
-
+						<FieldSwitch label="Favorite?" model="trackFav" />
 						<!-- DIFFICULTY -->
-						<div class="field is-horizontal">
-							<label class="field-label is-normal">Difficulty</label>
-							<div class="field-body">
-								<div class="field">
-									<div class="buttons has-addons">
-										<button
-											class="button"
-											:class="{ 'has-background-grey-light is-selected': trackLevel === 'Easy' }"
-											@click="trackLevel = 'Easy'">
-											Easy
-										</button>
-
-										<button
-											class="button"
-											:class="{ 'has-background-grey-light is-selected': trackLevel === 'Moderate' }"
-											@click="trackLevel = 'Moderate'">
-											Moderate
-										</button>
-
-										<button
-											class="button"
-											:class="{ 'has-background-grey-light is-selected': trackLevel === 'Difficult' }"
-											@click="trackLevel = 'Difficult'">
-											Difficult
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-
+						<FieldDifficulty label="Difficulty" model="trackLevel" />
 						<!-- ACTIVITY -->
-						<div class="field is-horizontal">
-							<label class="field-label is-normal">Activity</label>
-							<div class="field-body">
-								<div class="field">
-									<div class="control">
-										<div class="select">
-											<select x-model="trackType">
-												<option>Hiking</option>
-												<option>Biking</option>
-												<option>Boating</option>
-												<option>Offroad</option>
-												<option>Motorcycling</option>
-												<option>Flying</option>
-												<option>Skiing</option>
-												<option>Snowshoeing</option>
-												<option>Getting There</option>
-											</select>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-
+						<FieldSelectActivity label="Activity" model="trackType" />
 					</div>
 				</div>
-
                 <!-- PHOTOS TAB -->
 				<div x-show="tab === 'photos' && trackGPXBlob">
 					<div>
