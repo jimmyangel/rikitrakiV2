@@ -38,33 +38,82 @@ export default function (Alpine) {
         // -----------------------------------------------------
         // INIT
         // -----------------------------------------------------
-        init() {
-            const id = this.$store.tracks.activeTrackId
-            if (!id) return
+		init() {
+			// Watch for modal opening
+			this.$watch('$store.ui.showEditTrackModal', value => {
+				if (value) this.populateForm()
+			})
 
-            const t = this.$store.tracks.items[id].details
+			// Watchers identical to upload modal
+			this.$watch('timeOffset', () => {
+				assignLatLngToPhotos(this)
+			})
 
-            // Prefill schema fields
-            this.trackName = t.name
-            this.trackDescription = t.description
-            this.trackFav = t.fav
-            this.trackLevel = t.level
-            this.trackType = t.type
+			this.$watch('selectedRegionOverride', value => {
+				this.trackRegionTags = value ? value.split('|') : []
+			})
+		},
 
-            // Region override
-            this.trackRegionTags = t.regionTags || []
-            this.regionOverrideOptions = t.regionTags || []
-            this.selectedRegionOverride = t.regionOverride || ''
+		populateForm() {
+			const id = this.$store.tracks.activeTrackId
+			if (!id) return
 
-            // Coordinates
-            this.trackLatLng = t.latLng || null
+			const t = this.$store.tracks.items[id].details
 
-            // Photos
-            this.hasPhotos = !!(t.photos && t.photos.length)
-            this.trackPhotos = t.photos || []
+			// Always start on info tab
+			this.tab = 'info'
 
-            // TODO: build photoMeta from trackPhotos
-        },
+			// -------------------------------
+			// GPX / Coordinates
+			// -------------------------------
+			// Edit modal does NOT use GPX upload
+			this.trackGPXBlob = null
+			this.trackGPX = ''
+			this.trackCoordinates = t.coordinates || []
+			this.trackLatLng = t.latLng || null
+
+			// -------------------------------
+			// Schema fields
+			// -------------------------------
+			this.trackName = t.name || ''
+			this.trackDescription = t.description || ''
+			this.trackFav = !!t.fav
+			this.trackLevel = t.level || 'Easy'
+			this.trackType = t.type || 'Hiking'
+
+			// -------------------------------
+			// Region override
+			// -------------------------------
+			this.trackRegionTags = t.regionTags || []
+			this.regionOverrideOptions = t.regionTags || []
+			this.selectedRegionOverride = t.regionOverride || null
+
+			// -------------------------------
+			// Photos
+			// -------------------------------
+			this.trackPhotos = t.photos || []
+			this.hasPhotos = this.trackPhotos.length > 0
+
+			// Build photoMeta from photos (canonical)
+			this.photoMeta = this.trackPhotos.map(p => ({
+				id: p.id,
+				caption: p.caption || '',
+				latLng: p.latLng || null,
+				timestamp: p.timestamp || null
+			}))
+
+			// Time offset starts at 0 for editing
+			this.timeOffset = 0
+
+			this.confirmRemoval = false
+
+			// -------------------------------
+			// UI state
+			// -------------------------------
+			this.$store.ui.error = null
+			this.$store.ui.errorField = ''
+			this.$store.ui.uploading = false
+		},
 
         // -----------------------------------------------------
         // ACTIONS
@@ -73,9 +122,24 @@ export default function (Alpine) {
             // TODO: implement updateTrack lambda call
         },
 
-        removeTrack() {
-            // TODO: implement removeTrack lambda call
-        },
+		async removeTrack() {
+			try {
+				//await this.$store.tracks.removeTrack(activeTrackId)
+
+				// Success → show info message in footer
+				this.$store.ui.info = "Track has been removed."
+				this.$store.ui.error = null
+
+				setTimeout(() => {
+					this.$store.ui.info = ''
+					this.$store.ui.showEditTrackModal = false
+				}, 2500)
+			} catch (err) {
+				// Error → show error message in footer
+				this.$store.ui.error = err.message || "Failed to remove track."
+				this.$store.ui.info = null
+			}
+		}
 
     }))
 }
