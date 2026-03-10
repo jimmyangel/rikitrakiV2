@@ -34,6 +34,7 @@ export default function (Alpine) {
         dragIndex: null,      // required by PhotosPanel
 
 		confirmRemoval: false,
+		idPrefix: null,
 
         // -----------------------------------------------------
         // INIT

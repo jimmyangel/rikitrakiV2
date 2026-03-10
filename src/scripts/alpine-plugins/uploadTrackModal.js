@@ -60,6 +60,8 @@ export default function (Alpine) {
 		regionOverrideOptions: [],
 		selectedRegionOverride: '',
 
+		idPrefix: null,
+
         // Drag/drop
         dragIndex: null,
 

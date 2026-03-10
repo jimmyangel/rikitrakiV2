@@ -44,6 +44,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
+												id="username"
 												type="text"
 												placeholder="Your username"
 												x-model="username">
@@ -59,6 +60,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
+												id="password"
 												type="password"
 												placeholder="Your password"
 												x-model="password">
@@ -103,6 +105,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
+												id="email"
 												:class="{ 'is-danger': $store.ui.errorField === 'email' }"
 												x-model="email">
 										</div>
@@ -140,6 +143,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
+												id="regUsername"
 												:class="{ 'is-danger': $store.ui.errorField === 'regUsername' }"
 												type="text"
 												placeholder="Choose a username"
@@ -156,6 +160,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
+												id="regEmail"
 												:class="{ 'is-danger': $store.ui.errorField === 'regEmail' }"
 												type="email"
 												placeholder="Your email"
@@ -183,6 +188,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
+												id="regPassword"
 												:class="{ 'is-danger': $store.ui.errorField === 'regPassword' }"
 												type="password"
 												placeholder="Choose a password"
@@ -199,6 +205,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 									<div class="field">
 										<div class="control">
 											<input class="input"
+												id="regRepassword"
 												:class="{ 'is-danger': $store.ui.errorField === 'regRepassword' }"
 												type="password"
 												placeholder="Re-enter password"

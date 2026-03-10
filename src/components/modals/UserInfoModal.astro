@@ -30,6 +30,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
                         <div class="field">
                             <div class="control">
                                 <input class="input"
+                                    id="currentPassword"
                                     :class="{ 'is-danger': $store.ui.errorField === 'currentPassword' }"
                                     type="password"
                                     placeholder="Enter current password"
@@ -45,6 +46,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
                         <div class="field">
                             <div class="control">
                                 <input class="input"
+                                    id="newPassword"
                                     :class="{ 'is-danger': $store.ui.errorField === 'newPassword' }"
                                     type="password"
                                     placeholder="Enter new password"
@@ -60,6 +62,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
                         <div class="field">
                             <div class="control">
                                 <input class="input"
+                                    id="confirmPassword"
                                     :class="{ 'is-danger': $store.ui.errorField === 'confirmPassword' }"
                                     type="password"
                                     placeholder="Re-enter new password"

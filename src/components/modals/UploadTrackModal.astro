@@ -17,7 +17,7 @@ import PhotosPanel from './parts/PhotosPanel.astro'
         <div class="modal-background"
              @click="$store.ui.showUploadTrackModal = false"></div>
 
-        <div class="modal-card upload-track-modal-card" x-data="uploadTrackModal">
+        <div class="modal-card upload-track-modal-card" x-data="uploadTrackModal" x-init="idPrefix = 'upload'">
 
 			<ModalHeader closeAction="$store.ui.showUploadTrackModal = false">
 				<p slot="title" class="is-size-5 mb-2">Upload a Track</p>

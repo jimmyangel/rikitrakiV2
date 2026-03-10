@@ -11,12 +11,13 @@ const { label, model, errorName, placeholder = "", rows = 5, maxlength = 5000 } 
     <div class="field">
       <div class="control">
         <textarea
-          class="textarea"
-          x-model={model}
-          rows={rows}
-          maxlength={maxlength}
-          placeholder={placeholder}
-          :class="{ 'is-danger': $store.ui.errorField === errorName }"
+			:id="`${idPrefix}-${errorName}`"
+			class="textarea"
+			x-model={model}
+			rows={rows}
+			maxlength={maxlength}
+			placeholder={placeholder}
+			:class="{ 'is-danger': $store.ui.errorField === errorName }"
         ></textarea>
       </div>
     </div>

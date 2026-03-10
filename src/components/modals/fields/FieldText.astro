@@ -11,12 +11,13 @@ const { label, model, errorName, placeholder = "", maxlength = 200 } = Astro.pro
     <div class="field">
       <div class="control">
         <input
-          class="input"
-          type="text"
-          maxlength={maxlength}
-          placeholder={placeholder}
-          x-model={model}
-          :class="{ 'is-danger': $store.ui.errorField === errorName }"
+			:id="`${idPrefix}-${errorName}`"
+			class="input"
+			type="text"
+			maxlength={maxlength}
+			placeholder={placeholder}
+			x-model={model}
+			:class="{ 'is-danger': $store.ui.errorField === errorName }"
         >
       </div>
     </div>

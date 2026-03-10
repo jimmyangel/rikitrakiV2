@@ -17,7 +17,7 @@ import PhotosPanel from './parts/PhotosPanel.astro'
         <div class="modal-background"
              @click="$store.ui.showEditTrackModal = false"></div>
 
-        <div class="modal-card edit-track-modal-card" x-data="editTrackModal">
+        <div class="modal-card edit-track-modal-card" x-data="editTrackModal" x-init="idPrefix = 'edit'">
 
             <ModalHeader closeAction="$store.ui.showEditTrackModal = false">
                 <p slot="title" class="is-size-5 mb-2">Edit Track</p>

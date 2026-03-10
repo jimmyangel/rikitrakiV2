@@ -56,9 +56,10 @@ import { Icon } from 'astro-icon/components'
         <div class="panel-block">
             <div class="control has-icons-left">
                 <input class="input"
-                       type="search"
-                       placeholder="Track name, user, activity, level…"
-                       x-model="$store.tracks.filter">
+                        id="trackFilter"
+                        type="search"
+                        placeholder="Track name, user, activity, level…"
+                        x-model="$store.tracks.filter">
                 <span class="icon is-left">
                     <Icon name={"fa7-solid:search"} />
                 </span>
