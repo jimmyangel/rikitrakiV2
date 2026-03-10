@@ -5,7 +5,7 @@ const { label, model, errorName, placeholder = "", rows = 5, maxlength = 5000 } 
 <div class="field is-horizontal"
      x-data={`{ errorName: '${errorName}' }`}>
 
-  <label class="field-label is-normal">{label}</label>
+  <label :for="`${idPrefix}-${errorName}`" class="field-label is-normal">{label}</label>
 
   <div class="field-body">
     <div class="field">

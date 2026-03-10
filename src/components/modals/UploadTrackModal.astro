@@ -50,7 +50,7 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 						<div class="field is-horizontal">
 
 							<!-- LEFT LABEL FOR GPX -->
-							<label class="field-label is-normal">GPX file</label>
+							<label for="gpxInput" class="field-label is-normal">GPX file</label>
 
 							<div class="field-body">
 
@@ -58,6 +58,7 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 								<div class="field">
 									<div class="control">
 										<input class="input"
+											id="gpxInput"
 											type="file"
 											accept=".gpx"
 											x-ref="gpxInput"

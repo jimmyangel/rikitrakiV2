@@ -1,12 +1,18 @@
 ---
 const { label, model, options } = Astro.props
+// `options` is the *name* of the array inside the modal Alpine scope.
+// Example: "regionOverrideOptions"
 ---
 
 <div class="field is-horizontal"
-     x-data={`{ optionsName: '${options}' }`}
-     x-show="!!$data[optionsName] && $data[optionsName].length > 0">
+     x-data={`{ optionsName: '${options}', model: '${model}' }`}>
 
-  <label class="field-label is-normal">{label}</label>
+  <div
+    class="field-label is-normal"
+    :id="`${idPrefix}-${model}-label`"
+  >
+    {label}
+  </div>
 
   <div class="field-body">
     <div class="field">
@@ -16,6 +22,8 @@ const { label, model, options } = Astro.props
              :class="{ 'is-disabled': $data[optionsName].length <= 1 }">
 
           <select
+            :id="`${idPrefix}-${model}`"
+            :aria-labelledby="`${idPrefix}-${model}-label`"
             x-model={model}
             :disabled="$data[optionsName].length <= 1"
           >

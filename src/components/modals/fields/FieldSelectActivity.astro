@@ -6,15 +6,29 @@ const activities = [
 ]
 ---
 
-<div class="field is-horizontal">
-  <label class="field-label is-normal">{label}</label>
+<div class="field is-horizontal"
+     x-data={`{ model: '${model}' }`}>
+
+  <div
+    class="field-label is-normal"
+    :id="`${idPrefix}-${model}-label`"
+  >
+    {label}
+  </div>
+
   <div class="field-body">
     <div class="field">
       <div class="control">
         <div class="select">
-          <select x-model={model}>
+
+          <select
+            :id="`${idPrefix}-${model}`"
+            :aria-labelledby="`${idPrefix}-${model}-label`"
+            x-model={model}
+          >
             {activities.map(a => <option>{a}</option>)}
           </select>
+
         </div>
       </div>
     </div>
