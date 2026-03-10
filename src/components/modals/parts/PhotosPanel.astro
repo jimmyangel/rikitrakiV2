@@ -4,172 +4,184 @@ import { Icon } from 'astro-icon/components'
 const { show } = Astro.props
 ---
 <div>
-	<!-- PHOTO UPLOAD ROW -->
-	<div class="field">
-		<div class="control is-flex is-flex-wrap-wrap is-align-items-center">
+    <!-- PHOTO UPLOAD ROW -->
+    <div class="field">
+        <div class="control is-flex is-flex-wrap-wrap is-align-items-center">
 
-		<p class="mr-3 mb-2">Add up to 8 JPEG images</p>
+        <p class="mr-3 mb-2">Add up to 8 JPEG images</p>
 
-		<div class="mr-4 mb-2">
-			<input
-				type="file"
-				multiple
-				accept="image/jpeg"
-				class="is-hidden"
-				x-ref="photoInput"
-				@change="selectPhotos($event)"
-			>
-			<button class="button" @click="$refs.photoInput.click()">
-				<Icon name="fa7-solid:images" class="is-size-4" />
-			</button>
-		</div>
+        <div class="mr-4 mb-2">
+            <input
+                type="file"
+                multiple
+                accept="image/jpeg"
+                class="is-hidden"
+                x-ref="photoInput"
+                @change="selectPhotos($event)"
+            >
+            <button class="button" @click="$refs.photoInput.click()">
+                <Icon name="fa7-solid:images" class="is-size-4" />
+            </button>
+        </div>
 
-		<p class="mr-4 mb-2 is-size-7">(Images larger than 1MB will be resized)</p>
+        <p class="mr-4 mb-2 is-size-7">(Images larger than 1MB will be resized)</p>
 
-		<div class="is-flex is-align-items-center mb-2">
-			<label class="label mr-2 mb-0">Time offset (hrs)</label>
-			<input
-				class="input"
-				style="width: 6rem;"
-				type="number"
-				min="-14"
-				max="14"
-				step="0.5"
-				x-model="timeOffset"
-			>
-		</div>
+        <div class="is-flex is-align-items-center mb-2">
+            <label class="label mr-2 mb-0">Time offset (hrs)</label>
+            <input
+                class="input"
+                style="width: 6rem;"
+                type="number"
+                min="-14"
+                max="14"
+                step="0.5"
+                x-model="timeOffset"
+            >
+        </div>
 
-		</div>
-	</div>
+        </div>
+    </div>
 
-	<!-- PHOTO GRID -->
-	<div class="columns is-multiline" id="track-photos-container">
-		<template x-for="(photo, idx) in trackPhotos" :key="idx">
-		<div
-			class="column
-					is-full-mobile
-					is-half-tablet
-					is-one-third-desktop
-					is-one-quarter-widescreen"
-			draggable="true"
-			@dragstart="startDrag(idx)"
-			@dragover.prevent
-			@drop="dropOn(idx)"
-		>
+    <!-- PHOTO GRID -->
+    <div class="columns is-multiline" id="track-photos-container">
+        <template x-for="(photo, idx) in trackPhotos" :key="idx">
+        <div
+            class="column
+                    is-full-mobile
+                    is-half-tablet
+                    is-one-third-desktop
+                    is-one-quarter-widescreen"
+            draggable="true"
+            @dragstart="startDrag(idx)"
+            @dragover.prevent
+            @drop="dropOn(idx)"
+        >
 
-			<input
-				class="input is-small mb-1"
-				type="text"
-				maxlength="200"
-				placeholder="Caption"
-				x-model="photo.picCaption"
-			>
+            <input
+                class="input is-small mb-1"
+                type="text"
+                maxlength="200"
+                placeholder="Caption"
+                x-model="photo.picCaption"
+            >
 
-			<figure
-				class="image is-4by3 mb-1 photo-figure"
-				:class="({ 'geo-exif': photoMeta[idx].hasExifGps, 'geo-interp': !photoMeta[idx].hasExifGps && trackPhotos[idx].picLatLng, 'geo-none': !photoMeta[idx].hasExifGps && !trackPhotos[idx].picLatLng })"
-			>
-			<button
-				class="delete photo-delete-btn"
-				@click="deletePhoto(idx)"
-				title="Remove photo"
-			></button>
+            <figure
+                class="image is-4by3 mb-1 photo-figure"
+                :class="({'geo-exif': photoMeta[idx].tagType === 'exif', 'geo-interp': photoMeta[idx].tagType === 'time', 'geo-prev': photoMeta[idx].tagType === 'previous', 'geo-none': photoMeta[idx].tagType === 'none'})"
+            >
+            <button
+                class="delete photo-delete-btn"
+                @click="deletePhoto(idx)"
+                title="Remove photo"
+            ></button>
 
-			<img
-				:src="photoMeta[idx].preview"
-				style="width:100%; height:100%; object-fit:cover;"
-			>
-			</figure>
+            <img
+                :src="photoMeta[idx].preview"
+                style="width:100%; height:100%; object-fit:cover;"
+            >
+            </figure>
 
-		</div>
-		</template>
-	</div>
+        </div>
+        </template>
+    </div>
 
-	<!-- LEGEND -->
-	<div
-		class="photo-legend is-size-7 mt-3"
-		x-show="trackPhotos.length > 0 && (
-				trackPhotos.some((p, i) => photoMeta[i].hasExifGps) ||
-				trackPhotos.some((p, i) => !photoMeta[i].hasExifGps && p.picLatLng)
-				)"
-	>
+    <!-- LEGEND -->
+    <div
+        class="photo-legend is-size-7 mt-3"
+        x-show="trackPhotos.length > 0"
+    >
 
-		<span
-			class="legend-item"
-			x-show="trackPhotos.some((p, i) => photoMeta[i].hasExifGps)"
-		>
-			<span class="legend-box geo-exif"></span>
-				Geotagged (EXIF)
-		</span>
+        <span
+            class="legend-item"
+            x-show="photoMeta.some(m => m.tagType === 'exif')"
+        >
+            <span class="legend-box geo-exif"></span>
+                Geotagged (EXIF)
+        </span>
 
-		<span
-			class="legend-item"
-			x-show="trackPhotos.some((p, i) => !photoMeta[i].hasExifGps && p.picLatLng)"
-		>
-			<span class="legend-box geo-interp"></span>
-				Time‑tagged (interpolated)
-		</span>
+        <span
+            class="legend-item"
+            x-show="photoMeta.some(m => m.tagType === 'time')"
+        >
+            <span class="legend-box geo-interp"></span>
+                Time‑tagged (interpolated)
+        </span>
 
-	</div>
+        <span
+            class="legend-item"
+            x-show="photoMeta.some(m => m.tagType === 'previous')"
+        >
+            <span class="legend-box geo-prev"></span>
+                Previously tagged
+        </span>
+
+        <span
+            class="legend-item"
+            x-show="photoMeta.some(m => m.tagType === 'none')"
+        >
+            <span class="legend-box geo-none"></span>
+                Not tagged
+        </span>
+
+    </div>
 </div>
 
 <style>
-	/* Make the figure the positioning container */
-	.photo-figure {
-		position: relative;
-		overflow: hidden; /* keep image clipped, not the button */
+
+	:root {
+		--geo-exif:   #2ecc71;
+		--geo-interp: #f39c12;
+		--geo-prev:   #3498db;
+		--geo-none:   black;
 	}
 
-	/* Position Bulma delete button in top-right */
-	.photo-delete-btn {
-		position: absolute;
-		top: 0.35rem;
-		right: 0.35rem;
-		z-index: 10;        /* <-- THIS is the key */
-		transform: scale(0.8);
-		cursor: pointer;
-	}
+    /* Make the figure the positioning container */
+    .photo-figure {
+        position: relative;
+        overflow: hidden;
+    }
 
-	/* Geotagging feedback borders */
-	.geo-exif {
-		border: 2px solid #2ecc71; /* green */
-	}
+    /* Position Bulma delete button in top-right */
+    .photo-delete-btn {
+        position: absolute;
+        top: 0.35rem;
+        right: 0.35rem;
+        z-index: 10;
+        transform: scale(0.8);
+        cursor: pointer;
+    }
 
-	.geo-interp {
-		border: 2px solid #f39c12; /* orange */
-	}
+    /* Geotagging feedback borders */
+	.geo-exif   { border: 2px solid var(--geo-exif); }
+	.geo-interp { border: 2px solid var(--geo-interp); }
+	.geo-prev   { border: 2px solid var(--geo-prev); }
+	.geo-none   { border: 2px solid var(--geo-none); }
 
-	.geo-none {
-		border: 2px solid transparent;
-	}
+    .photo-legend {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        color: #666;
+    }
 
-	.photo-legend {
-		display: flex;
-		gap: 1.5rem;
-		align-items: center;
-		color: #666;
-	}
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
 
-	.legend-item {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-	}
+    .legend-box {
+        width: 14px;
+        height: 14px;
+        border: 3px solid transparent;
+        display: inline-block;
+        flex-shrink: 0;
+        border-radius: 2px;
+    }
 
-	.legend-box {
-		width: 14px;
-		height: 14px;
-		border: 3px solid transparent;
-		display: inline-block;
-		flex-shrink: 0;
-		border-radius: 2px;
-	}
+	.legend-box.geo-exif   { border-color: var(--geo-exif); }
+	.legend-box.geo-interp { border-color: var(--geo-interp); }
+	.legend-box.geo-prev   { border-color: var(--geo-prev); }
+	.legend-box.geo-none   { border-color: var(--geo-none); }
 
-	.legend-box.geo-exif {
-		border-color: #2ecc71; /* green */
-	}
-
-	.legend-box.geo-interp {
-		border-color: #f39c12; /* orange */
-	}
 </style>

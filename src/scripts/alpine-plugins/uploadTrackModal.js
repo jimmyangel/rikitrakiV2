@@ -232,15 +232,15 @@ export default function (Alpine) {
 				// 5. Set default selection to detected region (or null)
 				this.selectedRegionOverride = detected ? detected.join('|') : null
 
-				// 6. Legacy requirement: trackRegionTags must reflect the *selected* region
+				// 6. Canonical: trackRegionTags always array-of-strings
 				this.trackRegionTags = this.selectedRegionOverride
 					? this.selectedRegionOverride.split('|')
-					: null
+					: []
 
 			} catch (e) {
 				this.regionOverrideOptions = []
 				this.selectedRegionOverride = null
-				this.trackRegionTags = null
+				this.trackRegionTags = []
 			}
 
             this.trackCoordinates = single.geometry.coordinates.map(([lon, lat], i) => ({

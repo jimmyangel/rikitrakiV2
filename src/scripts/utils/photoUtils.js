@@ -169,30 +169,62 @@ export async function addPhotos(files, state, helpers) {
             break
         }
 
+        // 1. Extract EXIF
         const { gps, timestamp } = await extractExif(file)
+
+        // 2. Normalize image
         const normalized = await normalizeImage(file)
+
+        // 3. Create thumbnail (data URL)
         const thumbDataUrl = await createThumbnail(normalized)
 
+        // 4. Push schema photo (backend-ready)
         trackPhotos.push({
             picName: normalized.name,
             picThumb: '',
-            picLatLng: gps,
+            picLatLng: gps || null,
             picCaption: '',
-            picThumbDataUrl: thumbDataUrl
+            picThumbDataUrl: thumbDataUrl   // raw data URL is fine for upload
         })
 
+        // 5. Determine tagType
+        let tagType
+        if (gps) {
+            tagType = 'exif'
+        } else {
+            // If no EXIF GPS, interpolation may assign lat/lon later
+            tagType = 'none'
+        }
+
+        // 6. Push UI metadata (UI-ready)
         photoMeta.push({
+            id: trackPhotos.length - 1,
             preview: thumbDataUrl,
+            latLng: gps || null,
             timestamp,
-            hasExifGps: !!gps
+            tagType
         })
 
+        // 7. Keep normalized file for upload
         photos.push(normalized)
     }
 
     state.hasPhotos = trackPhotos.length > 0
 
+    // 8. If track has coordinates, interpolate missing photo lat/lon
     if (trackCoordinates.length) {
         assignLatLngToPhotos(state)
+
+        // After interpolation, update tagType for interpolated photos
+        state.photoMeta.forEach((m, idx) => {
+            const p = state.trackPhotos[idx]
+
+            if (!m.latLng && p.picLatLng) {
+                // This photo got lat/lon from interpolation
+                m.latLng = p.picLatLng
+                m.tagType = 'time'
+            }
+        })
     }
 }
+

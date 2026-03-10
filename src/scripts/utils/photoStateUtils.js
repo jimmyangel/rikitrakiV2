@@ -1,32 +1,33 @@
-// ------------------------------
-// Drag start
-// ------------------------------
 export function startDrag(state, index) {
     state.dragIndex = index
 }
 
-// ------------------------------
-// Drop on
-// ------------------------------
 export function dropOn(state, index) {
-    const { dragIndex, trackPhotos, photoMeta } = state
+    if (state.dragIndex === null || state.dragIndex === index) return
 
-    if (dragIndex === null || dragIndex === index) return
+    const movedPhoto = state.trackPhotos.splice(state.dragIndex, 1)[0]
+    const movedMeta = state.photoMeta.splice(state.dragIndex, 1)[0]
 
-    const movedPhoto = trackPhotos.splice(dragIndex, 1)[0]
-    const movedMeta = photoMeta.splice(dragIndex, 1)[0]
+    state.trackPhotos.splice(index, 0, movedPhoto)
+    state.photoMeta.splice(index, 0, movedMeta)
 
-    trackPhotos.splice(index, 0, movedPhoto)
-    photoMeta.splice(index, 0, movedMeta)
+    if (state.photos) {
+        const movedFile = state.photos.splice(state.dragIndex, 1)[0]
+        state.photos.splice(index, 0, movedFile)
+    }
 
     state.dragIndex = null
 }
 
-// ------------------------------
-// Delete photo
-// ------------------------------
 export function deletePhoto(state, index) {
     state.trackPhotos.splice(index, 1)
     state.photoMeta.splice(index, 1)
+
+    if (state.photos) {
+        state.photos.splice(index, 1)
+    }
+
+    state.dragIndex = null
     state.hasPhotos = state.trackPhotos.length > 0
 }
+
