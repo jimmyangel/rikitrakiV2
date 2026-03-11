@@ -197,8 +197,13 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
     map.flyToActiveTrack()
 
-    // This ia hack to allow terrain to stabilize and land in the right place
-    setTimeout(() => { map.flyToActiveTrack() }, 2500)
+    // This is hack to allow terrain to stabilize and land in the right place
+    setTimeout(() => { 
+        map.flyToActiveTrack()
+        setTimeout(() => { 
+            map.flyToActiveTrack()
+        }, 200)
+    }, 2500)
     
     store.loadingTracks = false
 }
