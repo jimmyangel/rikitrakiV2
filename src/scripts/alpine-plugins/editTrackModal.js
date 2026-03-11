@@ -1,11 +1,10 @@
-import { sampleNearbyLocs } from '../utils/geoUtils'
+import { sampleNearbyLocs, parseGPXtoGeoJSON, extractSingleLineString } from '../utils/geoUtils'
 import { 
-	addPhotos,
-	createThumbnail, 
-	normalizeImage,
-	extractExif,
-	interpolateTrackLatLng,
-	assignLatLngToPhotos
+    addPhotos,
+    createThumbnail, 
+    normalizeImage,
+    extractExif,
+    assignLatLngToPhotos
 } from '../utils/photoUtils.js'
 
 import {
@@ -33,8 +32,11 @@ export default function (Alpine) {
         trackRegionTags: [],
         trackLatLng: null,
         hasPhotos: false,
-        trackPhotos: [],   // schema objects only
+        trackPhotos: [],
+
+        // Real GPX data for interpolation
         trackCoordinates: [],
+        trackTimes: [],
 
         // -----------------------------------------------------
         // REGION OVERRIDE
@@ -45,10 +47,15 @@ export default function (Alpine) {
         // -----------------------------------------------------
         // PHOTOS PANEL REQUIRED FIELDS
         // -----------------------------------------------------
-        photos: [],           // File objects (for newly added photos)
-        photoMeta: [],        // { preview, timestamp, tagType, latLng }
-        timeOffset: 0,        // required by PhotosPanel
-        dragIndex: null,      // required by PhotosPanel
+        photos: [],
+        photoMeta: [],
+        timeOffset: 0,
+        dragIndex: null,
+
+        // -----------------------------------------------------
+        // INTERNAL COUNTER FOR NEW picIndex VALUES
+        // -----------------------------------------------------
+        nextPicIndex: 0,
 
         confirmRemoval: false,
         idPrefix: null,
@@ -57,12 +64,10 @@ export default function (Alpine) {
         // INIT
         // -----------------------------------------------------
         init() {
-            // Watch for modal opening
             this.$watch('$store.ui.showEditTrackModal', value => {
                 if (value) this.populateForm()
             })
 
-            // Same behavior as upload modal
             this.$watch('timeOffset', () => {
                 assignLatLngToPhotos(this)
             })
@@ -79,74 +84,77 @@ export default function (Alpine) {
             const id = this.$store.tracks.activeTrackId
             if (!id) return
 
-            const t = this.$store.tracks.items[id].details
-            const geotags = this.$store.tracks.items[id].geotags?.geoTags?.trackPhotos || []
+            const track = this.$store.tracks.items[id]
+            const t = track.details
+            const geotags = track.geotags?.geoTags?.trackPhotos || []
 
-            // Always start on info tab
             this.tab = 'info'
 
-            // -------------------------------
-            // GPX / Coordinates
-            // -------------------------------
-            this.trackGPXBlob = null
-            this.trackGPX = ''
-            this.trackCoordinates = t.coordinates || []
-            this.trackLatLng = t.trackLatLng || null
+            // -----------------------------------------------------
+            // RE-PARSE GPX TO GET REAL COORDINATES + REAL TIMES
+            // -----------------------------------------------------
+            try {
+                const rawGeoJSON = await parseGPXtoGeoJSON(track.gpxBlob)
+                const singleReal = extractSingleLineString(rawGeoJSON, { useRealTimestamps: true })
 
-            // -------------------------------
+                this.trackCoordinates = singleReal.geometry.coordinates || []
+				const rawTimes = singleReal.properties.coordTimes || []
+				this.trackTimes = rawTimes.map(t =>
+					t instanceof Date ? t.getTime() :
+					typeof t === 'string' ? Date.parse(t) :
+					t
+				)
+            } catch (err) {
+                console.error('Failed to reparse GPX for edit mode:', err)
+                this.trackCoordinates = []
+                this.trackTimes = []
+            }
+
+            // -----------------------------------------------------
             // Schema fields
-            // -------------------------------
+            // -----------------------------------------------------
             this.trackName = t.trackName || ''
             this.trackDescription = t.trackDescription || ''
             this.trackFav = !!t.trackFav
             this.trackLevel = t.trackLevel || 'Easy'
             this.trackType = t.trackType || 'Hiking'
+            this.trackLatLng = t.trackLatLng || null
 
-            // -------------------------------
-            // Region override (canonical)
-            // -------------------------------
+            // -----------------------------------------------------
+            // Region override
+            // -----------------------------------------------------
             this.trackRegionTags = t.trackRegionTags || []
             this.regionOverrideOptions = []
 
             try {
                 if (this.trackLatLng) {
                     const [lat, lon] = this.trackLatLng
-
-                    // 1. Sample nearby regions (skip detectRegion)
                     const nearby = await sampleNearbyLocs(lat, lon, 1000)
 
-                    // 2. Start with DB regionTags (always first)
                     let all = []
                     if (t.trackRegionTags && Array.isArray(t.trackRegionTags)) {
                         all.push(t.trackRegionTags)
                     }
-
-                    // 3. Add nearby sampled regions
                     all.push(...nearby)
 
-                    // 4. Deduplicate by "country|region"
                     this.regionOverrideOptions = [...new Map(
                         all.map(r => [r.join('|'), r])
                     ).values()]
                 }
             } catch (e) {
-                // Fallback: only DB region
                 this.regionOverrideOptions = t.trackRegionTags
                     ? [t.trackRegionTags]
                     : []
             }
 
-            // 5. Selected override = DB value
             this.selectedRegionOverride = t.regionOverride || null
-
-            // 6. Canonical: trackRegionTags always array-of-strings
             this.trackRegionTags = this.selectedRegionOverride
                 ? this.selectedRegionOverride.split('|')
                 : []
 
-            // -------------------------------
+            // -----------------------------------------------------
             // Photos (canonical merge)
-            // -------------------------------
+            // -----------------------------------------------------
             const metaPhotos = t.trackPhotos || []
 
             this.trackPhotos = metaPhotos.map((p, index) => {
@@ -176,35 +184,42 @@ export default function (Alpine) {
                     ? `data:image/jpeg;base64,${p.picThumbDataUrl}`
                     : null,
                 tagType: p.picLatLng ? 'previous' : 'none',
+                hasExifGps: false
             }))
+
+            // -----------------------------------------------------
+            // Compute nextPicIndex
+            // -----------------------------------------------------
+            const existing = this.trackPhotos
+                .map(p => p.picIndex)
+                .filter(v => v != null)
+
+            this.nextPicIndex = existing.length
+                ? Math.max(...existing) + 1
+                : 0
 
             this.timeOffset = 0
             this.confirmRemoval = false
-            this.photos = []      // new photos added during edit
+            this.photos = []
 
-            // -------------------------------
-            // UI state
-            // -------------------------------
             this.$store.ui.error = null
             this.$store.ui.errorField = ''
             this.$store.ui.uploading = false
         },
 
         // -----------------------------------------------------
-        // PHOTO ADD / PROCESSING (same pipeline as upload)
+        // PHOTO ADD / PROCESSING
         // -----------------------------------------------------
-        selectPhotos(e) {
+        async selectPhotos(e) {
             const files = Array.from(e.target.files || [])
             if (!files.length) return
 
-            // Reuse the canonical upload pipeline
-			addPhotos(files, this, {
-				extractExif,
-				normalizeImage,
-				createThumbnail
-			})
+            await addPhotos(files, this, {
+                extractExif,
+                normalizeImage,
+                createThumbnail
+            })
 
-            // Reset input so selecting the same file again works
             e.target.value = ''
         },
 
@@ -230,9 +245,6 @@ export default function (Alpine) {
 
         async removeTrack() {
             try {
-                // await this.$store.tracks.removeTrack(activeTrackId)
-
-                // Success → show info message in footer
                 this.$store.ui.info = 'Track has been removed.'
                 this.$store.ui.error = null
 
@@ -241,7 +253,6 @@ export default function (Alpine) {
                     this.$store.ui.showEditTrackModal = false
                 }, 2500)
             } catch (err) {
-                // Error → show error message in footer
                 this.$store.ui.error = err.message || 'Failed to remove track.'
                 this.$store.ui.info = null
             }

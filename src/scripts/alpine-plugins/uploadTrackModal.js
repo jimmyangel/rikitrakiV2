@@ -70,7 +70,7 @@ export default function (Alpine) {
                 if (value) this.clearForm()
             })
 
-            this.$watch('timeOffset', () => {
+            this.$watch('timeOffset', (v) => {
                 assignLatLngToPhotos(this)
             })
 
@@ -179,6 +179,13 @@ export default function (Alpine) {
 
 			this.$store.ui.info = 'GPX loaded successfully'
 
+			// Normalize coordTimes to epoch ms
+			single.properties.coordTimes = single.properties.coordTimes.map(t =>
+				t instanceof Date ? t.getTime() :
+				typeof t === 'string' ? Date.parse(t) :
+				t
+			)
+
 			setTimeout(() => {
 				this.$store.ui.info = ''
 			}, 2500)
@@ -243,13 +250,10 @@ export default function (Alpine) {
 				this.trackRegionTags = []
 			}
 
-            this.trackCoordinates = single.geometry.coordinates.map(([lon, lat], i) => ({
-                lon,
-                lat,
-                timestamp: single.properties?.coordTimes?.[i]
-                    ? new Date(single.properties.coordTimes[i]).getTime()
-                    : null
-            }))
+			this.trackCoordinates = single.geometry.coordinates
+			this.trackTimes = single.properties.coordTimes.map(t =>
+				t ? new Date(t).getTime() : null
+			)
 
             assignLatLngToPhotos(this)
         },

@@ -114,23 +114,28 @@ export async function extractExif(file) {
 // ------------------------------
 // Track interpolation
 // ------------------------------
-export function interpolateTrackLatLng(coords, ts) {
-    if (!coords.length) return null
+export function interpolateTrackLatLng(trackCoordinates, trackTimes, ts) {
 
-    for (let i = 0; i < coords.length - 1; i++) {
-        const a = coords[i]
-        const b = coords[i + 1]
+    if (!trackCoordinates.length || !trackTimes.length) return null
 
-        if (!a.timestamp || !b.timestamp) continue
+    for (let i = 0; i < trackCoordinates.length - 1; i++) {
+        const t0 = trackTimes[i]
+        const t1 = trackTimes[i + 1]
 
-        if (ts >= a.timestamp && ts <= b.timestamp) {
-            const ratio = (ts - a.timestamp) / (b.timestamp - a.timestamp)
-            const lat = a.lat + ratio * (b.lat - a.lat)
-            const lon = a.lon + ratio * (b.lon - a.lon)
+        if (t0 == null || t1 == null) continue
+
+        if (ts >= t0 && ts <= t1) {
+            const ratio = (ts - t0) / (t1 - t0)
+
+            const [lon0, lat0] = trackCoordinates[i]
+            const [lon1, lat1] = trackCoordinates[i + 1]
+
+            const lon = lon0 + ratio * (lon1 - lon0)
+            const lat = lat0 + ratio * (lat1 - lat0)
+
             return [lon, lat]
         }
     }
-
     return null
 }
 
@@ -138,93 +143,142 @@ export function interpolateTrackLatLng(coords, ts) {
 // Assign interpolated GPS
 // ------------------------------
 export function assignLatLngToPhotos(state) {
-    const { trackPhotos, photoMeta, trackCoordinates, timeOffset } = state
+	if (!state.trackCoordinates || state.trackCoordinates.length < 2) return
+	if (!state.trackTimes || state.trackTimes.length < 2) return
+	if (!state.photoMeta || state.photoMeta.length === 0) return
+
+
+    const { trackPhotos, photoMeta, trackCoordinates, trackTimes, timeOffset } = state
 
     if (!trackCoordinates.length) return
     if (!trackPhotos.length) return
 
-    for (let i = 0; i < trackPhotos.length; i++) {
-        const meta = photoMeta[i]
-        const photo = trackPhotos[i]
+	for (let i = 0; i < trackPhotos.length; i++) {
+		const meta = photoMeta[i]
+		const photo = trackPhotos[i]
 
-        if (meta.hasExifGps) continue
-        if (!meta.timestamp) continue
+		// DB photos: preserve everything
+		if (meta.tagType === 'previous') {
+			meta.latLng = photo.picLatLng
+			continue
+		}
 
-        const shifted = meta.timestamp + timeOffset * 3600 * 1000
-        photo.picLatLng = interpolateTrackLatLng(trackCoordinates, shifted)
-    }
+		// EXIF GPS always wins
+		if (meta.hasExifGps) {
+			meta.tagType = 'exif'
+			continue
+		}
+
+		if (!meta.timestamp) {
+			meta.tagType = 'none'
+			meta.latLng = null
+			photo.picLatLng = null
+			continue
+		}
+
+		const shifted = meta.timestamp + timeOffset * 3600 * 1000
+		const interpolated = interpolateTrackLatLng(trackCoordinates, trackTimes, shifted)
+
+		if (interpolated) {
+			// matched
+			meta.latLng = interpolated
+			photo.picLatLng = interpolated
+			meta.tagType = 'time'
+		} else {
+			// out of range
+			meta.latLng = null
+			photo.picLatLng = null
+			meta.tagType = 'none'
+		}
+	}
+
 }
 
 // ------------------------------
 // Pipeline: addPhotos
 // ------------------------------
+const MAX_NUM_IMAGES = 8
+
 export async function addPhotos(files, state, helpers) {
-    const MAX = 8
-    const { trackPhotos, photoMeta, photos, trackCoordinates } = state
     const { extractExif, normalizeImage, createThumbnail } = helpers
 
-    for (const file of files) {
-        if (trackPhotos.length >= MAX) {
-            Alpine.store('ui').error = `Maximum of ${MAX} photos allowed`
-            break
-        }
-
-        // 1. Extract EXIF
-        const { gps, timestamp } = await extractExif(file)
-
-        // 2. Normalize image
-        const normalized = await normalizeImage(file)
-
-        // 3. Create thumbnail (data URL)
-        const thumbDataUrl = await createThumbnail(normalized)
-
-        // 4. Push schema photo (backend-ready)
-        trackPhotos.push({
-            picName: normalized.name,
-            picThumb: '',
-            picLatLng: gps || null,
-            picCaption: '',
-            picThumbDataUrl: thumbDataUrl   // raw data URL is fine for upload
-        })
-
-        // 5. Determine tagType
-        let tagType
-        if (gps) {
-            tagType = 'exif'
-        } else {
-            // If no EXIF GPS, interpolation may assign lat/lon later
-            tagType = 'none'
-        }
-
-        // 6. Push UI metadata (UI-ready)
-        photoMeta.push({
-            id: trackPhotos.length - 1,
-            preview: thumbDataUrl,
-            latLng: gps || null,
-            timestamp,
-            tagType
-        })
-
-        // 7. Keep normalized file for upload
-        photos.push(normalized)
+    if (state.trackPhotos.length + files.length > MAX_NUM_IMAGES) {
+        state.$store?.ui && (state.$store.ui.error = `You can upload up to ${MAX_NUM_IMAGES} photos.`)
+        return
     }
 
-    state.hasPhotos = trackPhotos.length > 0
+    for (const file of files) {
+        const exif = await extractExif(file)
+        const normalized = await normalizeImage(file)
 
-    // 8. If track has coordinates, interpolate missing photo lat/lon
-    if (trackCoordinates.length) {
+        const gps = exif?.gps || null
+
+        // Canonical timestamp normalization
+        let timestamp = null
+        if (exif?.timestamp instanceof Date) {
+            timestamp = exif.timestamp.getTime()
+        } else if (typeof exif?.timestamp === 'string') {
+            const d = new Date(exif.timestamp)
+            timestamp = isNaN(d.getTime()) ? null : d.getTime()
+        } else if (typeof exif?.timestamp === 'number') {
+            timestamp = exif.timestamp
+        }
+
+        const thumbDataUrl = await createThumbnail(normalized)
+
+        // Canonical picIndex
+        let picIndex
+        if (typeof state.nextPicIndex === 'number') {
+            picIndex = state.nextPicIndex++
+        } else {
+            picIndex = state.trackPhotos.length
+        }
+        const picName = picIndex.toString()
+
+        // TrackPhotos entry (UI list)
+        state.trackPhotos.push({
+            picIndex,
+            picName,
+            picCaption: '',
+            picLatLng: gps ? [gps.lat, gps.lon] : null,
+            picThumb: null,
+            picThumbDataUrl: thumbDataUrl.replace(/^data:image\/jpeg;base64,/, '')
+        })
+
+        // PhotoMeta entry (interpolation + EXIF)
+        state.photoMeta.push({
+            id: picIndex,
+            caption: '',
+            latLng: gps ? [gps.lat, gps.lon] : null,
+            timestamp,               // always numeric or null
+            preview: thumbDataUrl,
+            tagType: gps ? 'exif' : 'none',
+            hasExifGps: !!gps
+        })
+
+        state.photos.push(normalized)
+    }
+
+    state.hasPhotos = state.trackPhotos.length > 0
+
+    // Canonical: only interpolate when trackCoordinates exist
+    if (state.trackCoordinates && state.trackCoordinates.length > 1) {
         assignLatLngToPhotos(state)
 
-        // After interpolation, update tagType for interpolated photos
+        // After interpolation, sync latLng into trackPhotos
         state.photoMeta.forEach((m, idx) => {
             const p = state.trackPhotos[idx]
 
-            if (!m.latLng && p.picLatLng) {
-                // This photo got lat/lon from interpolation
+            if (!m.hasExifGps && !m.latLng && p.picLatLng) {
                 m.latLng = p.picLatLng
                 m.tagType = 'time'
             }
         })
     }
 }
+
+
+
+
+
 
