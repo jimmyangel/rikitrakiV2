@@ -4,6 +4,7 @@ import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
 import { uploadTrack } from '../data/uploadTrack.js'
+import { updateTrack } from '../data/updateTrack.js'
 import {
     parseGPXtoGeoJSON,
     computeBounds,
@@ -472,6 +473,115 @@ export default function initTracksStore(Alpine) {
                 Alpine.store('ui').error = 'Unexpected upload error.'
 
                 return null
+            }
+        },
+        async updateTrack(payload) {
+            // Reset UI state
+            Alpine.store('ui').error = null
+            Alpine.store('ui').uploading = true
+            Alpine.store('ui').showInfo('Saving changes…', 3000)
+
+            try {
+                // -----------------------------------------------------
+                // PHOTO DIFF (added, removed, reordered, caption edits)
+                // -----------------------------------------------------
+                const {
+                    trackId,
+                    originalTrackDetails,
+                    trackPhotos: currentPhotos
+                } = payload
+
+                const originalPhotos = originalTrackDetails.trackPhotos || []
+                const current = currentPhotos || []
+
+                // 1. Added / removed (identity = picName)
+                const removed = originalPhotos.filter(o => !current.some(c => c.picName === o.picName))
+                const added   = current.filter(c => !originalPhotos.some(o => o.picName === c.picName))
+
+                // 2. Caption edits
+                const captionEdited = current.some(c => {
+                    const o = originalPhotos.find(p => p.picName === c.picName)
+                    return o && o.picCaption !== c.picCaption
+                })
+
+                // 3. Reorder (order of picName changed)
+                const originalOrder = originalPhotos.map(p => p.picName)
+                const currentOrder  = current.map(p => p.picName)
+                const reordered = JSON.stringify(originalOrder) !== JSON.stringify(currentOrder)
+
+                // 4. picIndex changes (identity remapping)
+                const picIndexChanged = current.some(c => {
+                    const o = originalPhotos.find(p => p.picName === c.picName)
+                    return o && o.picIndex !== c.picIndex
+                })
+
+                // 5. Final canonical list (UI order is canonical)
+                const finalPhotos = [...current]
+
+                // 6. Determine if anything changed
+                const photosChanged =
+                    removed.length > 0 ||
+                    added.length > 0 ||
+                    captionEdited ||
+                    reordered ||
+                    picIndexChanged
+
+                // -----------------------------------------------------
+                // MINIMAL UPDATE PAYLOAD (only changed fields)
+                // -----------------------------------------------------
+                const minimal = { trackId }
+
+                if (payload.trackName !== originalTrackDetails.trackName)
+                    minimal.trackName = payload.trackName
+
+                if (payload.trackDescription !== originalTrackDetails.trackDescription)
+                    minimal.trackDescription = payload.trackDescription
+
+                if (payload.trackFav !== originalTrackDetails.trackFav)
+                    minimal.trackFav = payload.trackFav
+
+                if (payload.trackLevel !== originalTrackDetails.trackLevel)
+                    minimal.trackLevel = payload.trackLevel
+
+                if (payload.trackType !== originalTrackDetails.trackType)
+                    minimal.trackType = payload.trackType
+
+                if (JSON.stringify(payload.trackRegionTags) !== JSON.stringify(originalTrackDetails.trackRegionTags))
+                    minimal.trackRegionTags = payload.trackRegionTags
+
+                if (photosChanged)
+                    minimal.trackPhotos = finalPhotos
+
+                // -----------------------------------------------------
+                // DELEGATE TO DATA LAYER (stubbed)
+                // -----------------------------------------------------
+                const result = await updateTrack(minimal, { added, removed })
+
+                Alpine.store('ui').uploading = false
+
+                if (!result.ok) {
+                    Alpine.store('ui').error = 'Update failed.'
+                    return { ok: false }
+                }
+
+                // SUCCESS
+                Alpine.store('ui').showInfo('Track updated.', 3000)
+
+                // Invalidate cache for this track
+                delete this.items[trackId]
+
+                // Reload from DB
+                await this.openTrack(trackId, { fromHistory: true })
+
+                return { ok: true }
+
+            } catch (err) {
+                console.error('updateTrack() store error:', err)
+
+                Alpine.store('ui').uploading = false
+                Alpine.store('ui').error = 'Unexpected update error.'
+
+                return { ok: false }
             }
         }
     })

@@ -125,11 +125,11 @@ import PhotosPanel from './parts/PhotosPanel.astro'
                     <div class="field-body">
                         <div class="field">
                             <div class="control">
-                                <button class="button"
-                                        :disabled="$store.ui.uploading"
-                                        @click="update()">
-                                    Save changes
-                                </button>
+								<button class="button"
+										:disabled="!ready || $store.ui.uploading || !isDirty"
+										@click="update()">
+									Save changes
+								</button>
                             </div>
                         </div>
                     </div>

@@ -54,8 +54,8 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
                     <!-- Track name -->
                     <span
                         x-text="
-                            $store.tracks.items[$store.tracks.activeTrackId].details.trackName +
-                            ($store.tracks.items[$store.tracks.activeTrackId].details.trackFav ? ' ✭' : '')
+                            $store.tracks.items[$store.tracks.activeTrackId]?.details?.trackName +
+                            ($store.tracks.items[$store.tracks.activeTrackId]?.details?.trackFav ? ' ✭' : '')
                         "
                     ></span>
                 </div>
