@@ -46,7 +46,7 @@ export function sanitizeUrl() {
         changed = true
     }
 
-    // Canonical rule: trackId cannot coexist with lat/lon
+    // Rule: trackId cannot coexist with lat/lon
     if (trackId !== null) {
         if (url.searchParams.has('lat') || url.searchParams.has('lon')) {
             url.searchParams.delete('lat')

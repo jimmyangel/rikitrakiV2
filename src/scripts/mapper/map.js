@@ -750,7 +750,7 @@ export function renderMapThumbnails(geoTags) {
                 el.dataset.arrayIndex = photo.arrayIndex
                 el.dataset.type = 'image'
 
-                // Full-size image URL (canonical rule)
+                // Full-size image URL
                 const picPointer = photo.picIndex ?? photo.arrayIndex
                 el.href = `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${picPointer}`
 

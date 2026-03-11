@@ -213,7 +213,7 @@ export async function addPhotos(files, state, helpers) {
 
         const gps = exif?.gps || null
 
-        // Canonical timestamp normalization
+        // timestamp normalization
         let timestamp = null
         if (exif?.timestamp instanceof Date) {
             timestamp = exif.timestamp.getTime()
@@ -226,7 +226,7 @@ export async function addPhotos(files, state, helpers) {
 
         const thumbDataUrl = await createThumbnail(normalized)
 
-        // Canonical picIndex
+        //  picIndex
         let picIndex
         if (typeof state.nextPicIndex === 'number') {
             picIndex = state.nextPicIndex++
@@ -261,7 +261,7 @@ export async function addPhotos(files, state, helpers) {
 
     state.hasPhotos = state.trackPhotos.length > 0
 
-    // Canonical: only interpolate when trackCoordinates exist
+    // Only interpolate when trackCoordinates exist
     if (state.trackCoordinates && state.trackCoordinates.length > 1) {
         assignLatLngToPhotos(state)
 

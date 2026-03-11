@@ -515,7 +515,7 @@ export default function initTracksStore(Alpine) {
                     return o && o.picIndex !== c.picIndex
                 })
 
-                // 5. Final canonical list (UI order is canonical)
+                // 5. Final list (UI order is standardized)
                 const finalPhotos = [...current]
 
                 // 6. Determine if anything changed

@@ -239,7 +239,7 @@ export default function (Alpine) {
 				// 5. Set default selection to detected region (or null)
 				this.selectedRegionOverride = detected ? detected.join('|') : null
 
-				// 6. Canonical: trackRegionTags always array-of-strings
+				// 6. trackRegionTags always array-of-strings
 				this.trackRegionTags = this.selectedRegionOverride
 					? this.selectedRegionOverride.split('|')
 					: []

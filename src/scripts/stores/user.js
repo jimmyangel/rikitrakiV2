@@ -95,7 +95,7 @@ export default function initUserStore(Alpine) {
 		},
 
         //
-        // Canonical URL username handling
+        // URL username handling
         //
 		applyUsernameToUrl() {
 			if (!this.username) return

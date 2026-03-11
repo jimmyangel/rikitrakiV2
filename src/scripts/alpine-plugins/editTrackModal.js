@@ -44,7 +44,7 @@ export default function (Alpine) {
         trackRegionTags: [],          // flat array of strings per schema
         trackLatLng: null,
         hasPhotos: false,
-        trackPhotos: [],              // canonical UI photos
+        trackPhotos: [],              // UI photos
 
         // Real GPX data for interpolation
         trackCoordinates: [],
@@ -72,7 +72,7 @@ export default function (Alpine) {
         confirmRemoval: false,
         idPrefix: null,
 
-        originalTrackDetails: null,   // snapshot of canonical UI state
+        originalTrackDetails: null,   // snapshot of UI state
         ready: false,
 
         // -----------------------------------------------------
@@ -92,10 +92,10 @@ export default function (Alpine) {
                 const track = this.$store.tracks.items[id]
                 if (!track || !track.details) return
 
-                // 1) Populate full canonical UI state
+                // 1) Populate full UI state
                 await this.populateForm()
 
-                // 2) Snapshot canonical UI state for diffing
+                // 2) Snapshot UI state for diffing
                 this.originalTrackDetails = JSON.parse(JSON.stringify({
                     trackId: this.trackId,
                     trackName: this.trackName,
@@ -116,7 +116,7 @@ export default function (Alpine) {
                 assignLatLngToPhotos(this)
             })
 
-            // Region override → update trackRegionTags (canonical)
+            // Region override → update trackRegionTags
             this.$watch('selectedRegionOverride', value => {
                 if (!this.ready) return
 
@@ -215,7 +215,7 @@ export default function (Alpine) {
             this.trackType = t.trackType || 'Hiking'
             this.trackLatLng = t.trackLatLng || null
 
-            // Region tags (canonical: flat array of strings)
+            // Region tags (flat array of strings)
             this.trackRegionTags = [...(t.trackRegionTags || [])]
             this.selectedRegionOverride = t.regionOverride || null
             this.regionOverrideOptions = []
@@ -247,7 +247,7 @@ export default function (Alpine) {
                 this.trackRegionTags = this.selectedRegionOverride.split('|')
             }
 
-            // Photos (canonical merge)
+            // Photos (merge)
             const metaPhotos = t.trackPhotos || []
 
             this.trackPhotos = metaPhotos.map((p, index) => {
@@ -335,7 +335,7 @@ export default function (Alpine) {
         },
 
         // -----------------------------------------------------
-        // DIRTY CHECK (canonical vs snapshot of canonical)
+        // DIRTY CHECK (vs snapshot)
         // -----------------------------------------------------
         get isDirty() {
             if (this.trackId === null) return false
@@ -357,7 +357,7 @@ export default function (Alpine) {
                 return true
             }
 
-            // Photos (canonical vs canonical snapshot)
+            // Photos (vs snapshot)
             if (
                 JSON.stringify(this.trackPhotos) !==
                 JSON.stringify(this.originalTrackDetails.trackPhotos)
