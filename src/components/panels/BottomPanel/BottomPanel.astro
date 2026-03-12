@@ -11,7 +11,7 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
 >
     <!-- Close button -->
     <button class="bottom-panel-close-button" title="Close info panel">
-        <Icon name="fa7-solid:xmark" class="icon" />
+        <Icon name="fa7-solid:caret-down" class="icon" />
     </button>
 
     <!-- OVERLAY ARROWS (desktop only) -->
@@ -42,14 +42,23 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
                 <div 
                     class="bottom-panel-title is-size-6 has-text-weight-bold has-background-light py-2 pl-2 pr-5 is-flex is-align-items-center"
                 >
-                    <!-- Reset button (styled like your app buttons) -->
+                    <!-- Exit track button -->
+                     <button 
+                        class="reset-btn mr-2"
+                        @click="exitTrack()"
+                        title="Exit track"
+                    >
+                        <Icon name="fa7-solid:xmark" />
+                    </button>  
+
+                    <!-- Reset button -->
                     <button 
                         class="reset-btn mr-2"
                         @click="$store.tracks.resetAnimation()"
                         title="Reset to track"
                     >
                         <Icon name="fa7-solid:crosshairs" />
-                    </button>
+                    </button>              
 
                     <!-- Track name -->
                     <span
@@ -131,7 +140,11 @@ import ActiveTrackContent from './ActiveTrackContent.astro'
                 } else {
                     el.scrollBy({ left: amount, behavior: 'smooth' })
                 }
-            }
+            },
+            
+            exitTrack() {
+                this.$store.tracks.exitActiveTrack({ fromHistory: false })
+            },
         }
     }
 </script>
