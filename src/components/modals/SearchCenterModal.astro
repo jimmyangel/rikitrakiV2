@@ -68,6 +68,7 @@ import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 		Alpine.data('worldMapModal', () => ({
 
 			pick(lat, lon) {
+                this.$store.tracks.exitActiveTrack()
 				this.$store.tracks.setSearchCenter(lat, lon)
 				this.$store.ui.showSearchCenterModal = false
 			}

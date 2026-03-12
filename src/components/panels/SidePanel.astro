@@ -36,18 +36,13 @@ import { Icon } from 'astro-icon/components'
             </div>
         </div>
 
-        <div x-show="!$store.tracks.activeTrackId" class="panel-block is-size-7">
+        <div class="panel-block is-size-7">
             Change search center by long tap/click directly on the map or click below…
-        </div>
-
-        <div x-show="$store.tracks.activeTrackId" class="panel-block is-size-7">
-            Search center is disabled while viewing a track
         </div>
 
         <div class="panel-block">
             <button class="button is-small is-light is-fullwidth"
                     @click="$store.ui.showSearchCenterModal = true"
-                    :disabled="$store.tracks.activeTrackId"
                     :title="$store.tracks.activeTrackId ? 'Exit Active Track Mode to change search center' : ''">
                 Change Search Center
             </button>

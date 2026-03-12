@@ -407,7 +407,7 @@ export default function initTracksStore(Alpine) {
             map.setNorthArrowDisabled(false)
         },
 
-        exitActiveTrack({ fromHistory = false } = {}) {
+        exitActiveTrack({ fromHistory = false, fly = true } = {}) {
             if (!this.activeTrackId) return
 
             this.isPlaying = false
@@ -432,7 +432,9 @@ export default function initTracksStore(Alpine) {
 
             if (!fromHistory) { pushHistory({ trackId: null, center: null })}
 
-            map.flyToTrackDataSource()
+            if (fly) {
+                map.flyToTrackDataSource()
+            }
         },
 
         hideMarkers() {

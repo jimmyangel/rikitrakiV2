@@ -505,6 +505,7 @@ function handleLongPress(position) {
     const lat = Cesium.Math.toDegrees(cartographic.latitude)
     const lon = Cesium.Math.toDegrees(cartographic.longitude)
 
+    Alpine.store('tracks').exitActiveTrack({ fly: false })
     Alpine.store('tracks').setSearchCenter(lat, lon)
 }
 
