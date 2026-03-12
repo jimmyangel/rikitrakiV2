@@ -11,7 +11,7 @@ export async function updateTrack(payload, { added = [], removed = [] } = {}) {
     if (added.length > 0) {
         console.log('--- ADDING NEW PHOTOS ---')
         added.forEach((p, i) => {
-            console.log(`STUB addPicture → trackId=${trackId}, picName=${p.picName}`)
+            console.log(`STUB addPicture → trackId=${trackId}, picIndex=${p.picIndex}`)
         })
     }
 
@@ -21,7 +21,7 @@ export async function updateTrack(payload, { added = [], removed = [] } = {}) {
     if (removed.length > 0) {
         console.log('--- REMOVING PHOTOS ---')
         removed.forEach((p, i) => {
-            console.log(`STUB deletePicture → trackId=${trackId}, picName=${p.picName}`)
+            console.log(`STUB deletePicture → trackId=${trackId}, picIndex=${p.picName}`)
         })
     }
 
