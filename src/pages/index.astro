@@ -20,9 +20,9 @@ import '../styles/map-frame.css'
             <aside class="side-panel map-frame-side isopen">
                 <div class="side-panel-content isopen">
                     <button class="side-panel-close-button" title="Close panel">
-                        <Icon name="fa7-solid:right-from-bracket" class="icon icon-flip-x" />
+                        <Icon name="fa7-solid:right-from-bracket" class="icon icon-flip-x icon-desktop" />
+                        <Icon name="fa7-solid:caret-up" class="icon icon-mobile" />
                     </button>
-
                     <SidePanel />
                 </div>
             </aside>
@@ -65,13 +65,6 @@ import '../styles/map-frame.css'
     <UploadTrackModal />
     <EditTrackModal />
 </div>
-
-<style>
-    .icon-flip-x {
-        transform: scaleX(-1);
-    }
-
-</style>
 
 <script>
     import initStores from '../scripts/stores/initStores.js'

@@ -229,6 +229,10 @@
     }
 }
 
+.icon-flip-x {
+    transform: scaleX(-1);
+}
+
 .side-panel-open-button,
 .side-panel-close-button {
     display: flex;
