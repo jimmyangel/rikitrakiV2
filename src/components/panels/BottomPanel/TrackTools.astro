@@ -55,7 +55,7 @@ import { Icon } from 'astro-icon/components'
         <!-- Download row -->
         <div></div>
         <div class="center">
-            <button class="exit-btn" @click="downloadGPX()" title="Download GPX">
+            <button class="down-btn" @click="downloadGPX()" title="Download GPX">
                 Download
             </button>
         </div>
@@ -223,5 +223,17 @@ import { Icon } from 'astro-icon/components'
         50% {
             opacity: 0.4;
         }
+    }
+
+    .down-btn {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 4px 10px;
+        border: none;
+        background: #fff;
+        cursor: pointer;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+        border-radius: 4px;
+        white-space: nowrap;
     }
 </style>

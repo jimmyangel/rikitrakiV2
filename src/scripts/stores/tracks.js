@@ -109,6 +109,12 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
             details.trackDate = extractTrackDate(rawGeoJSON)
 
             const single = extractSingleLineString(rawGeoJSON)
+
+            if (details.trackType !== 'Flying') {
+                const coords = single.geometry.coordinates
+                single.geometry.coordinates = await map.sampleTerrain(coords)
+            }
+
             const metrics = computeTrackMetrics(single)
 
             single.geometry.coordinates =

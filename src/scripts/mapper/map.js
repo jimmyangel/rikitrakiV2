@@ -786,6 +786,33 @@ export function renderMapThumbnails(geoTags) {
         })
 }
 
+export async function sampleTerrain(coords) {
+    if (!viewer || !viewer.terrainProvider) {
+        console.warn('Terrain not ready')
+        return coords
+    }
+
+    const cartos = coords.map(([lon, lat]) => Cesium.Cartographic.fromDegrees(lon, lat))
+
+    const updated = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, cartos)
+
+    return updated.map((c, i) => {
+        const original = coords[i]
+        const h = c.height
+
+        // If Cesium couldn't resolve height, keep original elevation
+        const elevation = (typeof h === 'number' && !isNaN(h))
+            ? h
+            : original[2]
+
+        return [
+            Cesium.Math.toDegrees(c.longitude),
+            Cesium.Math.toDegrees(c.latitude),
+            elevation
+        ]
+    })
+}
+
 export function clearMapThumbnails() {
     const layer = document.getElementById('map-thumbnails-layer')
     if (layer) layer.innerHTML = ''
