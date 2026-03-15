@@ -96,7 +96,8 @@ export async function extractExif(file) {
         let timestamp = null
 
         if (data && data.latitude != null && data.longitude != null) {
-            gps = [data.longitude, data.latitude]
+            // ✔ EXIF now returns [lat, lon]
+            gps = [data.latitude, data.longitude]
         }
 
         if (data && data.DateTimeOriginal instanceof Date) {
@@ -127,13 +128,15 @@ export function interpolateTrackLatLng(trackCoordinates, trackTimes, ts) {
         if (ts >= t0 && ts <= t1) {
             const ratio = (ts - t0) / (t1 - t0)
 
+            // trackCoordinates are [lon, lat] from GPX
             const [lon0, lat0] = trackCoordinates[i]
             const [lon1, lat1] = trackCoordinates[i + 1]
 
             const lon = lon0 + ratio * (lon1 - lon0)
             const lat = lat0 + ratio * (lat1 - lat0)
 
-            return [lon, lat]
+            // ✔ Return [lat, lon] to match EXIF + legacy
+            return [lat, lon]
         }
     }
     return null
@@ -143,55 +146,50 @@ export function interpolateTrackLatLng(trackCoordinates, trackTimes, ts) {
 // Assign interpolated GPS
 // ------------------------------
 export function assignLatLngToPhotos(state) {
-	if (!state.trackCoordinates || state.trackCoordinates.length < 2) return
-	if (!state.trackTimes || state.trackTimes.length < 2) return
-	if (!state.photoMeta || state.photoMeta.length === 0) return
-
+    if (!state.trackCoordinates || state.trackCoordinates.length < 2) return
+    if (!state.trackTimes || state.trackTimes.length < 2) return
+    if (!state.photoMeta || state.photoMeta.length === 0) return
 
     const { trackPhotos, photoMeta, trackCoordinates, trackTimes, timeOffset } = state
 
-    if (!trackCoordinates.length) return
-    if (!trackPhotos.length) return
+    for (let i = 0; i < trackPhotos.length; i++) {
+        const meta = photoMeta[i]
+        const photo = trackPhotos[i]
 
-	for (let i = 0; i < trackPhotos.length; i++) {
-		const meta = photoMeta[i]
-		const photo = trackPhotos[i]
+        // DB photos: preserve everything
+        if (meta.tagType === 'previous') {
+            meta.latLng = photo.picLatLng
+            continue
+        }
 
-		// DB photos: preserve everything
-		if (meta.tagType === 'previous') {
-			meta.latLng = photo.picLatLng
-			continue
-		}
+        // EXIF GPS always wins (already [lat, lon])
+        if (meta.hasExifGps) {
+            meta.tagType = 'exif'
+            continue
+        }
 
-		// EXIF GPS always wins
-		if (meta.hasExifGps) {
-			meta.tagType = 'exif'
-			continue
-		}
+        if (!meta.timestamp) {
+            meta.tagType = 'none'
+            meta.latLng = null
+            photo.picLatLng = null
+            continue
+        }
 
-		if (!meta.timestamp) {
-			meta.tagType = 'none'
-			meta.latLng = null
-			photo.picLatLng = null
-			continue
-		}
+        const shifted = meta.timestamp + timeOffset * 3600 * 1000
+        const interpolated = interpolateTrackLatLng(trackCoordinates, trackTimes, shifted)
 
-		const shifted = meta.timestamp + timeOffset * 3600 * 1000
-		const interpolated = interpolateTrackLatLng(trackCoordinates, trackTimes, shifted)
-
-		if (interpolated) {
-			// matched
-			meta.latLng = interpolated
-			photo.picLatLng = interpolated
-			meta.tagType = 'time'
-		} else {
-			// out of range
-			meta.latLng = null
-			photo.picLatLng = null
-			meta.tagType = 'none'
-		}
-	}
-
+        if (interpolated) {
+            // matched
+            meta.latLng = interpolated          // [lat, lon]
+            photo.picLatLng = interpolated      // [lat, lon]
+            meta.tagType = 'time'
+        } else {
+            // out of range
+            meta.latLng = null
+            photo.picLatLng = null
+            meta.tagType = 'none'
+        }
+    }
 }
 
 // ------------------------------
@@ -211,22 +209,18 @@ export async function addPhotos(files, state, helpers) {
         const exif = await extractExif(file)
         const normalized = await normalizeImage(file)
 
-        const gps = exif?.gps || null
+        // exif.gps is now [lat, lon]
+        const gps = Array.isArray(exif?.gps) ? exif.gps : null
 
         // timestamp normalization
         let timestamp = null
-        if (exif?.timestamp instanceof Date) {
-            timestamp = exif.timestamp.getTime()
-        } else if (typeof exif?.timestamp === 'string') {
-            const d = new Date(exif.timestamp)
-            timestamp = isNaN(d.getTime()) ? null : d.getTime()
-        } else if (typeof exif?.timestamp === 'number') {
+        if (typeof exif?.timestamp === 'number') {
             timestamp = exif.timestamp
         }
 
         const thumbDataUrl = await createThumbnail(normalized)
 
-        //  picIndex
+        // picIndex
         let picIndex
         if (typeof state.nextPicIndex === 'number') {
             picIndex = state.nextPicIndex++
@@ -240,7 +234,7 @@ export async function addPhotos(files, state, helpers) {
             picIndex,
             picName,
             picCaption: '',
-            picLatLng: gps ? [gps.lat, gps.lon] : null,
+            picLatLng: gps ? [gps[0], gps[1]] : null,   // ✔ [lat, lon]
             picThumb: null,
             picThumbDataUrl: thumbDataUrl.replace(/^data:image\/jpeg;base64,/, '')
         })
@@ -249,8 +243,8 @@ export async function addPhotos(files, state, helpers) {
         state.photoMeta.push({
             id: picIndex,
             caption: '',
-            latLng: gps ? [gps.lat, gps.lon] : null,
-            timestamp,               // always numeric or null
+            latLng: gps ? [gps[0], gps[1]] : null,      // ✔ [lat, lon]
+            timestamp,
             preview: thumbDataUrl,
             tagType: gps ? 'exif' : 'none',
             hasExifGps: !!gps
@@ -276,9 +270,3 @@ export async function addPhotos(files, state, helpers) {
         })
     }
 }
-
-
-
-
-
-

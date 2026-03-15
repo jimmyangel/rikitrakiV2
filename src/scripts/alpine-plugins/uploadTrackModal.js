@@ -321,8 +321,9 @@ export default function (Alpine) {
 				photos: this.photos
 			})
 
-			// Fake trackId for now (replace with result.trackId later)
-			const trackId = "T0001"
+			if (!result) return 
+
+			const trackId = result
 
 			this.uploaded = true
 
@@ -337,12 +338,11 @@ export default function (Alpine) {
 				skipHistory: true
 			})
 
-			// 2. Open the track (reading from DB later)
-			//    For now, this uses the fake trackId above.
+			// 2. Open the track (now using the real trackId)
 			this.$store.tracks.openTrack(trackId)
 
+			// 3. Close modal
 			this.$store.ui.showUploadTrackModal = false
 		}
-
     }))
 }

@@ -11,80 +11,137 @@ export async function uploadTrack({
     trackName,
     trackDescription,
     hasPhotos,
-    trackPhotos,   // schema objects only
-    photos         // actual File objects
+    trackPhotos,
+    photos
 }) {
-    console.log('==============================')
-    console.log('uploadTrack() STUB START')
-    console.log('==============================')
+    console.log('uploadTrack() START')
 
-    // Simulate real upload delay
-    console.log('Simulating upload delay (3 seconds)...')
-    await new Promise(r => setTimeout(r, 3000))
-
-    // 1. JWT token
     const token = localStorage.getItem('rikitraki-token')
-    console.log('JWT token:', token ? '(present)' : '(missing)')
+    if (!token) throw new Error('Missing JWT token')
 
     // ------------------------------------------------------------
-    // STEP 1: Upload photos FIRST (safer, avoids broken tracks)
+    // SANITIZE GPX BLOB
     // ------------------------------------------------------------
-    console.log('--- STEP 1: Upload photos (stub) ---')
-
-    if (hasPhotos) {
-        for (let i = 0; i < photos.length; i++) {
-            const file = photos[i]
-            console.log(`Uploading photo ${i}: ${file.name}`)
-            console.log(`POST ${constants.APIV2_BASE_URL}/tracks/temp/photo/${i}`)
-            console.log('(No network call made — stub only)')
-        }
-    } else {
-        console.log('No photos to upload.')
+    let gpxBlobString = trackGPXBlob
+    if (trackGPXBlob instanceof Blob) {
+        gpxBlobString = await trackGPXBlob.text()
     }
 
-	// ------------------------------------------------------------
-	// STEP 2: Create track AFTER photos succeed
-	// ------------------------------------------------------------
-	console.log('--- STEP 2: Create track (stub) ---')
+    // ------------------------------------------------------------
+    // SANITIZE PHOTOS (only optional fields normalized)
+    // ------------------------------------------------------------
+    const sanitizedPhotos = trackPhotos.map((p, idx) => {
+        const {
+            picIndex,          // strip (not in schema)
+            picCaption,        // optional → normalize
+            picThumbDataUrl,   // required → normalize shape only
+            ...rest
+        } = p
 
-	// Log each thumbnail for inspection
-	if (hasPhotos) {
-		console.log('--- Thumbnails (picThumbDataUrl) ---')
-		trackPhotos.forEach((p, i) => {
-			console.log(`Thumbnail ${i}:`, p.picThumbDataUrl)
-		})
-	}
+        // Optional caption → normalize to empty string
+        const safeCaption =
+            typeof picCaption === 'string'
+                ? picCaption
+                : ""
 
-	const trackPayload = {
-		trackLatLng,
-		trackRegionTags,
-		trackLevel,
-		trackType,
-		trackFav,
-		trackGPX,
-		trackGPXBlob,
-		trackName,
-		trackDescription,
-		hasPhotos,
-		trackPhotos
-	}
+        // Required thumbnail → ensure full data URL shape
+        // (this was the bug we fixed before)
+        if (typeof picThumbDataUrl !== 'string' || picThumbDataUrl.length === 0) {
+            throw new Error(`Missing thumbnail data for photo index ${idx}`)
+        }
 
-	console.log('--- Track payload (schema‑aligned) ---')
-	console.log(trackPayload)
+        const fullDataUrl = picThumbDataUrl.startsWith('data:')
+            ? picThumbDataUrl
+            : `data:image/jpeg;base64,${picThumbDataUrl}`
 
-	console.log(`POST ${constants.APIV2_BASE_URL}/track`)
-	console.log('(No network call made — stub only)')
+        return {
+            ...rest,
+            picCaption: safeCaption,
+            picThumbDataUrl: fullDataUrl
+        }
+    })
 
-	const trackId = 'stub-track-id-123'
-	console.log('Simulated trackId:', trackId)
+    // ------------------------------------------------------------
+    // BUILD PAYLOAD
+    // ------------------------------------------------------------
+    const trackPayload = {
+        trackLatLng,
+        trackRegionTags,
+        trackLevel,
+        trackType,
+        trackFav,
+        trackGPX,
+        trackGPXBlob: gpxBlobString,
+        trackName,
+        trackDescription,
+        hasPhotos,
+        trackPhotos: sanitizedPhotos
+    }
 
-	console.log('==============================')
-	console.log('uploadTrack() STUB COMPLETE')
-	console.log('==============================')
+    const createRes = await fetch(`${constants.APIV2_BASE_URL}/tracks`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(trackPayload)
+    })
+
+    if (!createRes.ok) {
+        const text = await createRes.text().catch(() => '')
+        throw new Error(`Track creation failed: ${text}`)
+    }
+
+    const { trackId } = await createRes.json()
+    if (!trackId) throw new Error('Track created but no trackId returned')
+
+    console.log('Track created with ID:', trackId)
+
+    // ------------------------------------------------------------
+    // STEP 2 — UPLOAD PHOTOS AS RAW JPEG BYTES
+    // ------------------------------------------------------------
+    if (hasPhotos && photos.length > 0) {
+        console.log(`Uploading ${photos.length} photos as RAW JPEG bytes...`)
+
+        const uploadPromises = photos.map(async (file, i) => {
+            console.log(`Preparing photo ${i} for raw upload...`, {
+                name: file.name,
+                type: file.type,
+                size: file.size
+            })
+
+            // Convert File → raw bytes
+            const arrayBuffer = await file.arrayBuffer()
+            const uint8 = new Uint8Array(arrayBuffer)
+
+            const res = await fetch(
+                `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${i}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'image/jpeg'
+                    },
+                    body: uint8
+                }
+            )
+
+            if (!res.ok) {
+                const text = await res.text().catch(() => '')
+                throw new Error(`Photo upload failed at index ${i}: ${text}`)
+            }
+
+            console.log(`Photo ${i} uploaded successfully`)
+        })
+
+        await Promise.all(uploadPromises)
+        console.log('All photos uploaded successfully')
+    }
+
+    console.log('uploadTrack() COMPLETE')
 
     return {
         ok: true,
         trackId
     }
 }
-
