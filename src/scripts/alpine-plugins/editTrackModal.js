@@ -410,19 +410,26 @@ export default function (Alpine) {
         },
 
         async removeTrack() {
-            try {
-                this.$store.ui.info = 'Track has been removed.'
-                this.$store.ui.error = null
-
-                setTimeout(() => {
-                    this.$store.ui.info = ''
-                    this.$store.ui.showEditTrackModal = false
-                }, 2500)
-            } catch (err) {
-                this.$store.ui.error = err.message || 'Failed to remove track.'
-                this.$store.ui.info = null
+            const trackId = this.$store.tracks.activeTrackId
+            if (!trackId) {
+                this.$store.ui.error = 'No active track to remove.'
+                return
             }
-        },
+
+            const ok = await this.$store.tracks.delete(trackId)
+            if (!ok) return
+
+            // Success: close modal + reset state
+            this.$store.tracks.activeTrackId = null
+            this.$store.ui.showEditTrackModal = false
+
+            // Reset map to world mode
+            await this.$store.tracks.setSearchCenter(
+                this.$store.tracks.defaultLat,
+                this.$store.tracks.defaultLon,
+                { fromHistory: true }
+            )
+        }
 
     }))
 }

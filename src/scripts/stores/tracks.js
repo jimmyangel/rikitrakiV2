@@ -5,6 +5,7 @@ import { constants } from '../config.js'
 import { getTrackDetails } from '../data/getTrackDetails.js'
 import { uploadTrack } from '../data/uploadTrack.js'
 import { updateTrack } from '../data/updateTrack.js'
+import { deleteTrack } from '../data/deleteTrack.js'
 import {
     parseGPXtoGeoJSON,
     computeBounds,
@@ -595,6 +596,64 @@ export default function initTracksStore(Alpine) {
                 Alpine.store('ui').error = 'Unexpected update error.'
 
                 return { ok: false }
+            }
+        },
+        async delete(trackId) {
+            // Reset UI state
+            Alpine.store('ui').error = null
+            Alpine.store('ui').uploading = true
+            Alpine.store('ui').showInfo('Removing track…', 3000)
+
+            try {
+                // Delegate to data layer
+                const result = await deleteTrack(trackId)
+
+                Alpine.store('ui').uploading = false
+
+                if (!result.ok) {
+                    Alpine.store('ui').error = 'Delete failed.'
+                    return false
+                }
+
+                // Success
+                Alpine.store('ui').showInfo('Track removed.', 3000)
+
+                // --- CLEANUP SECTION ---
+
+                // 1. Determine if this track had photos BEFORE removing it
+                const hadPhotos = this.items?.[trackId]?.details?.hasPhotos
+
+                // 2. Exit active track mode (clears activeTrackId)
+                this.exitActiveTrack({ fromHistory: false })
+
+                // 3. Remove CZML from Cesium
+                await map.removeActiveDataSource()
+
+                // 4. Remove from items: {}
+                if (this.items && this.items[trackId]) {
+                    delete this.items[trackId]
+                }
+
+                // 5. Remove cached track details
+                if (this.trackCache && this.trackCache[trackId]) {
+                    delete this.trackCache[trackId]
+                }
+
+                // 6. Conditionally reload MOTD
+                if (hadPhotos) {
+                    sessionStorage.removeItem('motd')
+                    await this.loadMotd()
+                }
+
+                return true
+
+            } catch (err) {
+                console.error('deleteTrack() store error:', err)
+
+                Alpine.store('ui').uploading = false
+                Alpine.store('ui').error = 'Unexpected delete error.'
+
+                return false
             }
         }
     })

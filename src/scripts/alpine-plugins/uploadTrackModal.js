@@ -67,7 +67,7 @@ export default function (Alpine) {
 
         init() {
             this.$watch('$store.ui.showUploadTrackModal', value => {
-                if (value) this.clearForm()
+                if (!value) this.clearForm()
             })
 
             this.$watch('timeOffset', (v) => {
@@ -77,6 +77,7 @@ export default function (Alpine) {
 			this.$watch('selectedRegionOverride', value => {
 				this.trackRegionTags = value ? value.split('|') : []
 			})
+			this.clearForm()
         },
 
         clearForm() {

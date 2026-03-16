@@ -484,6 +484,24 @@ function safeRemoveDataSource(ds) {
     scene.postRender.addEventListener(removeAfterFrame)
 }
 
+export async function removeActiveDataSource() {
+    if (!viewer || !activeTrackDataSource) return
+
+    const ds = activeTrackDataSource
+    const scene = viewer.scene
+
+    await new Promise(resolve => {
+        function removeAfterFrame() {
+            viewer.dataSources.remove(ds, false)
+            scene.postRender.removeEventListener(removeAfterFrame)
+            resolve()
+        }
+        scene.postRender.addEventListener(removeAfterFrame)
+    })
+
+    activeTrackDataSource = null
+}
+
 export function flyToTrackDataSource() {
     if (!viewer || !trackDataSource) return
     viewer.flyTo(trackDataSource)
@@ -513,7 +531,18 @@ export async function loadTrackCZML(czml) {
     if (!viewer) return null
 
     if (activeTrackDataSource) {
-        safeRemoveDataSource(activeTrackDataSource)
+        const ds = activeTrackDataSource
+        const scene = viewer.scene
+
+        await new Promise(resolve => {
+            function removeAfterFrame() {
+                viewer.dataSources.remove(ds, false)
+                scene.postRender.removeEventListener(removeAfterFrame)
+                resolve()
+            }
+            scene.postRender.addEventListener(removeAfterFrame)
+        })
+
         activeTrackDataSource = null
     }
 
