@@ -227,14 +227,20 @@ export async function addPhotos(files, state, helpers) {
         } else {
             picIndex = state.trackPhotos.length
         }
-        const picName = picIndex.toString()
+
+        // NEW: derive picName + picCaption from file.name
+        const originalName = file.name || ''
+        const baseName = originalName.replace(/\.[^/.]+$/, '')  // strip extension
+
+        const picName = originalName            // full filename
+        const picCaption = baseName             // filename without extension
 
         // TrackPhotos entry (UI list)
         state.trackPhotos.push({
             picIndex,
             picName,
-            picCaption: '',
-            picLatLng: gps ? [gps[0], gps[1]] : null,   // ✔ [lat, lon]
+            picCaption,
+            picLatLng: gps ? [gps[0], gps[1]] : null,
             picThumb: null,
             picThumbDataUrl: thumbDataUrl.replace(/^data:image\/jpeg;base64,/, '')
         })
@@ -242,8 +248,8 @@ export async function addPhotos(files, state, helpers) {
         // PhotoMeta entry (interpolation + EXIF)
         state.photoMeta.push({
             id: picIndex,
-            caption: '',
-            latLng: gps ? [gps[0], gps[1]] : null,      // ✔ [lat, lon]
+            caption: picCaption,
+            latLng: gps ? [gps[0], gps[1]] : null,
             timestamp,
             preview: thumbDataUrl,
             tagType: gps ? 'exif' : 'none',
@@ -270,3 +276,4 @@ export async function addPhotos(files, state, helpers) {
         })
     }
 }
+
