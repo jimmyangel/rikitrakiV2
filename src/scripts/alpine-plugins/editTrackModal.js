@@ -384,7 +384,7 @@ export default function (Alpine) {
             this.$store.ui.uploading = true
             this.$store.ui.showInfo('Saving changes…', 3000)
 
-            const result = await Alpine.store('tracks').updateTrack({
+            const result = await Alpine.store('tracks').update({
                 trackId: this.trackId,
                 trackName: this.trackName,
                 trackDescription: this.trackDescription,

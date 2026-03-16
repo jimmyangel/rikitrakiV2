@@ -306,7 +306,7 @@ export default function (Alpine) {
 			}
 
 			// Delegate to the tracks store
-			const result = await Alpine.store('tracks').uploadTrack({
+			const result = await Alpine.store('tracks').upload({
 				trackLatLng: this.trackLatLng,
 				trackRegionTags: this.trackRegionTags,
 				trackLevel: this.trackLevel,

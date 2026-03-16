@@ -454,7 +454,7 @@ export default function initTracksStore(Alpine) {
             map.showSearchCenter()
         },
 
-        async uploadTrack(payload) {
+        async upload(payload) {
             // Reset UI state
             Alpine.store('ui').error = null
             Alpine.store('ui').uploading = true
@@ -488,7 +488,7 @@ export default function initTracksStore(Alpine) {
                 return null
             }
         },
-        async updateTrack(payload) {
+        async update(payload) {
             // Reset UI state
             Alpine.store('ui').error = null
             Alpine.store('ui').uploading = true
