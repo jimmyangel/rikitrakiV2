@@ -200,25 +200,18 @@ const MAX_NUM_IMAGES = 8
 export async function addPhotos(files, state, helpers) {
     const { extractExif, normalizeImage, createThumbnail } = helpers
 
-    // --- JPEG VALIDATION HELPERS ---
     async function isRealJpeg(file) {
-        // Quick MIME check
         if (file.type !== 'image/jpeg') return false
-
-        // Magic-byte check (FF D8 FF)
         const header = new Uint8Array(await file.slice(0, 3).arrayBuffer())
         return header[0] === 0xFF && header[1] === 0xD8 && header[2] === 0xFF
     }
 
-    // --- MAX LIMIT CHECK ---
     if (state.trackPhotos.length + files.length > MAX_NUM_IMAGES) {
         state.$store?.ui && (state.$store.ui.error = `You can upload up to ${MAX_NUM_IMAGES} photos.`)
         return
     }
 
     for (const file of files) {
-
-        // --- JPEG ENFORCEMENT ---
         const ok = await isRealJpeg(file)
         if (!ok) {
             console.warn('Rejected non-JPEG file:', file)
@@ -226,14 +219,11 @@ export async function addPhotos(files, state, helpers) {
             continue
         }
 
-        // --- EXIF EXTRACTION ---
         const exif = await extractExif(file)
         const normalized = await normalizeImage(file)
 
-        // exif.gps is now [lat, lon]
         const gps = Array.isArray(exif?.gps) ? exif.gps : null
 
-        // timestamp normalization
         let timestamp = null
         if (typeof exif?.timestamp === 'number') {
             timestamp = exif.timestamp
@@ -241,7 +231,6 @@ export async function addPhotos(files, state, helpers) {
 
         const thumbDataUrl = await createThumbnail(normalized)
 
-        // picIndex
         let picIndex
         if (typeof state.nextPicIndex === 'number') {
             picIndex = state.nextPicIndex++
@@ -249,21 +238,23 @@ export async function addPhotos(files, state, helpers) {
             picIndex = state.trackPhotos.length
         }
 
-        // Derive picName + picCaption from file.name
         const originalName = file.name || ''
         const baseName = originalName.replace(/\.[^/.]+$/, '')
 
         const picName = originalName
         const picCaption = baseName
 
-        // TrackPhotos entry (UI list)
+        // UI list entry
         state.trackPhotos.push({
             picIndex,
             picName,
             picCaption,
             picLatLng: gps ? [gps[0], gps[1]] : null,
             picThumb: null,
-            picThumbDataUrl: thumbDataUrl.replace(/^data:image\/jpeg;base64,/, '')
+            picThumbDataUrl: thumbDataUrl.replace(/^data:image\/jpeg;base64,/, ''),
+
+            // attach normalized JPEG Blob for new photos
+            file: normalized
         })
 
         // PhotoMeta entry
@@ -277,20 +268,17 @@ export async function addPhotos(files, state, helpers) {
             hasExifGps: !!gps
         })
 
-        // Raw JPEG bytes for upload
+        // Keep this for upload mode for now
         state.photos.push(normalized)
     }
 
     state.hasPhotos = state.trackPhotos.length > 0
 
-    // Only interpolate when trackCoordinates exist
     if (state.trackCoordinates && state.trackCoordinates.length > 1) {
         assignLatLngToPhotos(state)
 
-        // After interpolation, sync latLng into trackPhotos
         state.photoMeta.forEach((m, idx) => {
             const p = state.trackPhotos[idx]
-
             if (!m.hasExifGps && !m.latLng && p.picLatLng) {
                 m.latLng = p.picLatLng
                 m.tagType = 'time'
@@ -298,4 +286,6 @@ export async function addPhotos(files, state, helpers) {
         })
     }
 }
+
+
 

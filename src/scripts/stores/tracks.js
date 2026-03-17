@@ -572,6 +572,8 @@ export default function initTracksStore(Alpine) {
                 if (photosChanged)
                     minimal.trackPhotos = finalPhotos
 
+                minimal.photos = payload.photos
+
                 // -----------------------------------------------------
                 // DELEGATE TO DATA LAYER (stubbed)
                 // -----------------------------------------------------

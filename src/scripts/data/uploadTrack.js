@@ -32,6 +32,7 @@ export async function uploadTrack({
     // ------------------------------------------------------------
     const sanitizedPhotos = trackPhotos.map((p, idx) => {
         const {
+            file,
             picIndex,          // strip (not in schema)
             picCaption,        // optional → normalize
             picThumbDataUrl,   // required → normalize shape only
