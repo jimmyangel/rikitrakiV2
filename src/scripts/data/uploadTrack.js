@@ -11,8 +11,7 @@ export async function uploadTrack({
     trackName,
     trackDescription,
     hasPhotos,
-    trackPhotos,
-    photos
+    trackPhotos
 }) {
     console.log('uploadTrack() START')
 
@@ -32,21 +31,18 @@ export async function uploadTrack({
     // ------------------------------------------------------------
     const sanitizedPhotos = trackPhotos.map((p, idx) => {
         const {
-            file,
+            file,              // strip
             picIndex,          // strip (not in schema)
             picCaption,        // optional → normalize
             picThumbDataUrl,   // required → normalize shape only
             ...rest
         } = p
 
-        // Optional caption → normalize to empty string
         const safeCaption =
             typeof picCaption === 'string'
                 ? picCaption
                 : ""
 
-        // Required thumbnail → ensure full data URL shape
-        // (this was the bug we fixed before)
         if (typeof picThumbDataUrl !== 'string' || picThumbDataUrl.length === 0) {
             throw new Error(`Missing thumbnail data for photo index ${idx}`)
         }
@@ -101,17 +97,22 @@ export async function uploadTrack({
     // ------------------------------------------------------------
     // STEP 2 — UPLOAD PHOTOS AS RAW JPEG BYTES
     // ------------------------------------------------------------
-    if (hasPhotos && photos.length > 0) {
-        console.log(`Uploading ${photos.length} photos as RAW JPEG bytes...`)
+    if (hasPhotos && trackPhotos.length > 0) {
+        console.log(`Uploading ${trackPhotos.length} photos as RAW JPEG bytes...`)
 
-        const uploadPromises = photos.map(async (file, i) => {
+        const uploadPromises = trackPhotos.map(async (p, i) => {
+            const file = p.file
+
+            if (!file) {
+                throw new Error(`Missing file for photo index ${i}`)
+            }
+
             console.log(`Preparing photo ${i} for raw upload...`, {
                 name: file.name,
                 type: file.type,
                 size: file.size
             })
 
-            // Convert File → raw bytes
             const arrayBuffer = await file.arrayBuffer()
             const uint8 = new Uint8Array(arrayBuffer)
 
