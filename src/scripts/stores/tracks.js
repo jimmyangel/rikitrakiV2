@@ -648,6 +648,12 @@ export default function initTracksStore(Alpine) {
                     delete this.items[trackId]
                 }
 
+                // Remove from all[]
+                if (Array.isArray(this.all)) {
+                    const idx = this.all.findIndex(t => t.trackId === trackId)
+                    if (idx !== -1) this.all.splice(idx, 1)
+                }
+
                 // Conditionally reload MOTD
                 if (hadPhotos) {
                     sessionStorage.removeItem('motd')
