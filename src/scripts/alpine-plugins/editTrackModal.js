@@ -376,7 +376,6 @@ export default function (Alpine) {
 
             if (!validateAll('info', this)) return
 
-            // Assign picThumb based on final order
             for (let i = 0; i < this.trackPhotos.length; i++) {
                 this.trackPhotos[i].picThumb = i.toString()
             }
@@ -419,16 +418,8 @@ export default function (Alpine) {
             const ok = await this.$store.tracks.delete(trackId)
             if (!ok) return
 
-            // Success: close modal + reset state
             this.$store.tracks.activeTrackId = null
             this.$store.ui.showEditTrackModal = false
-
-            // Reset map to world mode
-            await this.$store.tracks.setSearchCenter(
-                this.$store.tracks.defaultLat,
-                this.$store.tracks.defaultLon,
-                { fromHistory: true }
-            )
         }
 
     }))

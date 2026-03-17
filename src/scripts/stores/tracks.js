@@ -622,26 +622,21 @@ export default function initTracksStore(Alpine) {
 
                 // --- CLEANUP SECTION ---
 
-                // 1. Determine if this track had photos BEFORE removing it
+                // Determine if this track had photos BEFORE removing it
                 const hadPhotos = this.items?.[trackId]?.details?.hasPhotos
 
-                // 2. Exit active track mode (clears activeTrackId)
+                // Exit active track mode (clears activeTrackId)
                 this.exitActiveTrack({ fromHistory: false })
 
-                // 3. Remove CZML from Cesium
+                // Remove CZML data source from Cesium
                 await map.removeActiveDataSource()
 
-                // 4. Remove from items: {}
+                // Remove from items: {}
                 if (this.items && this.items[trackId]) {
                     delete this.items[trackId]
                 }
 
-                // 5. Remove cached track details
-                if (this.trackCache && this.trackCache[trackId]) {
-                    delete this.trackCache[trackId]
-                }
-
-                // 6. Conditionally reload MOTD
+                // Conditionally reload MOTD
                 if (hadPhotos) {
                     sessionStorage.removeItem('motd')
                     await this.loadMotd()
