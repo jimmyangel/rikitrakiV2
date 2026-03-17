@@ -2,38 +2,11 @@
 import Thumbnail from './Thumbnail.astro';
 ---
 
-<div x-data="motdContent()"
-     x-init="$store.tracks.loadMotd()"
-     style="display: contents">
-
-    <template x-cloak x-if="$store.tracks.motdTracks.length === 0">
-        <div class="empty-card">
-            <p class="is-size-6 has-text-centered" x-text="emptyMessage"></p>
-        </div>
-    </template>
-
-    <template x-for="(p, i) in motdTracks" :key="p.trackId">
-        <Thumbnail />
-    </template>
-</div>
-
-<script is:inline>
-function motdContent() {
-    return {
-		isActiveTrackMode: false,
-
-        get motdTracks() {
-            return this.$store.tracks.motdTracks ?? []
-        },
-
-		get emptyMessage() { 
-			if (this.$store.tracks.username) { 
-				return `User "${this.$store.tracks.username}" doesn't have any tracks with photos and descriptions yet.`
-			}
-		},
+<div x-data="{
+        isActiveTrackMode: false,
 
         getImage(p) {
-            return this.$store.tracks.thumbnailUrl(p.trackId)
+            return $store.tracks.thumbnailUrl(p.trackId)
         },
 
         getLabel(p) {
@@ -41,8 +14,29 @@ function motdContent() {
         },
 
         onClick(p) {
-            this.$store.tracks.openTrack(p.trackId)
+            $store.tracks.openTrack(p.trackId)
         }
-    }
-}
-</script>
+    }"
+    x-init="$store.tracks.loadMotd()"
+    style="display: contents">
+
+    <template x-if="!$store.tracks.motdLoading && $store.tracks.motdTracks.length === 0" x-cloak>
+        <div class="empty-card">
+            <p class="is-size-6 has-text-centered"
+            x-text="'User &quot;' + $store.tracks.username + '&quot; doesn\\'t have any tracks with photos and descriptions yet.'">
+            </p>
+        </div>
+    </template>
+
+    <template x-if="!$store.tracks.motdLoading && $store.tracks.motdTracks.length > 0">
+        <template x-for="(p, i) in $store.tracks.motdTracks" :key="p.trackId">
+            <Thumbnail
+                :item="p"
+                :index="i"
+                :getImage="getImage"
+                :getLabel="getLabel"
+                :onClick="onClick"
+            />
+        </template>
+    </template>
+</div>

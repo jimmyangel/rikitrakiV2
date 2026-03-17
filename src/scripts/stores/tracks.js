@@ -218,8 +218,9 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
 
 
 async function loadMotd(store) {
-    const username = getUsernameFromUrl() 
+    store.motdLoading = true
 
+    const username = getUsernameFromUrl()
     const { motdTracks } = await getMotd(username)
 
     store.motdTracks = motdTracks.map(([trackId, index, title]) => ({
@@ -227,6 +228,8 @@ async function loadMotd(store) {
         index,
         title
     }))
+
+    store.motdLoading = false
 }
 
 //
@@ -258,6 +261,7 @@ export default function initTracksStore(Alpine) {
         count: null,
 
         motdTracks: [],
+        motdLoading: true,
 
         get filtered() {
             return filterTracks(this.all, this.filter)
