@@ -23,20 +23,14 @@ import Thumbnail from './Thumbnail.astro';
     <template x-if="!$store.tracks.motdLoading && $store.tracks.motdTracks.length === 0" x-cloak>
         <div class="empty-card">
             <p class="is-size-6 has-text-centered"
-            x-text="'User &quot;' + $store.tracks.username + '&quot; doesn\\'t have any tracks with photos and descriptions yet.'">
+               x-text="'User &quot;' + $store.tracks.username + '&quot; doesn\\'t have any tracks with photos and descriptions yet.'">
             </p>
         </div>
     </template>
 
     <template x-if="!$store.tracks.motdLoading && $store.tracks.motdTracks.length > 0">
         <template x-for="(p, i) in $store.tracks.motdTracks" :key="p.trackId">
-            <Thumbnail
-                :item="p"
-                :index="i"
-                :getImage="getImage"
-                :getLabel="getLabel"
-                :onClick="onClick"
-            />
+            <Thumbnail />
         </template>
     </template>
 </div>
