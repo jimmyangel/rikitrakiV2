@@ -200,12 +200,33 @@ const MAX_NUM_IMAGES = 8
 export async function addPhotos(files, state, helpers) {
     const { extractExif, normalizeImage, createThumbnail } = helpers
 
+    // --- JPEG VALIDATION HELPERS ---
+    async function isRealJpeg(file) {
+        // Quick MIME check
+        if (file.type !== 'image/jpeg') return false
+
+        // Magic-byte check (FF D8 FF)
+        const header = new Uint8Array(await file.slice(0, 3).arrayBuffer())
+        return header[0] === 0xFF && header[1] === 0xD8 && header[2] === 0xFF
+    }
+
+    // --- MAX LIMIT CHECK ---
     if (state.trackPhotos.length + files.length > MAX_NUM_IMAGES) {
         state.$store?.ui && (state.$store.ui.error = `You can upload up to ${MAX_NUM_IMAGES} photos.`)
         return
     }
 
     for (const file of files) {
+
+        // --- JPEG ENFORCEMENT ---
+        const ok = await isRealJpeg(file)
+        if (!ok) {
+            console.warn('Rejected non-JPEG file:', file)
+            state.$store?.ui && (state.$store.ui.error = `Only JPEG images are allowed.`)
+            continue
+        }
+
+        // --- EXIF EXTRACTION ---
         const exif = await extractExif(file)
         const normalized = await normalizeImage(file)
 
@@ -228,12 +249,12 @@ export async function addPhotos(files, state, helpers) {
             picIndex = state.trackPhotos.length
         }
 
-        // NEW: derive picName + picCaption from file.name
+        // Derive picName + picCaption from file.name
         const originalName = file.name || ''
-        const baseName = originalName.replace(/\.[^/.]+$/, '')  // strip extension
+        const baseName = originalName.replace(/\.[^/.]+$/, '')
 
-        const picName = originalName            // full filename
-        const picCaption = baseName             // filename without extension
+        const picName = originalName
+        const picCaption = baseName
 
         // TrackPhotos entry (UI list)
         state.trackPhotos.push({
@@ -245,7 +266,7 @@ export async function addPhotos(files, state, helpers) {
             picThumbDataUrl: thumbDataUrl.replace(/^data:image\/jpeg;base64,/, '')
         })
 
-        // PhotoMeta entry (interpolation + EXIF)
+        // PhotoMeta entry
         state.photoMeta.push({
             id: picIndex,
             caption: picCaption,
@@ -256,6 +277,7 @@ export async function addPhotos(files, state, helpers) {
             hasExifGps: !!gps
         })
 
+        // Raw JPEG bytes for upload
         state.photos.push(normalized)
     }
 
