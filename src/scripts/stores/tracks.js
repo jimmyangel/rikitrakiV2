@@ -91,8 +91,9 @@ async function openTrack(trackId, { fromInit = false, fromHistory = false } = {}
     const store = Alpine.store('tracks')
     store.loadingTracks = true
 
-    // Always clear thumbnails before loading a new track
     map.clearMapThumbnails()
+
+    store.filter = ''
 
     if (store.activeTrackId) {
         map.showSearchMarker(store.activeTrackId)
@@ -318,6 +319,7 @@ export default function initTracksStore(Alpine) {
             // Update store
             this.lat = lat
             this.lon = lon
+            this.filter = ''
 
             // Reload tracks
             await reloadTracks(this, { fly })
