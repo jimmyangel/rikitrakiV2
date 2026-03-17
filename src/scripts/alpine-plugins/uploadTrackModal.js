@@ -101,6 +101,7 @@ export default function (Alpine) {
             this.trackCoordinates = []
             this.trackPhotos = []
             this.photoMeta = []
+			this.photos = []
             this.timeOffset = 0
 			this.regionOverrideOptions = []
 			this.selectedRegionOverride = null
@@ -305,6 +306,10 @@ export default function (Alpine) {
 			for (let i = 0; i < this.trackPhotos.length; i++) {
 				this.trackPhotos[i].picThumb = i.toString()
 			}
+console.log('MODAL before upload: photos length', this.photos.length)
+console.log('MODAL before upload: trackPhotos length', this.trackPhotos.length)
+console.log('MODAL before upload: photos array', this.photos)
+console.log('MODAL before upload: trackPhotos array', this.trackPhotos)
 
 			// Delegate to the tracks store
 			const result = await Alpine.store('tracks').upload({
