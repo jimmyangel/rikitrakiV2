@@ -329,22 +329,12 @@ export default function (Alpine) {
 
 			this.uploaded = true
 
-			// ------------------------------------------------------------
-			// POST‑UPLOAD FLOW
-			// ------------------------------------------------------------
-
-			// 1. Set search center to the track’s trailhead
 			const [lat, lon] = this.trackLatLng
-			this.$store.tracks.setSearchCenter(lat, lon, {
-				fly: false,
-				skipHistory: true
-			})
 
-			// 2. Open the track (now using the real trackId)
-			this.$store.tracks.openTrack(trackId)
-
-			// 3. Close modal
 			this.$store.ui.showUploadTrackModal = false
+
+			this.$store.tracks.openTrackAfterUpload(trackId, lat, lon)
+
 		}
     }))
 }

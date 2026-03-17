@@ -461,6 +461,15 @@ export default function initTracksStore(Alpine) {
             map.showSearchCenter()
         },
 
+        async openTrackAfterUpload(trackId, lat, lon) {
+            await this.setSearchCenter(lat, lon, {
+                fly: false,
+                skipHistory: true
+            })
+
+            this.openTrack(trackId)
+        },
+
         async upload(payload) {
             // Reset UI state
             Alpine.store('ui').error = null
@@ -480,9 +489,6 @@ export default function initTracksStore(Alpine) {
 
                 // Success
                 Alpine.store('ui').showInfo('Track uploaded.', 3000)
-
-                // Optionally: refresh track list here
-                // await this.loadTracks()
 
                 return result.trackId
 
