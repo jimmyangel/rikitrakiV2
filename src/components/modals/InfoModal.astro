@@ -1,0 +1,83 @@
+---
+import * as info from '../../content/info.md'
+import Logo from '../widgets/Logo.astro'
+const { github, twitter } = info.frontmatter
+---
+
+<div 
+  class="modal"
+  x-data
+  :class="{ 'is-active': $store.ui.showInfoModal }"
+>
+	<div class="modal-background" @click="$store.ui.showInfoModal = false"></div>
+
+	<div class="modal-card" style="max-width: 640px;">
+
+		<header class="modal-card-head is-align-items-center is-justify-content-space-between">
+			<div class="logo-stack">
+				<div class="logo-wrapper">
+					<Logo class="modal-logo" />
+				</div>
+				<p class="is-size-7 mt-1">
+					v2.0.0 Beta · by Ricardo Morin
+				</p>
+			</div>
+
+			<button 
+				class="delete" 
+				aria-label="close"
+				@click="$store.ui.showInfoModal = false"
+			></button>
+		</header>
+
+		<section class="modal-card-body">
+			<div class="content is-medium">
+			<info.Content />
+			</div>
+		</section>
+
+		<footer class="modal-card-foot">
+			<p class="is-size-7">
+			Contact:
+			<a href={github} target="_blank">GitHub Issues</a>
+			&nbsp;•&nbsp;
+			<a href={twitter} target="_blank">Twitter</a>
+			</p>
+		</footer>
+	</div>
+</div>
+
+<style is:global>
+	.logo-stack {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.logo-wrapper {
+		display: inline-block;
+		line-height: 0;
+		overflow: hidden;
+	}
+
+	.logo-wrapper .modal-logo {
+  		max-height: none;
+		display: block;
+		margin-left: -10px;
+	}
+</style>
+
+<style>
+  .content.is-medium {
+    font-size: 0.9rem;
+    /* line-height: 1.35; */
+  }
+
+  .modal-card-head {
+	padding: 1rem;
+  }
+
+</style>
+
+
+

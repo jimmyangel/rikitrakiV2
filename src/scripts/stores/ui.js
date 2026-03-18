@@ -5,6 +5,7 @@ export default function initUiStore(Alpine) {
 		showUserInfoModal: false,
 		showUploadTrackModal: false,
 		showEditTrackModal: false,
+		showInfoModal: false,
 		error: null,
 		errorField: '',
 		info: null,

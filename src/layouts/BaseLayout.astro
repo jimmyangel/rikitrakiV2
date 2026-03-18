@@ -52,7 +52,7 @@ import { Icon } from 'astro-icon/components'
                             :class="{ 'user-icon-logged-in': $store.user.isLoggedIn }"
                         />
                     </a>
-                     <a class="navbar-item" style="max-height: 62px;">
+                     <a class="navbar-item" style="max-height: 62px;" @click="$store.ui.showInfoModal = true">
                         <Icon name="fa7-solid:circle-info" class="is-size-4"/>
                     </a>
                 </div>
