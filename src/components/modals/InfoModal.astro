@@ -1,6 +1,7 @@
 ---
 import * as info from '../../content/info.md'
 import Logo from '../widgets/Logo.astro'
+import { Icon } from 'astro-icon/components'
 const { github, twitter } = info.frontmatter
 ---
 
@@ -37,13 +38,31 @@ const { github, twitter } = info.frontmatter
 		</section>
 
 		<footer class="modal-card-foot">
-			<p class="is-size-7">
-			Contact:
-			<a href={github} target="_blank">GitHub Issues</a>
-			&nbsp;•&nbsp;
-			<a href={twitter} target="_blank">Twitter</a>
-			</p>
+		<div class="footer-links">
+
+			<a href={github} target="_blank" class="footer-link">
+				<Icon name="fa7-brands:github" class="is-size-5"/>
+				GitHub
+			</a>
+
+			<span class="dot">•</span>
+
+			<a href={twitter} target="_blank" class="footer-link">
+				<Icon name="fa7-brands:x-twitter" class="is-size-5"/>
+				Twitter
+			</a>
+
+			<span class="dot">•</span>
+
+			<a href="https://morinricardo.com" target="_blank" class="footer-link">
+				<Icon name="fa7-solid:blog" class="is-size-5"/>
+				Blog
+			</a>
+
+		</div>
 		</footer>
+
+
 	</div>
 </div>
 
@@ -68,14 +87,61 @@ const { github, twitter } = info.frontmatter
 </style>
 
 <style>
-  .content.is-medium {
-    font-size: 0.9rem;
-    /* line-height: 1.35; */
-  }
+	.content.is-medium {
+		font-size: 0.9rem;
+	/* line-height: 1.35; */
+	}
 
-  .modal-card-head {
-	padding: 1rem;
-  }
+	.modal-card-head {
+		padding: 1rem;
+	}
+
+	.modal-card-foot {
+		padding: 1rem;
+	}
+
+	.footer-links {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.85rem;
+	}
+
+	.footer-links span:first-child {
+		font-weight: 600;
+		opacity: 0.8;
+	}
+
+	.footer-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.icon {
+		width: 1rem;
+		height: 1rem;
+		opacity: 0.8;
+	}
+
+	.dot {
+		opacity: 0.6;
+	}
+
+	.modal-card-foot {
+		justify-content: center;
+		padding: 0.75rem 1rem;
+	}
+
+	.modal-card-foot a {
+		color: #444;
+		text-decoration: underline;
+	}
+
+	.modal-card-foot a:hover {
+		color: #222;
+	}
+
 
 </style>
 
