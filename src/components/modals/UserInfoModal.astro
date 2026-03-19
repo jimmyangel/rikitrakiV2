@@ -1,4 +1,5 @@
 ---
+import '../../styles/modals.css' 
 import { Icon } from 'astro-icon/components'
 import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
@@ -134,24 +135,3 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
         </div>
     </div>
 </div>
-
-<style>
-    .modal.modal-top.is-active {
-        display: block !important;
-    }
-
-    .modal.modal-top .modal-card {
-        margin: 1.5rem auto 0 auto;
-        max-height: calc(100vh - 4rem);
-        overflow-y: auto;
-    }
-
-    .modal-card-head .modal-card-title {
-        flex: 1 1 auto;
-        white-space: normal;
-    }
-
-    .userinfo-modal .field-label {
-        flex-basis: 4rem;
-    }
-</style>

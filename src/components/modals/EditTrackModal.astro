@@ -1,4 +1,5 @@
 ---
+import '../../styles/modals.css' 
 import '../../styles/vendor/bulma-switch-control/main.min.css'
 import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
@@ -144,36 +145,10 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 </div>
 
 <style>
-	/* Header wrapping fix */
-	.modal-card-head {
-		align-items: flex-start;
-	}
-
-	.modal-card-head .modal-card-title {
-		flex: 1 1 0;
-		min-width: 0;
-		white-space: normal;
-	}
-
-	/* Align-bottom utility */
-	.align-bottom {
-		display: flex;
-		align-items: flex-end;
-	}
-
-	/* Modal max-height for mobile */
 	.modal .modal-card {
 		max-height: calc(100vh - 7rem);
-		overflow-y: auto;
 	}
 
-	/* Top-align modal */
-	.modal.modal-top .modal-card {
-		margin-top: 1.5rem;
-		margin-bottom: auto;
-	}
-
-	/* Sizing rules */
 	.edit-track-modal-card {
 		width: 90vw !important;
 		max-width: 90vw !important;
@@ -193,9 +168,7 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 		}
 	}
 
-	/* Optional: reduce column gap if needed */
 	.edit-track-modal-card .columns {
 		--bulma-column-gap: 0.3rem;
 	}
-
 </style>

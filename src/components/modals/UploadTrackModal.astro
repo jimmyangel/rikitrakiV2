@@ -1,4 +1,5 @@
 ---
+import '../../styles/modals.css' 
 import '../../styles/vendor/bulma-switch-control/main.min.css'
 import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
@@ -114,63 +115,30 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 </div>
 
 <style>
-    /* Header wrapping fix */
-    .modal-card-head {
-        align-items: flex-start;
-    }
+	.modal .modal-card {
+		max-height: calc(100vh - 7rem);
+	}
 
-    .modal-card-head .modal-card-title {
-        flex: 1 1 0;
-        min-width: 0;
-        white-space: normal;
-    }
+	/* Upload modal sizing */
+	.upload-track-modal-card {
+		width: 90vw !important;
+		max-width: 90vw !important;
+	}
 
-    /* B — Align-bottom utility */
-    .align-bottom {
-        display: flex;
-        align-items: flex-end;
-    }
+	@media screen and (min-width: 768px) {
+		.upload-track-modal-card {
+			width: 60rem !important;
+			max-width: 90vw !important;
+		}
+	}
 
-    /* C — Modal max-height for mobile */
-    .modal .modal-card {
-        max-height: calc(100vh - 7rem);
-        overflow-y: auto;
-    }
+	@media screen and (min-width: 1024px) {
+		.upload-track-modal-card {
+			width: 60rem !important;
+			max-width: 90vw !important;
+		}
+	}
 
-    /* Label alignment */
-    /*.field-label {
-        flex-basis: 4rem;
-    }*/
-
-    /* Top-align modal */
-    .modal.modal-top .modal-card {
-        margin-top: 1.5rem;
-        margin-bottom: auto;
-    }
-
-    /* Default: mobile (1 per row) */
-    .upload-track-modal-card {
-        width: 90vw !important;
-        max-width: 90vw !important;
-    }
-
-    /* ≥ 768px: wider modal */
-    @media screen and (min-width: 768px) {
-        .upload-track-modal-card {
-            width: 60rem !important;
-            max-width: 90vw !important;
-        }
-    }
-
-    /* ≥ 1024px: widest modal */
-    @media screen and (min-width: 1024px) {
-        .upload-track-modal-card {
-            width: 60rem !important;
-            max-width: 90vw !important;
-        }
-    }
-
-	/* Reduce column gap inside the upload modal */
 	.upload-track-modal-card .columns {
 		--bulma-column-gap: 0.3rem;
 	}

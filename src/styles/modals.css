@@ -1,0 +1,51 @@
+/* ============================================================
+   Global Modal Behavior
+   ============================================================ */
+
+/* Top‑aligned modal activation */
+.modal.modal-top.is-active {
+    display: block !important;
+}
+
+/* Standard top‑aligned modal spacing */
+.modal.modal-top .modal-card {
+    margin-top: 1.5rem;
+    margin-bottom: auto;
+}
+
+/* Ensure modal content scrolls when tall */
+.modal .modal-card {
+    overflow-y: auto;
+}
+
+
+/* ============================================================
+   Header Layout
+   Shared across UserInfo, Login, Upload, Edit, Info.
+   ============================================================ */
+
+.modal-card-head {
+    align-items: flex-start;
+}
+
+.modal-card-head .modal-card-title {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
+}
+
+
+/* ============================================================
+   Utilities
+   Used by multiple modals (Upload, Edit, etc.)
+   ============================================================ */
+
+.align-bottom {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* Shared label width (UserInfo, Login, etc.) */
+.field-label {
+    flex-basis: 4rem;
+}
