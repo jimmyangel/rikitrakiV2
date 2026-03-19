@@ -308,15 +308,12 @@ function makeTrueCircle(lon, lat, radiusMeters, segments = 128) {
     return Cesium.Cartesian3.fromRadiansArray(positions)
 }
 
-export function updateSearchCenterMarker(lat, lon, radiusKm = null) {
+export function updateSearchCenterPoint(lat, lon) {
     if (!viewer) return
     if (lat == null || lon == null) return
 
     const position = Cesium.Cartesian3.fromDegrees(lon, lat)
 
-    //
-    // Create or update the POINT
-    //
     if (!searchCenterEntity) {
         searchCenterEntity = viewer.entities.add({
             id: 'search-center',
@@ -334,44 +331,44 @@ export function updateSearchCenterMarker(lat, lon, radiusKm = null) {
     } else {
         searchCenterEntity.position = position
     }
+}
 
-    //
-    // Create or update the donut (outer circle with inner hole)
-    //
-    if (radiusKm !== null) {
-        const radiusMeters = radiusKm * 1000
+export function updateSearchCenterDonut(lat, lon, radiusKm) {
+    if (!viewer) return
+    if (lat == null || lon == null) return
+    if (radiusKm == null) return
 
-        // Outer circle
-        const outerRadius = radiusMeters + 10000
-        const outerPositions = makeTrueCircle(lon, lat, outerRadius)
-
-        // Inner circle: search radius
-        const innerPositions = makeTrueCircle(lon, lat, radiusMeters)
-
-        const hierarchy = {
-            positions: outerPositions,
-            holes: [
-                { positions: innerPositions }
-            ]
-        }
-
-        if (!searchCenterFillEntity) {
-            searchCenterFillEntity = viewer.entities.add({
-                id: 'search-center-fill',
-                polygon: {
-                    hierarchy,
-                    material: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.4),
-                    outline: false,
-                    height: 0,
-                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
-                }
-            })
-        } else {
-            searchCenterFillEntity.polygon.hierarchy = hierarchy
-        }
+    if (radiusKm > 4500) {
+        if (searchCenterFillEntity) searchCenterFillEntity.show = false
+        return
     }
 
+    const radiusMeters = radiusKm * 1000
 
+    const outerRadius = radiusMeters + 10000
+    const outerPositions = makeTrueCircle(lon, lat, outerRadius)
+    const innerPositions = makeTrueCircle(lon, lat, radiusMeters)
+
+    const hierarchy = {
+        positions: outerPositions,
+        holes: [{ positions: innerPositions }]
+    }
+
+    if (!searchCenterFillEntity) {
+        searchCenterFillEntity = viewer.entities.add({
+            id: 'search-center-fill',
+            polygon: {
+                hierarchy,
+                material: Cesium.Color.fromCssColorString('#e38b2c').withAlpha(0.4),
+                outline: false,
+                height: 0,
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+            }
+        })
+    } else {
+        searchCenterFillEntity.polygon.hierarchy = hierarchy
+        searchCenterFillEntity.show = true
+    }
 }
 
 export function flyToBounds(bounds) {

@@ -325,11 +325,13 @@ export default function initTracksStore(Alpine) {
             this.lon = lon
             this.filter = ''
 
+            map.updateSearchCenterPoint(lat, lon)
+
             // Reload tracks
             await reloadTracks(this, { fly })
 
             // Update marker
-            map.updateSearchCenterMarker(lat, lon, this.radiusKm)
+            map.updateSearchCenterDonut(lat, lon, this.radiusKm)
 
             // History + URL sync
             if (!fromHistory && !fromInit && !skipHistory) {
