@@ -1,16 +1,30 @@
 ---
-import '../../styles/modals.css' 
+import '../../styles/modals.css'
 import { Icon } from 'astro-icon/components'
 import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 ---
 
-<div class="userinfo-modal" x-data="userInfoModal">
-    <div :class="{ modal: true, 'is-active': $store.ui.showUserInfoModal, 'modal-top': true }">
+<div class="userinfo-modal" x-data="{ ...userInfoModal(), showCard: false }">
+
+    <div 
+        class="modal modal-top"
+        :class="{ 'is-active': $store.ui.showUserInfoModal }"
+        x-init="
+            $watch('$store.ui.showUserInfoModal', value => {
+                if (value) {
+                    showCard = false
+                    requestAnimationFrame(() => showCard = true)
+                } else {
+                    showCard = false
+                }
+            })
+        "
+    >
 
         <div class="modal-background" @click="$store.ui.showUserInfoModal = false"></div>
 
-        <div class="modal-card">
+        <div class="modal-card" :class="{ 'is-visible': showCard }">
 
             <ModalHeader closeAction="$store.ui.showUserInfoModal = false">
                 <p slot="title" class="is-size-5 mb-2">
@@ -21,7 +35,6 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
                 </p>
             </ModalHeader>
 
-            <!-- BODY -->
             <section class="modal-card-body">
 
                 <!-- CHANGE PASSWORD -->
@@ -78,8 +91,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
                     <div class="field-body">
                         <div class="field">
                             <div class="control">
-                                <button class="button"
-                                        @click="update()">
+                                <button class="button" @click="update()">
                                     Update
                                 </button>
                             </div>
@@ -130,7 +142,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 
             </section>
 
-			<ModalFooterMessages />
+            <ModalFooterMessages />
 
         </div>
     </div>

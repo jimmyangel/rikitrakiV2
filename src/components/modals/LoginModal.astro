@@ -5,20 +5,36 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 ---
 
 <!-- Modal -->
-<div x-data>
-	<div class="login-modal">
- 		<div :class="{ modal: true, 'is-active': $store.ui.showLoginModal, 'modal-top': true }">
+<div x-data="{ ...loginModal(), showCard: false }">
 
-        	<div class="modal-background" @click="$store.ui.showLoginModal = false"></div>
+    <div class="login-modal">
+        <div 
+            :class="{ modal: true, 'is-active': $store.ui.showLoginModal, 'modal-top': true }"
+            x-init="
+                $watch('$store.ui.showLoginModal', value => {
+                    if (value) {
+                        showCard = false
+                        requestAnimationFrame(() => showCard = true)
+                    } else {
+                        showCard = false
+                    }
+                })
+            "
+        >
 
-			<div class="modal-card" x-data="loginModal">
+            <div class="modal-background" @click="$store.ui.showLoginModal = false"></div>
 
-				<ModalHeader closeAction="$store.ui.showLoginModal = false">
-					<p slot="title" class="is-size-5 mb-2">Welcome to RikiTraki</p>
-					<p slot="subtitle" class="is-size-6 mr-2">
-						Please login if you wish to upload your own tracks and photos...
-					</p>
-				</ModalHeader>
+            <div class="modal-card"
+                 :class="{ 'is-visible': showCard }"
+                 x-data="loginModal"
+            >
+
+                <ModalHeader closeAction="$store.ui.showLoginModal = false">
+                    <p slot="title" class="is-size-5 mb-2">Welcome to RikiTraki</p>
+                    <p slot="subtitle" class="is-size-6 mr-2">
+                        Please login if you wish to upload your own tracks and photos...
+                    </p>
+                </ModalHeader>
 
 				<section class="modal-card-body">
 

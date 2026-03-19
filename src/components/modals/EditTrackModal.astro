@@ -12,13 +12,30 @@ import FieldSelectRegion from './fields/FieldSelectRegion.astro'
 import PhotosPanel from './parts/PhotosPanel.astro'
 ---
 
-<div x-data>
-    <div class="modal modal-top" :class="{ 'is-active': $store.ui.showEditTrackModal }">
+<div x-data="{ ...editTrackModal(), showCard: false }">
+
+    <div 
+        class="modal modal-top"
+        :class="{ 'is-active': $store.ui.showEditTrackModal }"
+        x-init="
+            $watch('$store.ui.showEditTrackModal', value => {
+                if (value) {
+                    showCard = false
+                    requestAnimationFrame(() => showCard = true)
+                } else {
+                    showCard = false
+                }
+            })
+        "
+    >
 
         <div class="modal-background"
              @click="$store.ui.showEditTrackModal = false"></div>
 
-        <div class="modal-card edit-track-modal-card" x-data="editTrackModal" x-init="idPrefix = 'edit'">
+        <div class="modal-card edit-track-modal-card"
+             :class="{ 'is-visible': showCard }"
+             x-data="editTrackModal"
+             x-init="idPrefix = 'edit'">
 
             <ModalHeader closeAction="$store.ui.showEditTrackModal = false">
                 <p slot="title" class="is-size-5 mb-2">Edit Track</p>

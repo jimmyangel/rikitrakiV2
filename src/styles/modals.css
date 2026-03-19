@@ -49,3 +49,17 @@
 .field-label {
     flex-basis: 4rem;
 }
+
+.modal-card {
+    transform: translateY(-30px);
+    opacity: 0;
+    transition: transform .5s ease, opacity .5s ease;
+}
+
+.modal-card.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+
+

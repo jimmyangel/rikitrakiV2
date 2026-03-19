@@ -1,18 +1,33 @@
 ---
 import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 ---
-<div x-data>
-    <div :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }">
+<div x-data="{ ...worldMapModal(), showCard: false }">
+    <div 
+        :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }"
+        x-init="
+            $watch('$store.ui.showSearchCenterModal', value => {
+                if (value) {
+                    showCard = false
+                    requestAnimationFrame(() => showCard = true)
+                } else {
+                    showCard = false
+                }
+            })
+        "
+    >
 
         <div class="modal-background"
              @click="$store.ui.showSearchCenterModal = false"></div>
 
         <div class="modal-content" x-data="worldMapModal()">
 
-            <div class="search-center-box">
+            <div class="search-center-box"
+                 :class="{ 'is-visible': showCard }">
 
                 <header class="search-center-header">
-                    <span class="search-center-title">Click on the map to choose a new search center...</span>
+                    <span class="search-center-title">
+                        Click on the map to choose a new search center...
+                    </span>
                     <button class="delete"
                             @click="$store.ui.showSearchCenterModal = false"></button>
                 </header>
@@ -32,6 +47,7 @@ import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 
 .modal-content {
     --bulma-modal-content-width: 60rem;
+    position: relative;
 }
 
 .search-center-box {
@@ -40,7 +56,17 @@ import WorldMapPicker from '../widgets/WorldMapPicker.astro'
     overflow: hidden;
     margin: 0 auto;
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: transform .5s ease, opacity .5s ease;
 }
+
+.search-center-box.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
 
 .search-center-header {
     display: flex;
