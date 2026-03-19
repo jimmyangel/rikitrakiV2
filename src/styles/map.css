@@ -294,6 +294,20 @@
     white-space: nowrap;
 }
 
+.map-popup-inner::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -9px; /* slightly overlaps the border for a seamless join */
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 11px solid white; /* 1px taller to overlap the border */
+    z-index: 2;
+}
+
 .map-popup-content-wrapper {
     padding: 1px;
     text-align: center;
