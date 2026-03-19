@@ -4,6 +4,7 @@ twitter: "https://twitter.com/jimmieangel"
 blog: "https://morinricardo.com"
 versionText: "<sup>Beta</sup> by Ricardo Morin"
 ---
+RikiTraki is a web app for viewing your GPS tracks and photos on a 3D globe. It gives you a simple personal space for your own data and a way to browse public tracks from others. The goal is to keep things clear, lightweight, and easy to navigate.
 
 ### How It Works
 
