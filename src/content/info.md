@@ -2,7 +2,7 @@
 github: "https://github.com/jimmyangel/rikitraki/issues"
 twitter: "https://twitter.com/jimmieangel"
 blog: "https://morinricardo.com"
-versionText: "v2.0.0<sup>Beta</sup> by Ricardo Morin"
+versionText: "<sup>Beta</sup> by Ricardo Morin"
 ---
 
 ### How It Works
@@ -25,7 +25,7 @@ RikiTraki 2.0 is a complete rebuild with a modern backend and a smoother, faster
 Highlights include:
 
 - a unified Cesium‑powered 3D map — the old 2D/3D switching is gone, making navigation smoother and more intuitive  
-- personal `/username` spaces  
+- personal */username* spaces  
 - improved track and photo uploads  
 - automatic region detection  
 - terrain‑aligned rendering  

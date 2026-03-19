@@ -2,6 +2,7 @@
 import * as info from '../../content/info.md'
 import Logo from '../widgets/Logo.astro'
 import { Icon } from 'astro-icon/components'
+import pkg from '../../../package.json'
 const { github, twitter, versionText } = info.frontmatter
 ---
 
@@ -19,7 +20,7 @@ const { github, twitter, versionText } = info.frontmatter
 				<div class="logo-wrapper">
 					<Logo class="modal-logo" />
 				</div>
-				<p class="is-size-7 mt-1 has-text-weight-semibold" set:html={versionText}></p>
+				<p class="is-size-7 mt-1 has-text-weight-semibold">v{pkg.version}<span set:html={versionText}></span></p>
 			</div>
 
 			<button 
