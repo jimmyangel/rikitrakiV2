@@ -7,20 +7,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 
 <div class="userinfo-modal" x-data="{ ...userInfoModal(), showCard: false }">
 
-    <div 
-        class="modal modal-top"
-        :class="{ 'is-active': $store.ui.showUserInfoModal }"
-        x-init="
-            $watch('$store.ui.showUserInfoModal', value => {
-                if (value) {
-                    showCard = false
-                    requestAnimationFrame(() => showCard = true)
-                } else {
-                    showCard = false
-                }
-            })
-        "
-    >
+    <div class="modal modal-top" :class="{ 'is-active': $store.ui.showUserInfoModal }">
 
         <div class="modal-background" @click="$store.ui.showUserInfoModal = false"></div>
 

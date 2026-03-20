@@ -14,20 +14,7 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 
 <div x-data="{ ...uploadTrackModal(), showCard: false }">
 
-    <div 
-        class="modal modal-top"
-        :class="{ 'is-active': $store.ui.showUploadTrackModal }"
-        x-init="
-            $watch('$store.ui.showUploadTrackModal', value => {
-                if (value) {
-                    showCard = false
-                    requestAnimationFrame(() => showCard = true)
-                } else {
-                    showCard = false
-                }
-            })
-        "
-    >
+    <div class="modal modal-top" :class="{ 'is-active': $store.ui.showUploadTrackModal }">
 
         <div class="modal-background"
              @click="$store.ui.showUploadTrackModal = false"></div>

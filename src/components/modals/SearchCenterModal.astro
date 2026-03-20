@@ -2,19 +2,7 @@
 import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 ---
 <div x-data="{ ...worldMapModal(), showCard: false }">
-    <div 
-        :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }"
-        x-init="
-            $watch('$store.ui.showSearchCenterModal', value => {
-                if (value) {
-                    showCard = false
-                    requestAnimationFrame(() => showCard = true)
-                } else {
-                    showCard = false
-                }
-            })
-        "
-    >
+    <div :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }">
 
         <div class="modal-background"
              @click="$store.ui.showSearchCenterModal = false"></div>
@@ -92,6 +80,17 @@ import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 <script type="module">
 	document.addEventListener('alpine:init', () => {
 		Alpine.data('worldMapModal', () => ({
+
+            init() {
+                this.$watch('$store.ui.showSearchCenterModal', value => {
+                    if (value) {
+                        this.showCard = false
+                        requestAnimationFrame(() => this.showCard = true)
+                    } else {
+                        this.showCard = false
+                    }
+                })
+            },
 
 			pick(lat, lon) {
                 this.$store.tracks.exitActiveTrack()

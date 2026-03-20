@@ -79,12 +79,14 @@ export default function (Alpine) {
         // INIT
         // -----------------------------------------------------
         init() {
-            // Open/close modal
             this.$watch('$store.ui.showEditTrackModal', async value => {
                 if (!value) {
                     this.reset()
+                    this.showcard = false
                     return
                 }
+                this.showCard = false
+                requestAnimationFrame(() => this.showCard = true)
 
                 const id = this.$store.tracks.activeTrackId
                 if (!id) return
@@ -92,10 +94,8 @@ export default function (Alpine) {
                 const track = this.$store.tracks.items[id]
                 if (!track || !track.details) return
 
-                // 1) Populate full UI state
                 await this.populateForm()
 
-                // 2) Snapshot UI state for diffing
                 this.originalTrackDetails = JSON.parse(JSON.stringify({
                     trackId: this.trackId,
                     trackName: this.trackName,
@@ -107,28 +107,23 @@ export default function (Alpine) {
                     trackPhotos: this.trackPhotos
                 }))
 
-                // 3) Ready
                 this.ready = true
             })
 
-            // timeOffset → reassign lat/lng to photos
             this.$watch('timeOffset', () => {
                 assignLatLngToPhotos(this)
             })
 
-            // Region override → update trackRegionTags
             this.$watch('selectedRegionOverride', value => {
                 if (!this.ready) return
 
                 if (!value) {
-                    // Restore original region tags from snapshot
                     this.trackRegionTags = [
                         ...(this.originalTrackDetails?.trackRegionTags || [])
                     ]
                     return
                 }
 
-                // Apply override (flat array of strings)
                 this.trackRegionTags = value.split('|')
             })
         },

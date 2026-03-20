@@ -13,7 +13,13 @@ export default function (Alpine) {
 
         init() {
             this.$watch('$store.ui.showUserInfoModal', value => {
-                if (value) this.clearForm()
+                if (value) {
+					this.clearForm()
+                    this.showCard = false
+                    requestAnimationFrame(() => this.showCard = true)
+                } else {
+                    this.showCard = false
+                }
             })
         },
 

@@ -7,9 +7,7 @@ import pkg from '../../../package.json'
 const { github, twitter, versionText } = info.frontmatter
 ---
 
-<div class="modal" 
-     x-data="{ showCard: false }"
-     :class="{ 'is-active': $store.ui.showInfoModal }"
+<div class="modal" x-data="{ showCard: false }" :class="{ 'is-active': $store.ui.showInfoModal }"
      x-init="
         $watch('$store.ui.showInfoModal', value => {
             if (value) {

@@ -17,16 +17,6 @@ import PhotosPanel from './parts/PhotosPanel.astro'
     <div 
         class="modal modal-top"
         :class="{ 'is-active': $store.ui.showEditTrackModal }"
-        x-init="
-            $watch('$store.ui.showEditTrackModal', value => {
-                if (value) {
-                    showCard = false
-                    requestAnimationFrame(() => showCard = true)
-                } else {
-                    showCard = false
-                }
-            })
-        "
     >
 
         <div class="modal-background"
