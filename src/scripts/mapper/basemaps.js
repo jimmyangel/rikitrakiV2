@@ -37,6 +37,16 @@ export const imageryProviders = [
 	]
   },
   {
+	name: 'Thunderforest Outdoors',
+	providers: [
+	  () => new UrlTemplateImageryProvider({
+		url: 'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=c3fa9edd920b4974b82703cf9d296359',
+		maximumLevel: 19,
+		credit: '©Thunderforest, ©OpenStreetMap'
+	  })
+	]
+  },
+  {
 	name: 'USA Topo Maps',
 	providers: [
 	  () => new UrlTemplateImageryProvider({
