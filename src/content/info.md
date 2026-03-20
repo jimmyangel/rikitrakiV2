@@ -1,6 +1,6 @@
 ---
-github: "https://github.com/jimmyangel/rikitraki/issues"
-twitter: "https://twitter.com/jimmieangel"
+github: "https://github.com/jimmyangel/rikitrakiV2"
+twitter: "https://twitter.com/rikitraki"
 blog: "https://morinricardo.com"
 versionText: "<sup>Beta</sup> by Ricardo Morin"
 ---
