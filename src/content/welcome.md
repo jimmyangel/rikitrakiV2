@@ -1,9 +1,6 @@
 ---
 
 ---
-# Welcome to RikiTraki
+## Welcome to RikiTraki 2.0
 
-Explore outdoor experiences and learn more about their locations.  
-View tracks in 2D and 3D, and upload your own adventures.
-
-Click **Let’s go** to start exploring.
+Explore outdoor experiences over realistic terrain. View your tracks in 3D and upload your own adventures.

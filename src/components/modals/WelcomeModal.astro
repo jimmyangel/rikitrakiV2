@@ -1,0 +1,150 @@
+---
+import '../../styles/modals.css'
+import * as welcome from '../../content/welcome.md'
+---
+
+<div 
+  class="modal welcome-modal"
+  x-data="welcomeModal"
+  :class="{ 'is-active': $store.ui.showWelcomeModal }"
+>
+    <div class="modal-background welcome-bg" @click="dismiss()"></div>
+
+    <div 
+      class="modal-card welcome-card"
+      :class="{ 'is-visible': showCard }"
+    >
+        <section class="modal-card-body welcome-body">
+            <div class="welcome-hero">
+                <!-- DESKTOP IMAGE -->
+                <img
+                  src="/images/welcome.jpg"
+                  alt="Welcome to Rikitraki"
+                  class="welcome-img"
+                />
+
+                <div class="content welcome-overlay">
+                    <welcome.Content />
+                    <div class="welcome-foot">
+                        <button class="button is-success is-light" @click="dismiss()">Let’s go</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('welcomeModal', () => ({
+
+    showCard: false,
+
+    init() {
+      this.$watch('$store.ui.showWelcomeModal', value => {
+        if (value) {
+          this.showCard = false
+          requestAnimationFrame(() => this.showCard = true)
+        } else {
+          this.showCard = false
+        }
+      })
+    },
+
+    dismiss() {
+      localStorage.setItem('rikitraki-hasSeenWelcome_v2', "true")
+      this.$store.ui.showWelcomeModal = false
+    }
+  }))
+})
+</script>
+
+<style>
+    .welcome-bg {
+        background-color: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(2px);
+    }
+
+    .welcome-card {
+        max-width: 640px;
+        transform: translateY(-80px) scale(0.97);
+        opacity: 0;
+        transition:
+            transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 0.6s ease-out;
+    }
+
+    .welcome-card.is-visible {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    .welcome-body {
+        padding: 0;
+    }
+
+    .welcome-hero {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    /* DESKTOP: real image, full width, full aspect */
+    .welcome-img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .welcome-overlay {
+        --bulma-content-heading-color: white;
+        position: absolute;
+        left: 1.5rem;
+        right: 1.5rem;
+        bottom: 1.5rem;
+        color: white;
+        text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .welcome-foot {
+        display: flex;
+        justify-content: center;
+        padding-top: 1rem;
+    }
+
+@media (max-width: 480px) {
+
+    .welcome-hero {
+        min-height: 320px;
+        background-image:
+            linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0)),
+            url('/images/welcome.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        /* NEW: keep overlay at the bottom */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.5rem;
+    }
+
+    .welcome-img {
+        display: none;
+    }
+
+    .welcome-overlay {
+        position: relative;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        padding: 0; /* padding now handled by hero container */
+    }
+
+  .welcome-overlay :global(h2) {
+    font-size: 1.4em;
+  }
+}
+
+</style>

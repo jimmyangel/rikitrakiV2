@@ -6,6 +6,7 @@ export default function initUiStore(Alpine) {
 		showUploadTrackModal: false,
 		showEditTrackModal: false,
 		showInfoModal: false,
+		showWelcomeModal: false,
 		error: null,
 		errorField: '',
 		info: null,
@@ -16,5 +17,12 @@ export default function initUiStore(Alpine) {
 				this.info = null
 			}, duration)
 		}
+	})
+	document.addEventListener('alpine:initialized', () => {
+		requestAnimationFrame(() => {
+		if (!localStorage.getItem('rikitraki-hasSeenWelcome_v2')) {
+			Alpine.store('ui').showWelcomeModal = true
+		}
+		})
 	})
 }
