@@ -7,23 +7,14 @@ import pkg from '../../../package.json'
 const { github, twitter, versionText } = info.frontmatter
 ---
 
-<div class="modal" x-data="{ showCard: false }" :class="{ 'is-active': $store.ui.showInfoModal }"
-     x-init="
-        $watch('$store.ui.showInfoModal', value => {
-            if (value) {
-                showCard = false
-                requestAnimationFrame(() => showCard = true)
-            } else {
-                showCard = false
-            }
-        })
-     "
->
+<div class="modal" x-data="infoModal" :class="{ 'is-active': $store.ui.showInfoModal }">
+
     <div class="modal-background" @click="$store.ui.showInfoModal = false"></div>
 
-    <div class="modal-card" 
-         style="max-width: 640px;"
-         :class="{ 'is-visible': showCard }"
+    <div 
+      class="modal-card"
+      style="max-width: 640px;"
+      :class="{ 'is-visible': showCard }"
     >
 
         <header class="modal-card-head is-align-items-center is-justify-content-space-between">
@@ -43,119 +34,124 @@ const { github, twitter, versionText } = info.frontmatter
             ></button>
         </header>
 
-		<section class="modal-card-body">
-			<div class="content is-medium">
-			<info.Content />
-			</div>
-		</section>
+        <section class="modal-card-body">
+            <div class="content is-medium">
+                <info.Content />
+            </div>
+        </section>
 
-		<footer class="modal-card-foot">
-		<div class="footer-links">
+        <footer class="modal-card-foot">
+            <div class="footer-links">
 
-			<a href={github} target="_blank" class="footer-link">
-				<Icon name="fa7-brands:github" class="is-size-3"/>
-				GitHub
-			</a>
+                <a href={github} target="_blank" class="footer-link">
+                    <Icon name="fa7-brands:github" class="is-size-3"/>
+                    GitHub
+                </a>
 
-			<span class="dot">•</span>
+                <span class="dot">•</span>
 
-			<a href={twitter} target="_blank" class="footer-link">
-				<Icon name="fa7-brands:x-twitter" class="is-size-3"/>
-				Twitter
-			</a>
+                <a href={twitter} target="_blank" class="footer-link">
+                    <Icon name="fa7-brands:x-twitter" class="is-size-3"/>
+                    Twitter
+                </a>
 
-			<span class="dot">•</span>
+                <span class="dot">•</span>
 
-			<a href="https://morinricardo.com" target="_blank" class="footer-link">
-				<Icon name="fa7-solid:blog" class="is-size-3"/>
-				Blog
-			</a>
+                <a href="https://morinricardo.com" target="_blank" class="footer-link">
+                    <Icon name="fa7-solid:blog" class="is-size-3"/>
+                    Blog
+                </a>
 
-		</div>
-		</footer>
+            </div>
+        </footer>
 
-
-	</div>
+    </div>
 </div>
 
 <style is:global>
-	.logo-stack {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-	}
+    .logo-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-	.logo-wrapper {
-		display: inline-block;
-		line-height: 0;
-		overflow: hidden;
-	}
+    .logo-wrapper {
+        display: inline-block;
+        line-height: 0;
+        overflow: hidden;
+    }
 
-	.logo-wrapper .modal-logo {
-  		max-height: none;
-		display: block;
-		margin-left: -8px;
-	}
+    .logo-wrapper .modal-logo {
+        max-height: none;
+        display: block;
+        margin-left: -8px;
+    }
 </style>
 
 <style>
-	.content.is-medium {
-		font-size: 0.9rem;
-	/* line-height: 1.35; */
-	}
+    .content.is-medium {
+        font-size: 0.9rem;
+    }
 
-	.modal-card-head {
-		padding: 1rem;
-	}
+    .modal-card-head {
+        padding: 1rem;
+    }
 
-	.modal-card-foot {
-		padding: 1rem;
-	}
+    .modal-card-foot {
+        padding: 1rem;
+    }
 
-	.footer-links {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.85rem;
-	}
+    .footer-links {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
 
-	.footer-links span:first-child {
-		font-weight: 600;
-		opacity: 0.8;
-	}
+    .footer-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
 
-	.footer-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25rem;
-	}
+    .icon {
+        width: 1rem;
+        height: 1rem;
+        opacity: 0.8;
+    }
 
-	.icon {
-		width: 1rem;
-		height: 1rem;
-		opacity: 0.8;
-	}
+    .dot {
+        opacity: 0.6;
+    }
 
-	.dot {
-		opacity: 0.6;
-	}
+    .modal-card-foot {
+        justify-content: center;
+        padding: 0.75rem 1rem;
+    }
 
-	.modal-card-foot {
-		justify-content: center;
-		padding: 0.75rem 1rem;
-	}
+    .modal-card-foot a {
+        color: #444;
+        text-decoration: underline;
+    }
 
-	.modal-card-foot a {
-		color: #444;
-		text-decoration: underline;
-	}
-
-	.modal-card-foot a:hover {
-		color: #222;
-	}
-
-
+    .modal-card-foot a:hover {
+        color: #222;
+    }
 </style>
 
-
-
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('infoModal', () => ({
+            init() {
+                this.$watch('$store.ui.showInfoModal', value => {
+                    if (value) {
+                        this.showCard = false
+                        requestAnimationFrame(() => this.showCard = true)
+                    } else {
+                        this.showCard = false
+                    }
+                })
+            }
+        }))
+    })
+</script>
