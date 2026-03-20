@@ -11,11 +11,7 @@ const { github, twitter, versionText } = info.frontmatter
 
     <div class="modal-background" @click="$store.ui.showInfoModal = false"></div>
 
-    <div 
-      class="modal-card"
-      style="max-width: 640px;"
-      :class="{ 'is-visible': showCard }"
-    >
+    <div class="modal-card" style="max-width: 640px;" :class="{ 'is-visible': showCard }">
 
         <header class="modal-card-head is-align-items-center is-justify-content-space-between">
             <div class="logo-stack">
@@ -142,6 +138,7 @@ const { github, twitter, versionText } = info.frontmatter
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('infoModal', () => ({
+			showCard: false,
             init() {
                 this.$watch('$store.ui.showInfoModal', value => {
                     if (value) {
