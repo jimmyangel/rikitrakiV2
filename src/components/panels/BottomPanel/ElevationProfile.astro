@@ -2,222 +2,279 @@
 ---
 <div class="track-card track-card-profile p-3" x-data="elevationProfile()">
     <h3 class="elevation-title" x-text="`Elevation Profile (${elevationUnit()})`"></h3>
-    <div x-html="svg"></div>
+    <div x-ref="svgContainer"></div>
 </div>
 
 <script is:inline>
-    function elevationProfile() {
-        return {
-            width: 600,
-            height: 220,
+function elevationProfile() {
+    return {
+        width: 600,
+        height: 220,
 
-            paddingTop: 20,
-            paddingBottom: 50,
-            paddingLeft: 40,
-            paddingRight: 20,
+        paddingTop: 20,
+        paddingBottom: 50,
+        paddingLeft: 40,
+        paddingRight: 20,
 
-            distancesKm: [],
-            elevationsM: [],
+        distancesKm: [],
+        elevationsM: [],
 
-            svg: '',
+        active: false,
+        index: null,
 
-            // UNIT HELPERS
-            distanceUnit() {
-                return this.$store.tracks.countryCode === 'US' ? 'mi' : 'km'
-            },
+        distanceUnit() {
+            return this.$store.tracks.countryCode === 'US' ? 'mi' : 'km'
+        },
 
-            elevationUnit() {
-                return this.$store.tracks.countryCode === 'US' ? 'ft' : 'm'
-            },
+        elevationUnit() {
+            return this.$store.tracks.countryCode === 'US' ? 'ft' : 'm'
+        },
 
-            init() {
-                this.$watch('$store.tracks.activeTrackId', () => this.loadTrack())
-                this.$nextTick(() => this.loadTrack())
-            },
+        init() {
+            this.$watch('$store.tracks.activeTrackId', () => this.loadTrack())
+            this.$nextTick(() => this.loadTrack())
+        },
 
-            loadTrack() {
-                const t = this.$store.tracks.items[this.$store.tracks.activeTrackId]
-                if (!t) return
-                if (!Array.isArray(t.distancesKm) || !Array.isArray(t.elevationsM)) return
+        loadTrack() {
+            const t = this.$store.tracks.items[this.$store.tracks.activeTrackId]
+            if (!t) return
+            if (!Array.isArray(t.distancesKm) || !Array.isArray(t.elevationsM)) return
 
-                this.distancesKm = t.distancesKm
-                this.elevationsM = t.elevationsM
-                this.render()
-            },
+            this.distancesKm = t.distancesKm
+            this.elevationsM = t.elevationsM
+            this.render()
+        },
 
-            render() {
-                if (!this.distancesKm.length || !this.elevationsM.length) return
+        start(evt) {
+            this.active = true
+            this.update(evt)
+        },
 
-                const usableWidth =
-                    this.width - this.paddingLeft - this.paddingRight
+        update(evt) {
+            if (!this.active) return
 
-                const usableHeight =
-                    this.height - this.paddingTop - this.paddingBottom
+            const svg = this.$refs.svgContainer.querySelector('svg')
+            const rect = svg.getBoundingClientRect()
+            const x = evt.clientX - rect.left
 
-                const pts = this.buildPoints(usableWidth, usableHeight)
-                const xTicks = this.buildXTicks(usableWidth)
-                const yTicks = this.buildYTicks(usableHeight)
+            const scale = rect.width / this.width
+            const left = this.paddingLeft * scale
+            const right = (this.width - this.paddingRight) * scale
+            const usable = right - left
 
-                const xAxisY = this.height - this.paddingBottom
-                const yAxisX = this.paddingLeft
+            const maxDist = Math.max(...this.distancesKm) || 1
 
-                const axes = `
-                    <line class="axis"
-                        x1="${yAxisX}" y1="${xAxisY}"
-                        x2="${this.width - this.paddingRight}" y2="${xAxisY}" />
+            const ratio = (x - left) / usable
+            const idx = Math.round(ratio * (this.distancesKm.length - 1))
 
-                    <line class="axis"
-                        x1="${yAxisX}" y1="${this.paddingTop}"
-                        x2="${yAxisX}" y2="${xAxisY}" />
-                `
+            this.index = Math.max(0, Math.min(idx, this.distancesKm.length - 1))
 
-                const xTickMarkup = xTicks.map(t => `
-                    <g>
-                        <line class="tick"
-                            x1="${t.x}" y1="${xAxisY}"
-                            x2="${t.x}" y2="${xAxisY + 4}" />
+            this.updateCrosshair()
+        },
 
-                        <text class="tick-label"
-                            x="${t.x}" y="${xAxisY + 18}"
-                            text-anchor="middle">${t.label}</text>
-                    </g>
-                `).join('')
+        stop() {
+            this.active = false
+        },
 
-                const yTickMarkup = yTicks.map(t => `
-                    <g>
-                        <line class="tick"
-                            x1="${yAxisX - 4}" y1="${t.y}"
-                            x2="${yAxisX}" y2="${t.y}" />
+        xAt(i) {
+            const usableWidth = this.width - this.paddingLeft - this.paddingRight
+            const maxDist = Math.max(...this.distancesKm) || 1
+            return this.paddingLeft + (this.distancesKm[i] / maxDist) * usableWidth
+        },
 
-                        <text class="tick-label"
-                            x="${yAxisX - 8}" y="${t.y + 4}"
-                            text-anchor="end">${t.label}</text>
-                    </g>
-                `).join('')
+        yAt(i) {
+            const usableHeight = this.height - this.paddingTop - this.paddingBottom
+            const maxElev = Math.max(...this.elevationsM)
+            const minElev = Math.min(...this.elevationsM)
+            const elevRange = maxElev - minElev || 1
 
-                this.svg = `
-                    <svg viewBox="0 0 ${this.width} ${this.height}" class="elevation-svg">
-                        ${axes}
-                        ${xTickMarkup}
-                        ${yTickMarkup}
+            return this.height - this.paddingBottom -
+                ((this.elevationsM[i] - minElev) / elevRange) * usableHeight
+        },
 
-                        <!-- X‑axis unit -->
-                        <text class="axis-unit"
-                            x="${this.width / 2}"
-                            y="${xAxisY + 34}"
-                            text-anchor="middle">${this.distanceUnit()}</text>
+        updateCrosshair() {
+            const svg = this.$refs.svgContainer.querySelector('svg')
+            const group = svg.querySelector('#crosshair-group')
 
-                        <polyline class="profile-line" points="${pts}" />
-                    </svg>
-                `
-            },
-
-            buildPoints(usableWidth, usableHeight) {
-                const maxElev = Math.max(...this.elevationsM)
-                const minElev = Math.min(...this.elevationsM)
-                const elevRange = maxElev - minElev || 1
-
-                const maxDist = Math.max(...this.distancesKm) || 1
-
-                return this.distancesKm.map((d, i) => {
-                    const x =
-                        this.paddingLeft +
-                        (d / maxDist) * usableWidth
-
-                    const y =
-                        this.height -
-                        this.paddingBottom -
-                        ((this.elevationsM[i] - minElev) / elevRange) *
-                            usableHeight
-
-                    return `${x},${y}`
-                }).join(' ')
-            },
-
-            buildXTicks(usableWidth) {
-                const maxDist = Math.max(...this.distancesKm) || 1
-                const step = maxDist / 5
-
-                return Array.from({ length: 6 }, (_, i) => {
-                    const d = i * step
-                    const x =
-                        this.paddingLeft +
-                        (d / maxDist) * usableWidth
-
-                    return {
-                        x,
-                        label: this.$formatDistanceNumber(d)
-                    }
-                })
-            },
-
-            buildYTicks(usableHeight) {
-                const maxElev = Math.max(...this.elevationsM)
-                const minElev = Math.min(...this.elevationsM)
-                const range = maxElev - minElev || 1
-                const step = range / 5
-
-                return Array.from({ length: 6 }, (_, i) => {
-                    const e = minElev + i * step
-
-                    const y =
-                        this.height -
-                        this.paddingBottom -
-                        ((e - minElev) / range) * usableHeight
-
-                    return {
-                        y,
-                        label: this.$formatElevationNumber(e)
-                    }
-                })
+            if (this.index === null) {
+                group.style.display = 'none'
+                return
             }
+
+            group.style.display = ''
+
+            const i = this.index
+            const x = this.xAt(i)
+            const y = this.yAt(i)
+
+            const xAxisY = this.height - this.paddingBottom
+            const yAxisX = this.paddingLeft
+
+            svg.querySelector('#crosshair-vert').setAttribute('x1', x)
+            svg.querySelector('#crosshair-vert').setAttribute('x2', x)
+            svg.querySelector('#crosshair-vert').setAttribute('y1', this.paddingTop)
+            svg.querySelector('#crosshair-vert').setAttribute('y2', xAxisY)
+
+            svg.querySelector('#crosshair-horiz').setAttribute('x1', yAxisX)
+            svg.querySelector('#crosshair-horiz').setAttribute('x2', x)
+            svg.querySelector('#crosshair-horiz').setAttribute('y1', y)
+            svg.querySelector('#crosshair-horiz').setAttribute('y2', y)
+
+            svg.querySelector('#crosshair-dot').setAttribute('cx', x)
+            svg.querySelector('#crosshair-dot').setAttribute('cy', y)
+
+            const label = svg.querySelector('#crosshair-label')
+            label.setAttribute('x', x + 6)
+            label.setAttribute('y', y - 6)
+            label.textContent = this.$formatElevationLabel(this.elevationsM[i])
+        },
+
+        render() {
+            const usableWidth = this.width - this.paddingLeft - this.paddingRight
+            const usableHeight = this.height - this.paddingTop - this.paddingBottom
+
+            const pts = this.buildPoints(usableWidth, usableHeight)
+            const xTicks = this.buildXTicks(usableWidth)
+            const yTicks = this.buildYTicks(usableHeight)
+
+            const xAxisY = this.height - this.paddingBottom
+            const yAxisX = this.paddingLeft
+
+            const svg = `
+                <svg viewBox="0 0 ${this.width} ${this.height}" class="elevation-svg">
+
+                    <!-- Axes -->
+                    <line x1="${yAxisX}" y1="${xAxisY}" x2="${this.width - this.paddingRight}" y2="${xAxisY}"
+                        stroke="#333" stroke-width="1" />
+
+                    <line x1="${yAxisX}" y1="${this.paddingTop}" x2="${yAxisX}" y2="${xAxisY}"
+                        stroke="#333" stroke-width="1" />
+
+                    <!-- X ticks -->
+                    ${xTicks.map(t => `
+                        <g>
+                            <line x1="${t.x}" y1="${xAxisY}" x2="${t.x}" y2="${xAxisY + 4}"
+                                stroke="#666" stroke-width="1" />
+                            <text x="${t.x}" y="${xAxisY + 18}" text-anchor="middle"
+                                font-size="12" fill="#444">${t.label}</text>
+                        </g>
+                    `).join('')}
+
+                    <!-- Y ticks -->
+                    ${yTicks.map(t => `
+                        <g>
+                            <line x1="${yAxisX - 4}" y1="${t.y}" x2="${yAxisX}" y2="${t.y}"
+                                stroke="#666" stroke-width="1" />
+                            <text x="${yAxisX - 8}" y="${t.y + 4}" text-anchor="end"
+                                font-size="12" fill="#444">${t.label}</text>
+                        </g>
+                    `).join('')}
+
+                    <!-- X-axis unit -->
+                    <text x="${this.width / 2}" y="${xAxisY + 34}" text-anchor="middle"
+                        font-size="12" fill="#444" font-weight="600">${this.distanceUnit()}</text>
+
+                    <!-- Elevation polyline -->
+                    <polyline fill="none" stroke="#666" stroke-width="2" points="${pts}" />
+
+                    <!-- Crosshair -->
+                    <g id="crosshair-group" style="display:none">
+                        <line id="crosshair-vert"
+                            x1="0" x2="0" y1="0" y2="0"
+                            stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-dasharray="4 2" />
+
+                        <line id="crosshair-horiz"
+                            x1="0" x2="0" y1="0" y2="0"
+                            stroke="rgba(0,0,0,0.4)" stroke-width="1" stroke-dasharray="4 2" />
+
+                        <circle id="crosshair-dot"
+                            cx="0" cy="0" r="4"
+                            fill="white" stroke="black" stroke-width="1" />
+
+                        <text id="crosshair-label"
+                            x="0" y="0"
+                            font-size="12"
+                            fill="black"
+                            font-weight="600"
+                        ></text>
+                    </g>
+
+                    <!-- Pointer overlay -->
+                    <rect x="0" y="0" width="${this.width}" height="${this.height}"
+                        fill="transparent" pointer-events="all" />
+                </svg>
+            `
+
+            this.$nextTick(() => {
+                this.$refs.svgContainer.innerHTML = svg
+
+                const overlay = this.$refs.svgContainer.querySelector('rect')
+                overlay.addEventListener('pointerdown', e => this.start(e))
+                overlay.addEventListener('pointermove', e => this.update(e))
+                overlay.addEventListener('pointerup', () => this.stop())
+                overlay.addEventListener('pointerleave', () => this.stop())
+            })
+        },
+
+        buildPoints(usableWidth, usableHeight) {
+            const maxElev = Math.max(...this.elevationsM)
+            const minElev = Math.min(...this.elevationsM)
+            const elevRange = maxElev - minElev || 1
+
+            const maxDist = Math.max(...this.distancesKm) || 1
+
+            return this.distancesKm.map((d, i) => {
+                const x = this.paddingLeft + (d / maxDist) * usableWidth
+                const y = this.height - this.paddingBottom -
+                    ((this.elevationsM[i] - minElev) / elevRange) * usableHeight
+                return `${x},${y}`
+            }).join(' ')
+        },
+
+        buildXTicks(usableWidth) {
+            const maxDist = Math.max(...this.distancesKm) || 1
+            const step = maxDist / 5
+
+            return Array.from({ length: 6 }, (_, i) => {
+                const d = i * step
+                const x = this.paddingLeft + (d / maxDist) * usableWidth
+                return { x, label: this.$formatDistanceNumber(d) }
+            })
+        },
+
+        buildYTicks(usableHeight) {
+            const maxElev = Math.max(...this.elevationsM)
+            const minElev = Math.min(...this.elevationsM)
+            const range = maxElev - minElev || 1
+            const step = range / 5
+
+            return Array.from({ length: 6 }, (_, i) => {
+                const e = minElev + i * step
+                const y = this.height - this.paddingBottom -
+                    ((e - minElev) / range) * usableHeight
+                return { y, label: this.$formatElevationNumber(e) }
+            })
         }
     }
+}
 </script>
 
 <style is:global>
-    .track-card-profile {
-        width: 28rem;
-        min-width: 28rem;
-    }
+.track-card-profile {
+    width: 28rem;
+    min-width: 28rem;
+}
 
-    .elevation-title {
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-bottom: 0.2rem;
-        text-align: center;
-    }
+.elevation-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    text-align: center;
+}
 
-    .elevation-svg {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
-
-    .axis {
-        stroke: #333;
-        stroke-width: 1;
-    }
-
-    .tick {
-        stroke: #666;
-        stroke-width: 1;
-    }
-
-    .tick-label {
-        font-size: 12px;
-        fill: #444;
-    }
-
-    .axis-unit {
-        font-size: 12px;
-        fill: #444;
-        font-weight: 600;
-    }
-
-    .profile-line {
-        fill: none;
-        stroke: #666;
-        stroke-width: 2;
-    }
+.elevation-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
 </style>
