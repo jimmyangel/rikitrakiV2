@@ -110,22 +110,34 @@ function elevationProfile() {
             const xAxisY = this.height - this.paddingBottom
             const yAxisX = this.paddingLeft
 
-            svg.querySelector('#crosshair-vert').setAttribute('x1', x)
-            svg.querySelector('#crosshair-vert').setAttribute('x2', x)
-            svg.querySelector('#crosshair-vert').setAttribute('y1', this.paddingTop)
-            svg.querySelector('#crosshair-vert').setAttribute('y2', xAxisY)
+            // Vertical line
+            const vert = svg.querySelector('#crosshair-vert')
+            vert.setAttribute('x1', x)
+            vert.setAttribute('x2', x)
+            vert.setAttribute('y1', this.paddingTop)
+            vert.setAttribute('y2', xAxisY)
 
-            svg.querySelector('#crosshair-horiz').setAttribute('x1', yAxisX)
-            svg.querySelector('#crosshair-horiz').setAttribute('x2', x)
-            svg.querySelector('#crosshair-horiz').setAttribute('y1', y)
-            svg.querySelector('#crosshair-horiz').setAttribute('y2', y)
+            // Horizontal line
+            const horiz = svg.querySelector('#crosshair-horiz')
+            horiz.setAttribute('x1', yAxisX)
+            horiz.setAttribute('x2', x)
+            horiz.setAttribute('y1', y)
+            horiz.setAttribute('y2', y)
 
-            svg.querySelector('#crosshair-dot').setAttribute('cx', x)
-            svg.querySelector('#crosshair-dot').setAttribute('cy', y)
+            // Dot
+            const dot = svg.querySelector('#crosshair-dot')
+            dot.setAttribute('cx', x)
+            dot.setAttribute('cy', y)
 
+            // Label with smart flipping
             const label = svg.querySelector('#crosshair-label')
-            label.setAttribute('x', x + 6)
+            const flip = x > this.width * 0.8
+
+            label.setAttribute('x', flip ? x - 6 : x + 6)
             label.setAttribute('y', y - 6)
+            label.setAttribute('text-anchor', flip ? 'end' : 'start')
+
+            // Use your Alpine magic for formatting
             label.textContent = this.$formatElevationLabel(this.elevationsM[i])
         },
 
