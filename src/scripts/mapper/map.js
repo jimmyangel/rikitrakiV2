@@ -257,6 +257,12 @@ export async function whenViewerReady() {
     })
 }
 
+async function waitForTerrainProvider() {
+    while (!viewer || !viewer.terrainProvider) {
+        await new Promise(r => setTimeout(r, 5))
+    }
+}
+
 export function waitForTerrainTiles() {
     return new Promise(resolve => {
         const remove = viewer.scene.globe.tileLoadProgressEvent.addEventListener(pending => {
@@ -813,20 +819,21 @@ export function renderMapThumbnails(geoTags) {
 }
 
 export async function sampleTerrain(coords) {
-    if (!viewer || !viewer.terrainProvider) {
-        console.warn('Terrain not ready')
-        return coords
-    }
+    await waitForTerrainProvider()
 
-    const cartos = coords.map(([lon, lat]) => Cesium.Cartographic.fromDegrees(lon, lat))
+    const cartos = coords.map(([lon, lat]) =>
+        Cesium.Cartographic.fromDegrees(lon, lat)
+    )
 
-    const updated = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, cartos)
+    const updated = await Cesium.sampleTerrainMostDetailed(
+        viewer.terrainProvider,
+        cartos
+    )
 
     return updated.map((c, i) => {
         const original = coords[i]
         const h = c.height
 
-        // If Cesium couldn't resolve height, keep original elevation
         const elevation = (typeof h === 'number' && !isNaN(h))
             ? h
             : original[2]
