@@ -21,6 +21,12 @@
     pointer-events: none;
 }
 
+.map-left {
+    position: absolute;
+    left: 0;
+    pointer-events: none;
+}
+
 .map-control {
     float: left;
     clear: both;
@@ -31,6 +37,10 @@
     float: right;
 }
 
+.map-left .map-control {
+    float: left;
+}
+
 .map-top .map-control {
     margin-top: 10px;
 }
@@ -39,6 +49,19 @@
     margin-right: 10px;
 }
 
+.map-left .map-control {
+    margin-left: 10px;
+}
+
+.map-bottom {
+    position: absolute;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.map-bottom .map-control {
+    margin-bottom: 30px;
+}
 
 /* ────────────────────────────────────────────────
    CONTROL BAR (North, Zoom, LookDown)
@@ -193,6 +216,12 @@
     height: 24px;
 }
 
+.map-help-icon {
+    padding: 2px;
+    width: 24px;
+    height: 24px;
+}
+
 .north-arrow-icon {
     padding: 4px;
     width: 24px;
@@ -204,7 +233,6 @@
     width: 24px;
     height: 24px;
 }
-
 
 /* ────────────────────────────────────────────────
    MAP THUMBNAILS
