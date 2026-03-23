@@ -3,10 +3,11 @@ import { defineConfig } from 'astro/config'
 
 import icon from 'astro-icon'
 import alpinejs from '@astrojs/alpinejs'
+import mdx from '@astrojs/mdx'
 
 export default defineConfig({
   output: 'static',
-  integrations: [icon(), alpinejs({ entrypoint: '/src/scripts/alpine-plugins/entrypoint' })],
+  integrations: [icon(), alpinejs({ entrypoint: '/src/scripts/alpine-plugins/entrypoint' }), mdx()],
   devToolbar: { enabled: false },
   vite: {
     plugins: [
