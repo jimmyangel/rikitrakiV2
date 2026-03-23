@@ -1,0 +1,66 @@
+---
+import '../../styles/modals.css'
+import * as help from '../../content/help.md'
+---
+<div 
+  class="modal"
+  x-data="mapHelpModal"
+  :class="{ 'is-active': $store.ui.showMapHelpModal }"
+>
+	<div class="modal-background map-help-bg" @click="$store.ui.showMapHelpModal = false"></div>
+
+	<div class="modal-card" style="max-width: 640px;" :class="{ 'is-visible': showCard }">
+
+
+        <header class="modal-card-head is-size-5 is-align-items-center is-justify-content-space-between">
+			Map Help
+
+            <button 
+                class="delete" 
+                aria-label="close"
+                @click="$store.ui.showMapHelpModal = false"
+            ></button>
+        </header>
+
+        <section class="modal-card-body">
+            <div class="content">
+                <help.Content />
+            </div>
+        </section>
+
+        <footer class="modal-card-foot">
+        </footer>
+	</div>
+</div>
+
+<style>
+    .map-help-bg {
+        background-color: rgba(0, 0, 0, 0.35);
+    }
+
+	.modal-card-head {
+        padding: 1rem;
+    }
+
+    .modal-card-foot {
+        padding: 6px;
+    }
+</style>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('mapHelpModal', () => ({
+			showCard: false,
+            init() {
+                this.$watch('$store.ui.showMapHelpModal', value => {
+                    if (value) {
+                        this.showCard = false
+                        requestAnimationFrame(() => this.showCard = true)
+                    } else {
+                        this.showCard = false
+                    }
+                })
+            }
+        }))
+    })
+</script>

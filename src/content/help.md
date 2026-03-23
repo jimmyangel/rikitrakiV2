@@ -1,0 +1,21 @@
+---
+
+---
+#### To pan the view in the map area
+* Left-click and drag, or
+* Command-click and drag, or
+* Single finger drag gesture
+
+#### To zoom the view in the map area
+* Right-click and drag, or
+* Mouse wheel scroll, or
+* Two finger pinch gesture
+
+#### To rotate the view in the map area
+* Middle-click and drag, or
+* Control-click and drag, or
+* Two finger rotate gesture
+
+#### Use the left side panel to
+* Change the search center
+* Filter the track list
