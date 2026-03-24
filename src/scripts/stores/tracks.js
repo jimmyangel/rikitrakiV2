@@ -679,7 +679,6 @@ export default function initTracksStore(Alpine) {
             if (!trackId) return
 
             const t = this.items?.[trackId]
-            console.log('update probe', t)
             if (!t) return
 
             const coords = t.geojson?.features?.[0]?.geometry?.coordinates

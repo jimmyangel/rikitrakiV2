@@ -232,7 +232,6 @@ export function initMap() {
     })
 
     probe = createProbeEntity(viewer)
-    console.log("created probe", probe)
 }
 
 export async function whenViewerReady() {
