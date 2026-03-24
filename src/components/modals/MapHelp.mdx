@@ -1,18 +1,45 @@
-#### To pan the view in the map area
-* Left-click and drag, or
-* Command-click and drag, or
-* Single finger drag gesture
+import NorthArrowIcon from '../panels/MapPanel/icons/NorthArrowIcon.astro'
+import ResetToSearchCenterIcon from '../panels/MapPanel/icons/ResetToSearchCenterIcon.astro'
+import layersIcon from '../../images/layers.png'
+import HelpIcon from '../panels/MapPanel/icons/HelpIcon.astro'
+import { Icon } from 'astro-icon/components'
 
-#### To zoom the view in the map area
-* Right-click and drag, or
-* Mouse wheel scroll, or
-* Two finger pinch gesture
+#### Map Controls
 
-#### To rotate the view in the map area
-* Middle-click and drag, or
-* Control-click and drag, or
-* Two finger rotate gesture
+| Icon | Click action |
+|------|-------------|
+| <NorthArrowIcon size={24} /> | Align the map to true north |
+| <Icon name="fa7-solid:plus" size={18} /> | Zoom in |
+| <Icon name="fa7-solid:minus" size={18} /> | Zoom out |
+| <ResetToSearchCenterIcon class="help-icon" /> | Reset the view to the search center markers |
+| <Icon name="fa7-solid:circle-arrow-down" size={24} /> | Look straight down |
+| <img src={layersIcon.src} /> | Select base map layer |
+| <HelpIcon size={24} /> | Map help |
 
-#### Use the left side panel to
-* Change the search center
-* Filter the track list
+#### Bottom Panel Map Controls
+
+| Icon | Click action |
+|------|-------------|
+| <Icon name="fa7-solid:xmark" size={24} /> | Exit the active track and go back to world view|
+| <Icon name="fa7-solid:crosshairs" size={24} /> | Reset the view to the active track |
+
+#### Map Interaction
+
+<div class="interaction-desktop">
+| Action | Mouse | Trackpad | Touch |
+|--------|--------|-----------|--------|
+| **Pan** | Left‑click + drag | Click + drag | Single‑finger drag |
+| **Zoom** | Right‑click + drag<br/>Scroll wheel | Two‑finger drag | Two‑finger pinch |
+| **Rotate** | Middle‑click + drag<br/>Control‑click + drag | Control‑click + drag | Two‑finger rotate |
+</div>
+
+<div class="interaction-mobile">
+| Action | Touch |
+|--------|--------|
+| **Pan** | Single‑finger drag |
+| **Zoom** | Two‑finger pinch |
+| **Rotate** | Two‑finger rotate |
+</div>
+
+
+

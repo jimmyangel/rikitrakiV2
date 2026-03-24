@@ -23,7 +23,7 @@ import * as help from './MapHelp.mdx'
         </header>
 
         <section class="modal-card-body">
-            <div class="content">
+            <div class="content is-medium">
                 <help.Content />
             </div>
         </section>
@@ -45,7 +45,33 @@ import * as help from './MapHelp.mdx'
     .modal-card-foot {
         padding: 6px;
     }
+
+	.content.is-medium {
+        font-size: 0.9rem;
+    }
 </style>
+
+<style is:global>
+	/* Desktop: show full table */
+	.interaction-desktop {
+		display: block;
+	}
+	.interaction-mobile {
+		display: none;
+	}
+
+	/* Mobile: show touch-only table */
+	@media (max-width: 600px) {
+		.interaction-desktop {
+			display: none;
+		}
+		.interaction-mobile {
+			display: block;
+		}
+	}
+
+</style>
+
 
 <script>
     document.addEventListener('alpine:init', () => {
