@@ -33,6 +33,14 @@ function elevationProfile() {
         init() {
             this.$watch('$store.tracks.activeTrackId', () => this.loadTrack())
             this.$nextTick(() => this.loadTrack())
+
+            document.addEventListener('pointerdown', e => {
+                const container = this.$refs.svgContainer
+                if (!container.contains(e.target)) {
+                    this.index = null
+                    this.updateCrosshair()
+                }
+            })
         },
 
         loadTrack() {
@@ -55,20 +63,35 @@ function elevationProfile() {
 
             const svg = this.$refs.svgContainer.querySelector('svg')
             const rect = svg.getBoundingClientRect()
-            const x = evt.clientX - rect.left
 
+            // Convert screen X → internal SVG X
             const scale = rect.width / this.width
-            const left = this.paddingLeft * scale
-            const right = (this.width - this.paddingRight) * scale
+            const internalX = (evt.clientX - rect.left) / scale
+
+            // Clamp to usable graph area
+            const left = this.paddingLeft
+            const right = this.width - this.paddingRight
             const usable = right - left
 
+            const clampedX = Math.max(left, Math.min(internalX, right))
+
+            // Convert internalX → distance
             const maxDist = Math.max(...this.distancesKm) || 1
+            const ratio = (clampedX - left) / usable
+            const dist = ratio * maxDist
 
-            const ratio = (x - left) / usable
-            const idx = Math.round(ratio * (this.distancesKm.length - 1))
+            // Find nearest index by distance
+            let nearest = 0
+            let best = Infinity
+            for (let i = 0; i < this.distancesKm.length; i++) {
+                const diff = Math.abs(this.distancesKm[i] - dist)
+                if (diff < best) {
+                    best = diff
+                    nearest = i
+                }
+            }
 
-            this.index = Math.max(0, Math.min(idx, this.distancesKm.length - 1))
-
+            this.index = nearest
             this.updateCrosshair()
         },
 
@@ -96,8 +119,10 @@ function elevationProfile() {
             const svg = this.$refs.svgContainer.querySelector('svg')
             const group = svg.querySelector('#crosshair-group')
 
+            // Clear crosshair + Cesium probe
             if (this.index === null) {
                 group.style.display = 'none'
+                this.$store.tracks.updateProbeAtIndex(null)
                 return
             }
 
@@ -139,6 +164,9 @@ function elevationProfile() {
 
             // Use your Alpine magic for formatting
             label.textContent = this.$formatElevationLabel(this.elevationsM[i])
+
+            // Sync Cesium probe
+            this.$store.tracks.updateProbeAtIndex(i)
         },
 
         render() {
@@ -213,7 +241,7 @@ function elevationProfile() {
 
                     <!-- Pointer overlay -->
                     <rect x="0" y="0" width="${this.width}" height="${this.height}"
-                        fill="transparent" pointer-events="all" />
+                        fill="transparent" pointer-events="all" cursor="pointer"/>
                 </svg>
             `
 

@@ -22,6 +22,8 @@ let onAnimationFinished = null
 // Reusable animated marker
 let animatedMarker = null
 
+export let probe = null
+
 export function initMap() {
 
     viewer = createViewer()
@@ -228,6 +230,9 @@ export function initMap() {
             }
         }
     })
+
+    probe = createProbeEntity(viewer)
+    console.log("created probe", probe)
 }
 
 export async function whenViewerReady() {
@@ -375,6 +380,22 @@ export function updateSearchCenterDonut(lat, lon, radiusKm) {
         searchCenterFillEntity.polygon.hierarchy = hierarchy
         searchCenterFillEntity.show = true
     }
+}
+
+function createProbeEntity(viewer) {
+    return viewer.entities.add({
+        id: 'trackProbe',
+        point: {
+            pixelSize: 10,
+            translucent: true,
+            color: Cesium.Color.fromCssColorString('#007BFF').withAlpha(0.9),
+            outlineColor: Cesium.Color.WHITE,
+            outlineWidth: 1,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+        },
+        show: false
+    })
 }
 
 export function flyToBounds(bounds) {
