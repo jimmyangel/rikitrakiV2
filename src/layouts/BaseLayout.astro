@@ -14,6 +14,12 @@ import { Icon } from 'astro-icon/components'
     </head>
 
     <body class="has-navbar-fixed-top">
+        <!-- Force astro to render certain icons used in modals -->
+        <div style="display:none">
+            <Icon name="fa7-solid:images" />
+            <Icon name="fa7-solid:xmark" />
+            <Icon name="fa7-solid:crosshairs" />
+        </div>
         <nav class="navbar is-fixed-top is-dark" role="navigation" aria-label="main navigation" x-data="{ open: false }">
             <div class="navbar-brand">
                 <a class="navbar-item" style="padding: 0px;" href="/">
@@ -62,12 +68,6 @@ import { Icon } from 'astro-icon/components'
         <div class="app-root">
             <slot />
         </div>
-
-        <!-- Force astro to render certain icons -->
-        <div style="display:none">
-            <Icon name="fa7-solid:images" />
-        </div>
-
     </body>
 </html>
 
