@@ -346,14 +346,19 @@ export function updateSearchCenterPoint(lat, lon) {
 export function updateSearchCenterDonut(lat, lon, radiusKm) {
     if (!viewer) return
     if (lat == null || lon == null) return
-    if (radiusKm == null) return
+
+    // Skip donut if radius is missing or zero/negative
+    if (!Number.isFinite(radiusKm) || radiusKm <= 0) {
+        if (searchCenterFillEntity) searchCenterFillEntity.show = false
+        return
+    }
 
     if (radiusKm > 4500) {
         if (searchCenterFillEntity) searchCenterFillEntity.show = false
         return
     }
 
-    const pct = 0.025 
+    const pct = 0.025
     const radiusMeters = radiusKm * 1000
 
     const outerRadius = radiusMeters * (1 + pct)
