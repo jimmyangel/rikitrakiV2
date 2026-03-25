@@ -353,9 +353,11 @@ export function updateSearchCenterDonut(lat, lon, radiusKm) {
         return
     }
 
+    const pct = 0.025 
     const radiusMeters = radiusKm * 1000
 
-    const outerRadius = radiusMeters + 10000
+    const outerRadius = radiusMeters * (1 + pct)
+
     const outerPositions = makeTrueCircle(lon, lat, outerRadius)
     const innerPositions = makeTrueCircle(lon, lat, radiusMeters)
 
