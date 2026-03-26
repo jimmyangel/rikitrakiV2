@@ -17,8 +17,8 @@ import { Icon } from 'astro-icon/components'
                             ? (
                                 $store.tracks.numberOfTracks != null &&
                                 $store.tracks.numberOfTracks !== $store.tracks.count
-                                    ? `${$store.tracks.count} of ${$store.tracks.numberOfTracks} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
-                                    : `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
+                                    ? `${$store.tracks.count} of ${$store.tracks.numberOfTracks} ${$store.tracks.numberOfTracks === 1 ? 'track' : 'tracks'} within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
+                                    : `${$store.tracks.count} ${$store.tracks.count === 1 ? 'track' : 'tracks'} within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
                             )
                             : '…'
                     "
