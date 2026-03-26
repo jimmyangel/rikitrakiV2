@@ -127,8 +127,8 @@ root/
 
 Issues and suggestions:
 
-- GitHub Issues: <https://github.com/jimmyangel/rikitraki/issues>  
-- Twitter: <https://twitter.com/jimmieangel>  
+- GitHub Issues: <https://github.com/jimmyangel/rikitrakiV2/issues>  
+- Twitter: <https://twitter.com/rikitraki>  
 - Blog: <https://morinricardo.com>  
 
 ---
