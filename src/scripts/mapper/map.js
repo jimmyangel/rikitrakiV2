@@ -475,22 +475,21 @@ export async function setTracks(tracks, { fly = true } = {}) {
     }
 
     if (cartographics.length > 0) {
-        const updated = await Cesium.sampleTerrain(
-            viewer.terrainProvider,
-            14,
-            cartographics
-        )
+        // Convert cartographics → coords array for your helper
+        const coords = cartographics.map(c => [
+            Cesium.Math.toDegrees(c.longitude),
+            Cesium.Math.toDegrees(c.latitude),
+            0 // original elevation (fallback)
+        ])
+
+        const updated = await sampleTerrain(coords)
 
         for (let i = 0; i < updated.length; i++) {
-            const c = updated[i]
+            const [lon, lat, height] = updated[i]
             const e = entities[i]
 
             e.position = new Cesium.ConstantPositionProperty(
-                Cesium.Cartesian3.fromRadians(
-                    c.longitude,
-                    c.latitude,
-                    c.height
-                )
+                Cesium.Cartesian3.fromDegrees(lon, lat, height)
             )
         }
     }
