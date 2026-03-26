@@ -757,7 +757,7 @@ export function showSearchCenter() {
 // Map Thumbnails: create and clear
 // ---------------------------------------------------------------------------
 
-export function renderMapThumbnails(geoTags) {
+export async function renderMapThumbnails(geoTags) {
     const layer = document.getElementById('map-thumbnails-layer')
     if (!layer) return
 
@@ -774,6 +774,7 @@ export function renderMapThumbnails(geoTags) {
         return
     }
 
+    // Photos with valid coordinates
     const photos = geoTags.trackPhotos
         .map((p, arrayIndex) => ({ ...p, arrayIndex }))
         .filter(p => p.picLatLng)
@@ -783,65 +784,78 @@ export function renderMapThumbnails(geoTags) {
         return
     }
 
-    const cartographics = photos.map(p =>
-        Cesium.Cartographic.fromDegrees(p.picLatLng[1], p.picLatLng[0])
-    )
+    //
+    // Build coords array for unified elevation pipeline
+    //
+    const coords = photos.map(p => [
+        p.picLatLng[1],   // lon
+        p.picLatLng[0],   // lat
+        0                 // fallback elevation
+    ])
 
-    Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, cartographics)
-        .then(sampled => {
+    //
+    // Use your canonical terrain sampler
+    //
+    const updated = await sampleTerrain(coords)
 
-            photos.forEach((photo, i) => {
-                const t = sampled[i]
+    //
+    // Build DOM + Cesium objects
+    //
+    photos.forEach((photo, i) => {
+        const [lon, lat, height] = updated[i]
 
-                const cartesian = Cesium.Cartesian3.fromRadians(
-                    t.longitude,
-                    t.latitude,
-                    t.height + 50
-                )
+        const cartesian = Cesium.Cartesian3.fromDegrees(
+            lon,
+            lat,
+            height + 50 // lift thumbnails slightly above terrain
+        )
 
-                //
-                // GLightbox-compatible anchor element
-                //
-                const el = document.createElement('a')
-                el.className = 'map-thumb glightbox'
-                el.dataset.gallery = 'track-photos'
-                el.dataset.glightboxIndex = photo.arrayIndex
-                el.dataset.arrayIndex = photo.arrayIndex
-                el.dataset.type = 'image'
+        //
+        // GLightbox-compatible anchor element
+        //
+        const el = document.createElement('a')
+        el.className = 'map-thumb glightbox'
+        el.dataset.gallery = 'track-photos'
+        el.dataset.glightboxIndex = photo.arrayIndex
+        el.dataset.arrayIndex = photo.arrayIndex
+        el.dataset.type = 'image'
 
-                // Full-size image URL
-                const picPointer = photo.picIndex ?? photo.arrayIndex
-                el.href = `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${picPointer}`
+        // Full-size image URL
+        const picPointer = photo.picIndex ?? photo.arrayIndex
+        el.href = `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${picPointer}`
 
-                // Optional metadata
-                if (photo.picCaption) el.dataset.title = photo.picCaption
+        // Optional metadata
+        if (photo.picCaption) el.dataset.title = photo.picCaption
 
-                // Thumbnail image
-                const img = document.createElement('img')
-                img.src = 'data:image/jpeg;base64,' + photo.picThumbBlob
-                el.appendChild(img)
+        // Thumbnail image
+        const img = document.createElement('img')
+        img.src = 'data:image/jpeg;base64,' + photo.picThumbBlob
+        el.appendChild(img)
 
-                // Prevent ARIA warning: remove focus before GLightbox opens 
-                el.addEventListener('click', e => { e.currentTarget.blur() })
+        // Prevent ARIA warning: remove focus before GLightbox opens
+        el.addEventListener('click', e => { e.currentTarget.blur() })
 
-                layer.appendChild(el)
+        layer.appendChild(el)
+        el.style.cursor = 'pointer'
 
-                el.style.cursor = 'pointer'
+        //
+        // Store Cesium info for postRender positioning
+        //
+        photo._cartesian = cartesian
+        photo._element = el
+    })
 
-                // Store Cesium info
-                photo._cartesian = cartesian
-                photo._element = el
-            })
+    //
+    // Store thumbnails for postRender loop
+    //
+    viewer._mapThumbnails = photos
 
-            viewer._mapThumbnails = photos
-
-            //
-            // Refresh GLightbox so it picks up new elements
-            //
-            if (window.lightbox && window.lightbox.reload) {
-                window.lightbox.reload()
-            }
-        })
+    //
+    // Refresh GLightbox
+    //
+    if (window.lightbox && window.lightbox.reload) {
+        window.lightbox.reload()
+    }
 }
 
 export async function sampleTerrain(coords) {
