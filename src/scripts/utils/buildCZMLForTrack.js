@@ -60,7 +60,6 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
             billboard: {
                 image: `images/${trackType ? trackType.toLowerCase() : 'hiking'}.png`,
                 verticalOrigin: 'BOTTOM',
-                heightReference: 'RELATIVE_TO_GROUND',
                 disableDepthTestDistance: Number.POSITIVE_INFINITY
             },
             position: {
@@ -128,8 +127,8 @@ export function buildCZMLForTrack(geojson, bounds, trackType) {
     doc.clock.currentTime = firstTime
     trackEntity.availability = `${firstTime}/${lastTime}`
 
-    const [lon, lat] = coords[0]
-    trailheadEntity.position.cartographicDegrees = [lon, lat, 2]
+    const [lon, lat, ele] = coords[0]
+    trailheadEntity.position.cartographicDegrees = [lon, lat, ele]
 
     return czml
 }
