@@ -397,8 +397,7 @@ function createProbeEntity(viewer) {
             color: Cesium.Color.fromCssColorString('#007BFF').withAlpha(0.9),
             outlineColor: Cesium.Color.WHITE,
             outlineWidth: 1,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+            disableDepthTestDistance: Number.POSITIVE_INFINITY
         },
         show: false
     })
