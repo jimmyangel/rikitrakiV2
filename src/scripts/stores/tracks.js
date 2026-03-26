@@ -20,6 +20,7 @@ import {
 import { buildCZMLForTrack } from '../utils/buildCZMLForTrack.js'
 import { pushHistory } from '../utils/history.js'
 import { getUsernameFromUrl } from '../utils/env.js'
+import { getNumberOfTracks } from '../data/getNumberOfTracks.js'
 
 //
 // Helpers (must be ABOVE Alpine.store)
@@ -64,6 +65,8 @@ async function reloadTracks(store, { fly = true } = {}) {
                 maxTracksTarget: 200,
                 username
             })
+
+        getNumberOfTracks({ username }).then(({ numberOfTracks }) => store.numberOfTracks = numberOfTracks)
 
         if (username && tracks.length === 0) {
             history.replaceState(null, '', '/')
@@ -247,6 +250,8 @@ export default function initTracksStore(Alpine) {
         items: {},
 
         activeTrackId: null,
+
+        numberOfTracks: null,
 
         isPlaying: false,
         isTrackInPlay: false,

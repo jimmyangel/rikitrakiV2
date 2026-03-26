@@ -11,13 +11,18 @@ import { Icon } from 'astro-icon/components'
         <div class="panel-block">
             <div class="heading-wrapper">
                 <div class="fade-in" :class="{ 'ready': $store.tracks.headingReady }">
-                    <span
-                        x-text="
-                            $store.tracks.count != null && $store.tracks.radiusKm != null
-                                ? `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
-                                : '…'
-                        "
-                    ></span>
+                <span
+                    x-text="
+                        $store.tracks.count != null && $store.tracks.radiusKm != null
+                            ? (
+                                $store.tracks.numberOfTracks != null &&
+                                $store.tracks.numberOfTracks !== $store.tracks.count
+                                    ? `${$store.tracks.count} of ${$store.tracks.numberOfTracks} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
+                                    : `${$store.tracks.count} tracks within a ${$formatDistanceLabel($store.tracks.radiusKm)} radius,`
+                            )
+                            : '…'
+                    "
+                ></span>
 
                     <span> centered at </span>
 
