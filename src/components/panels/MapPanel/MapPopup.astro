@@ -4,44 +4,10 @@
 <div id="trackPopUp" x-show="$store.tracks.selected" x-cloak x-data class="map-popup-container">
     <div id="trackPopUpContent" class="map-popup" style="z-index: 10;">
         <div class="map-popup-inner">
-            <a class="map-popup-close-button" href="#" @click.prevent="$store.tracks.clear()">×</a>
+            <button class="delete is-small map-popup-close-button" @click.prevent="$store.tracks.clear()"></button>
             <div class="map-popup-content-wrapper">
                 <div id="trackPopUpLink" class="map-popup-content"></div>
             </div>
         </div>
     </div>
 </div>
-
-
-
-<style>
-	.map-popup-container {
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: var(--z-controls);
-		pointer-events: none; 
-	}
-
-	.map-popup {
-		pointer-events: auto; 
-		position: absolute; 
-		transform: translate(-50%, -120%);
-	}
-
-	#trackPopUp {
-		position: absolute;
-		pointer-events: auto;
-	}
-
-	:global(.popup-track-link) {
-		display: block;
-		margin-bottom: 4px;
-	}
-
-	:global(.popup-track-link:hover) { 
-		text-decoration: underline; 
-	}
-
-
-</style>

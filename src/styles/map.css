@@ -306,8 +306,8 @@
 }
 
 .map-popup {
-    pointer-events: auto;
     position: absolute;
+    pointer-events: auto;
     transform: translate(-50%, -120%);
 }
 
@@ -326,13 +326,13 @@
     content: "";
     position: absolute;
     left: 50%;
-    bottom: -9px; /* slightly overlaps the border for a seamless join */
+    bottom: -9px;
     transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-top: 11px solid white; /* 1px taller to overlap the border */
+    border-top: 11px solid white;
     z-index: 2;
 }
 
@@ -355,21 +355,18 @@
 
 .map-popup-close-button {
     position: absolute;
-    top: 0;
-    right: 0;
-    padding: 4px 4px 0 0;
-    width: 18px;
-    height: 14px;
-    font: 16px/14px Tahoma, Verdana, sans-serif;
-    color: #c3c3c3;
-    text-decoration: none;
-    font-weight: bold;
+    top: 2px;
+    right: 2px;
 }
 
-.map-popup-close-button:hover {
-    color: #999;
+.popup-track-link {
+    display: block;
+    margin-bottom: 4px;
 }
 
+.popup-track-link:hover {
+    text-decoration: underline;
+}
 
 /* ────────────────────────────────────────────────
    CESIUM CREDIT OVERRIDE
