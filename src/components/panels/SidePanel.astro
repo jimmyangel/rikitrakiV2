@@ -54,15 +54,24 @@ import { Icon } from 'astro-icon/components'
         </div>
 
         <div class="panel-block">
-            <div class="control has-icons-left">
-                <input class="input"
-                        id="trackFilter"
-                        type="search"
-                        placeholder="Track name, user, activity, level…"
-                        x-model="$store.tracks.filter">
+            <div class="control has-icons-left has-icons-right">
+                <input class="input has-clear"
+                    id="trackFilter"
+                    type="text"
+                    placeholder="Type to filter…"
+                    x-model="$store.tracks.filter">
+
                 <span class="icon is-left">
-                    <Icon name={"fa7-solid:search"} />
+                    <Icon name="fa7-solid:search" />
                 </span>
+
+                <template x-if="$store.tracks.filter">
+                    <button
+                        class="delete is-small input-clear"
+                        x-cloak
+                        @click="$store.tracks.filter = ''">
+                    </button>
+                </template>
             </div>
         </div>
     </div>
@@ -188,4 +197,14 @@ import { Icon } from 'astro-icon/components'
     .fade-in.ready {
         opacity: 1;
     }
+
+    .input-clear {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%; 
+        transform: translateY(-50%);
+        pointer-events: auto;
+        z-index: 4; /* above the input */
+    }
+
 </style>
