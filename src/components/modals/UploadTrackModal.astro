@@ -1,6 +1,7 @@
 ---
 import '../../styles/modals.css' 
 import '../../styles/vendor/bulma-switch-control/main.min.css'
+import { Icon } from 'astro-icon/components'
 import ModalHeader from './parts/ModalHeader.astro'
 import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 import FieldText from './fields/FieldText.astro'
@@ -62,23 +63,45 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 
 								<!-- GPX FILE INPUT -->
 								<div class="field">
-									<div class="control">
-										<input class="input"
-											id="gpxInput"
-											type="file"
-											accept=".gpx"
-											x-ref="gpxInput"
-											@change="selectGpxFile($event)"
-											:class="{ 'is-danger': $store.ui.errorField === 'gpxFile' }">
+									<div class="file has-name"
+										:class="{ 'is-danger': $store.ui.errorField === 'gpxFile' }">
+
+										<label class="file-label">
+
+											<!-- Actual file input -->
+											<input
+												id="gpxInput"
+												class="file-input"
+												type="file"
+												accept=".gpx"
+												x-ref="gpxInput"
+												@change="selectGpxFile($event)"
+											>
+
+											<!-- Button + icon -->
+											<span class="file-cta">
+												<span class="file-icon">
+													<Icon name="fa7-solid:upload" />
+												</span>
+												<span class="file-label">
+													Select file…
+												</span>
+											</span>
+
+											<!-- Filename from uploadTrackModal -->
+											<span class="file-name"
+												x-text="trackGPX || 'No file selected'"></span>
+
+										</label>
 									</div>
+
 									<p class="help is-size-7">Up to 4MB</p>
 								</div>
-
-								<!-- REGION SELECTOR (NESTED HORIZONTAL FIELD) -->
-								<FieldSelectRegion label="Region" model="selectedRegionOverride" options="regionOverrideOptions" />
+								
 							</div>
 						</div>
-
+						<!-- REGION SELECTOR -->
+						<FieldSelectRegion label="Region" model="selectedRegionOverride" options="regionOverrideOptions" />
 						<!-- TRACK NAME -->
 						<FieldText label="Name" model="trackName" errorName="trackName" placeholder="Track name" />
 						<!-- DESCRIPTION -->
@@ -147,6 +170,15 @@ import PhotosPanel from './parts/PhotosPanel.astro'
 	.upload-track-modal-card .columns {
 		--bulma-column-gap: 0.3rem;
 	}
+
+	.file.has-name {
+		--bulma-file-name-max-width: 34em;
+	}
+
+	.file.has-name .file-label {
+    	border-radius: var(--bulma-input-radius);
+	}
+
 
 </style>
 
