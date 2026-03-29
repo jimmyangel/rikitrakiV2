@@ -7,6 +7,7 @@ import { getTrackDetails } from '../data/getTrackDetails.js'
 import { uploadTrack } from '../data/uploadTrack.js'
 import { updateTrack } from '../data/updateTrack.js'
 import { deleteTrack } from '../data/deleteTrack.js'
+import { clearNumberOfTracksCache } from '../data/clearNumberOfTracksCache.js'
 import {
     parseGPXtoGeoJSON,
     computeBounds,
@@ -470,6 +471,7 @@ export default function initTracksStore(Alpine) {
         },
 
         async openTrackAfterUpload(trackId, lat, lon) {
+            clearNumberOfTracksCache()
             await this.setSearchCenter(lat, lon, {
                 fly: false,
                 skipHistory: true
@@ -661,6 +663,9 @@ export default function initTracksStore(Alpine) {
                     const idx = this.all.findIndex(t => t.trackId === trackId)
                     if (idx !== -1) this.all.splice(idx, 1)
                 }
+
+                // Update number of tracks
+                this.numberOfTracks--
 
                 // Conditionally reload MOTD
                 if (hadPhotos) {
