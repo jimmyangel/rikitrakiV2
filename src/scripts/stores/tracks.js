@@ -68,10 +68,10 @@ async function reloadTracks(store, { fly = true } = {}) {
 
         getNumberOfTracks({ username }).then(({ numberOfTracks }) => store.numberOfTracks = numberOfTracks)
 
-        if (username && tracks.length === 0) {
+        /*if (username && tracks.length === 0) {
             history.replaceState(null, '', '/')
             return reloadTracks(store)
-        }
+        }*/
 
         tracks.sort((a, b) =>
             a.trackName.localeCompare(b.trackName, undefined, { sensitivity: 'base' })
