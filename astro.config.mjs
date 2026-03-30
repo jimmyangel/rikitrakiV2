@@ -7,7 +7,7 @@ import mdx from '@astrojs/mdx'
 
 export default defineConfig({
   output: 'static',
-  integrations: [icon(), alpinejs({ entrypoint: '/src/scripts/alpine-plugins/entrypoint' }), mdx()],
+  integrations: [icon(), alpinejs(), mdx()],
   devToolbar: { enabled: false },
   vite: {
     plugins: [
