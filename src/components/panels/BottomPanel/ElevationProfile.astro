@@ -34,13 +34,25 @@ function elevationProfile() {
             this.$watch('$store.tracks.activeTrackId', () => this.loadTrack())
             this.$nextTick(() => this.loadTrack())
 
-            document.addEventListener('pointerdown', e => {
-                const container = this.$refs.svgContainer
-                if (!container.contains(e.target)) {
-                    this.index = null
-                    this.updateCrosshair()
+            this.$nextTick(() => {
+                this.pointerHandler = e => {
+                    const container = this.$refs.svgContainer
+                    if (!container) return
+
+                    if (!container.contains(e.target)) {
+                        this.index = null
+                        this.updateCrosshair()
+                    }
                 }
+
+                document.addEventListener('pointerdown', this.pointerHandler)
             })
+        },
+
+        destroy() {
+            if (this.pointerHandler) {
+                document.removeEventListener('pointerdown', this.pointerHandler)
+            }
         },
 
         loadTrack() {
