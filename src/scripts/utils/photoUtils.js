@@ -192,13 +192,15 @@ export function assignLatLngToPhotos(state) {
             continue
         }
 
+        // No timestamp → no GPS possible
         if (!meta.timestamp) {
             meta.tagType = 'none'
-            meta.latLng = null
-            photo.picLatLng = null
+            delete meta.latLng
+            delete photo.picLatLng
             continue
         }
 
+        // Try time-based interpolation
         const shifted = meta.timestamp + timeOffset * 3600 * 1000
         const interpolated = interpolateTrackLatLng(trackCoordinates, trackTimes, shifted)
 
@@ -209,9 +211,9 @@ export function assignLatLngToPhotos(state) {
             meta.tagType = 'time'
         } else {
             // out of range
-            meta.latLng = null
-            photo.picLatLng = null
             meta.tagType = 'none'
+            delete meta.latLng
+            delete photo.picLatLng
         }
     }
 }
@@ -273,11 +275,9 @@ export async function addPhotos(files, state, helpers) {
             picIndex,
             picName,
             picCaption,
-            picLatLng: gps ? [gps[0], gps[1]] : null,
+            ...(gps ? { picLatLng: [gps[0], gps[1]] } : {}),
             picThumb: null,
             picThumbDataUrl: thumbDataUrl.replace(/^data:image\/jpeg;base64,/, ''),
-
-            // attach normalized JPEG Blob for new photos
             file: normalized
         })
 
@@ -285,7 +285,7 @@ export async function addPhotos(files, state, helpers) {
         state.photoMeta.push({
             id: picIndex,
             caption: picCaption,
-            latLng: gps ? [gps[0], gps[1]] : null,
+            ...(gps ? { latLng: [gps[0], gps[1]] } : {}),
             timestamp,
             preview: thumbDataUrl,
             tagType: gps ? 'exif' : 'none',
