@@ -36,15 +36,14 @@ export async function createThumbnail(file) {
     })
 }
 
-// ------------------------------
-// Normalize image
-// ------------------------------
 export async function normalizeImage(file) {
     const maxBytes = 1_000_000
     const maxWidth = 2048
 
+    // If already small enough, return as-is
     if (file.size <= maxBytes) return file
 
+    // Load image
     const img = await new Promise((resolve, reject) => {
         const i = new Image()
         i.onload = () => resolve(i)
@@ -52,6 +51,7 @@ export async function normalizeImage(file) {
         i.src = URL.createObjectURL(file)
     })
 
+    // Resize width if needed
     let targetWidth = img.naturalWidth
     let targetHeight = img.naturalHeight
 
@@ -61,21 +61,45 @@ export async function normalizeImage(file) {
     }
 
     const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
     canvas.width = targetWidth
     canvas.height = targetHeight
-    const ctx = canvas.getContext('2d')
     ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
 
+    // Try compressing with decreasing quality
     let quality = 0.92
     let blob = await new Promise(resolve =>
         canvas.toBlob(resolve, 'image/jpeg', quality)
     )
 
-    while (blob.size > maxBytes && quality > 0.5) {
+    while (blob.size > maxBytes && quality > 0.30) {
         quality -= 0.05
         blob = await new Promise(resolve =>
             canvas.toBlob(resolve, 'image/jpeg', quality)
         )
+    }
+
+    // If still too large, reduce dimensions and retry
+    while (blob.size > maxBytes) {
+        targetWidth = Math.floor(targetWidth * 0.85)
+        targetHeight = Math.floor(targetHeight * 0.85)
+
+        canvas.width = targetWidth
+        canvas.height = targetHeight
+        ctx.drawImage(img, 0, 0, targetWidth, targetHeight)
+
+        quality = 0.85
+        blob = await new Promise(resolve =>
+            canvas.toBlob(resolve, 'image/jpeg', quality)
+        )
+
+        while (blob.size > maxBytes && quality > 0.30) {
+            quality -= 0.05
+            blob = await new Promise(resolve =>
+                canvas.toBlob(resolve, 'image/jpeg', quality)
+            )
+        }
     }
 
     return new File([blob], file.name, { type: 'image/jpeg' })
