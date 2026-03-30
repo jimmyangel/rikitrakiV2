@@ -1,5 +1,4 @@
 import * as map from '../mapper/map.js'
-import * as Cesium from 'cesium'
 import { getTracksByLoc } from '../data/getTracksByLoc'
 import { getMotd } from '../data/getMotd'
 import { constants } from '../config.js'
@@ -694,17 +693,13 @@ export default function initTracksStore(Alpine) {
             const coords = t.geojson?.features?.[0]?.geometry?.coordinates
             if (!coords || !coords.length) return
 
-            const probe = map.probe
-            if (!probe) return
-
             if (i === null) {
-                probe.show = false
+                map.hideProbe()
                 return
             }
 
             const [lon, lat, ele] = coords[i]
-            probe.position = Cesium.Cartesian3.fromDegrees(lon, lat, ele || 0)
-            probe.show = true
+            map.setProbePosition(lon, lat, ele)
         }
     })
 

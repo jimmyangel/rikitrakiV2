@@ -403,6 +403,16 @@ function createProbeEntity(viewer) {
     })
 }
 
+export function setProbePosition(lon, lat, ele = 0) {
+    if (!probe) return
+    probe.position = Cesium.Cartesian3.fromDegrees(lon, lat, ele)
+    probe.show = true
+}
+
+export function hideProbe() {
+    if (probe) probe.show = false
+}
+
 export function flyToBounds(bounds) {
     if (!viewer) return
 
