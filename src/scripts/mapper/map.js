@@ -142,11 +142,21 @@ export function initMap() {
     viewer.screenSpaceEventHandler.setInputAction((movement) => {
         const picked = viewer.scene.pick(movement.endPosition)
 
-        const shouldBePointer =
-            picked &&
-            picked.id instanceof Cesium.Entity &&
-            picked.id.properties &&
-            picked.id.properties.track
+        let shouldBePointer = false
+
+        if (picked && picked.id instanceof Cesium.Entity) {
+            const entity = picked.id
+
+            // Case 1: Track marker
+            if (entity.properties && entity.properties.track) {
+                shouldBePointer = true
+            }
+
+            // Case 2: Trailhead marker
+            else if (entity.id === 'trailhead') {
+                shouldBePointer = true
+            }
+        }
 
         if (shouldBePointer && !isPointer) {
             isPointer = true
@@ -160,33 +170,62 @@ export function initMap() {
     viewer.screenSpaceEventHandler.setInputAction((movement) => {
         const pickedArray = viewer.scene.drillPick(movement.position)
 
-        const pickedTracks = pickedArray
+        const pickedEntities = pickedArray
             .map(p => p.id)
-            .filter(id =>
-                id instanceof Cesium.Entity &&
-                id.properties &&
-                id.properties.track
-            )
+            .filter(id => id instanceof Cesium.Entity)
 
-        if (pickedTracks.length === 0) return
+        if (pickedEntities.length === 0) return
+
+        const entity = pickedEntities[0]
 
         const linkContainer = document.querySelector('#trackPopUpLink')
         linkContainer.innerHTML = ''
 
-        for (const entity of pickedTracks) {
-            const track = entity.properties.track.getValue()
-            const a = document.createElement('a')
-            a.href = '#'
-            a.className = 'popup-track-link'
-            a.dataset.trackId = track.trackId
-            a.textContent = track.trackName
-            linkContainer.appendChild(a)
+        //
+        // CASE 1: Track marker(s)
+        //
+        if (entity.properties && entity.properties.track) {
+            const pickedTracks = pickedEntities.filter(e => e.properties && e.properties.track)
+
+            for (const e of pickedTracks) {
+                const track = e.properties.track.getValue()
+                const a = document.createElement('a')
+                a.href = '#'
+                a.className = 'popup-track-link'
+                a.dataset.trackId = track.trackId
+                a.textContent = track.trackName
+                linkContainer.appendChild(a)
+            }
+
+            Alpine.store('tracks').selected = { multi: true }
+            savedEntity = pickedTracks[0]
         }
 
-        Alpine.store('tracks').selected = { multi: true }
+        //
+        // CASE 2: Trailhead marker
+        //
+        else if (entity.id === 'trailhead') {
+            const carto = Cesium.Cartographic.fromCartesian(
+                entity.position.getValue(viewer.clock.currentTime)
+            )
 
-        savedEntity = pickedTracks[0]
+            const lat = Cesium.Math.toDegrees(carto.latitude)
+            const lng = Cesium.Math.toDegrees(carto.longitude)
 
+            const a = document.createElement('a')
+            a.href = `https://www.google.com/maps/dir//${lat},${lng}/`
+            a.target = '_blank'
+            a.innerHTML = 'Google Maps<br>Directions to trailhead'
+
+            linkContainer.appendChild(a)
+
+            Alpine.store('tracks').selected = { trailhead: true }
+            savedEntity = entity
+        }
+
+        //
+        // Position popup
+        //
         const time = viewer.clock.currentTime
         const worldPos = savedEntity.position.getValue(time)
         const entityScreenPos = Cesium.SceneTransforms.worldToWindowCoordinates(
