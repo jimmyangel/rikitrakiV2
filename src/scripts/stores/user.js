@@ -23,48 +23,62 @@ export default function initUserStore(Alpine) {
         //
         // Init: load from localStorage
         //
-        init() {
-            const u = localStorage.getItem('rikitraki-username')
-            const t = localStorage.getItem('rikitraki-token')
+		init() {
+			const u = localStorage.getItem('rikitraki-username')
+			const t = localStorage.getItem('rikitraki-token')
+			const a = localStorage.getItem('rikitraki-isAdmin')
 
-            if (u && t) {
-                this.username = u
-                this.token = t
-            }
-
-			this.usernameFromUrl = getUsernameFromUrl()
-        },
+			if (u && t) {
+				this.username = u
+				this.token = t
+				this.isAdmin = a === '1'
+			}
+		},
 
         //
         // Actions
         //
-        async login(username, password) {
-            Alpine.store('ui').error = null
+		async login(username, password) {
+			Alpine.store('ui').error = null
 
-            const { token, error } = await getToken(username, password)
+			const { token, error } = await getToken(username, password)
 
-            if (error) {
-                Alpine.store('ui').error = error
-                return false
-            }
+			if (error) {
+				Alpine.store('ui').error = error
+				return false
+			}
 
-            this.username = username
-            this.token = token
+			// Decode JWT payload
+			const payload = decodeJwt(token)
 
-            localStorage.setItem('rikitraki-username', username)
-            localStorage.setItem('rikitraki-token', token)
+			this.username = username
+			this.token = token
+			this.isAdmin = payload.isAdmin === true
 
-            return true
-        },
+			// Persist essentials
+			localStorage.setItem('rikitraki-username', username)
+			localStorage.setItem('rikitraki-token', token)
 
-        logout() {
-            this.username = null
-            this.token = null
-            this.error = null
+			// Only store admin flag if true
+			if (this.isAdmin) {
+				localStorage.setItem('rikitraki-isAdmin', '1')
+			} else {
+				localStorage.removeItem('rikitraki-isAdmin')
+			}
 
-            localStorage.removeItem('rikitraki-username')
-            localStorage.removeItem('rikitraki-token')
-        },
+			return true
+		},
+
+		logout() {
+			this.username = null
+			this.token = null
+			this.error = null
+			this.isAdmin = false
+
+			localStorage.removeItem('rikitraki-username')
+			localStorage.removeItem('rikitraki-token')
+			localStorage.removeItem('rikitraki-isAdmin')
+		},
 
 		async changePassword(currentPassword, newPassword) {
 			// Clear UI errors
@@ -143,4 +157,14 @@ export default function initUserStore(Alpine) {
 			return true
 		}
     })
+}
+
+function decodeJwt(token) {
+    try {
+        const payload = token.split('.')[1]
+        const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+        return JSON.parse(json)
+    } catch (e) {
+        return {}
+    }
 }
