@@ -1,3 +1,4 @@
+https://preview.rikitraki.com https://www.rikitraki.com/:splat 301
 # Don’t rewrite static assets
 /assets/*      /assets/:splat      200
 /_astro/*      /_astro/:splat      200
