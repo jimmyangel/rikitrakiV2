@@ -11,6 +11,11 @@ import { Icon } from 'astro-icon/components'
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="generator" content={Astro.generator} />
         <title>RikiTraki</title>
+        <script>
+            if (location.hostname === "preview.rikitraki.com") {
+                location.replace("https://www.rikitraki.com" + location.pathname + location.search + location.hash)
+            }
+        </script>
     </head>
 
     <body class="has-navbar-fixed-top">
