@@ -181,11 +181,16 @@ export function initMap() {
         const linkContainer = document.querySelector('#trackPopUpLink')
         linkContainer.innerHTML = ''
 
+        // Reset savedEntity each click
+        savedEntity = null
+
         //
         // CASE 1: Track marker(s)
         //
         if (entity.properties && entity.properties.track) {
-            const pickedTracks = pickedEntities.filter(e => e.properties && e.properties.track)
+            const pickedTracks = pickedEntities.filter(
+                e => e.properties && e.properties.track
+            )
 
             for (const e of pickedTracks) {
                 const track = e.properties.track.getValue()
@@ -222,6 +227,11 @@ export function initMap() {
             Alpine.store('tracks').selected = { trailhead: true }
             savedEntity = entity
         }
+
+        //
+        // If we didn't match CASE 1 or CASE 2, do NOT position popup
+        //
+        if (!savedEntity) return
 
         //
         // Position popup
@@ -586,6 +596,9 @@ export function flyToTrackDataSource() {
 
 function handleLongPress(position) {
     if (!viewer) return
+
+    // Hide popup by clearing Alpine selection
+    Alpine.store('tracks').selected = null
 
     if (Alpine.store('tracks').active) return
 
