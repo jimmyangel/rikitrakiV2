@@ -370,8 +370,8 @@ export default function initTracksStore(Alpine) {
             await loadMotd(this)
         },
 
-        thumbnailUrl(trackId) {
-            return `${constants.APIV2_BASE_URL}/tracks/${trackId}/thumbnail/0`
+        thumbnailUrl(trackId, index = 0) {
+            return `${constants.S3_BASE_URL}/${trackId}/thumbnails/${index}.jpg`
         },
 
         animate(isPlaying) {
