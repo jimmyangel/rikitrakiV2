@@ -12,7 +12,13 @@
         @click.capture="event.currentTarget.blur()"
         @click="!isActiveTrackMode && onClick && onClick(p, i)"
     >
-        <img class="thumbImg" :src="getImage(p)" :alt="getLabel(p, i)" />
+        <img
+            class="thumbImg"
+            :src="getImage(p)"
+            :alt="getLabel(p, i)"
+            loading="lazy"
+            @error="setTimeout(() => { $el.src = getImage(p) }, 300)"
+        />
         <div class="is-size-7 p-2" x-text="getLabel(p, i)"></div>
     </a>
 </div>
