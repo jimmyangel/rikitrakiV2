@@ -883,7 +883,7 @@ export async function renderMapThumbnails(geoTags) {
 
         // Full-size image URL
         const picPointer = photo.picIndex ?? photo.arrayIndex
-        el.href = `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${picPointer}`
+        el.href = `${constants.S3_BASE_URL}/${trackId}/pictures/${picPointer}.jpg`
 
         // Optional metadata
         if (photo.picCaption) el.dataset.title = photo.picCaption

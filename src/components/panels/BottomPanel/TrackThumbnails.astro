@@ -30,7 +30,7 @@ import Thumbnail from './Thumbnail.astro';
 				const trackId = this.$store.tracks.activeTrackId
 				if (!p || !trackId) return null
 				const picPointer = p.picIndex ?? i
-				return `${constants.APIV2_BASE_URL}/tracks/${trackId}/picture/${picPointer}`
+				return `${constants.S3_BASE_URL}/${trackId}/pictures/${picPointer}.jpg`
 			},
 
 			init() {
