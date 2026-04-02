@@ -28,6 +28,8 @@ export default function initUserStore(Alpine) {
 			const t = localStorage.getItem('rikitraki-token')
 			const a = localStorage.getItem('rikitraki-isAdmin')
 
+			this.usernameFromUrl = getUsernameFromUrl()
+
 			if (u && t) {
 				this.username = u
 				this.token = t
@@ -121,6 +123,15 @@ export default function initUserStore(Alpine) {
 		removeUsernameFromUrl() {
 			setUsernamePath(null)
 			this.usernameFromUrl = null
+			Alpine.store('tracks').loadMotd()
+		},
+
+		applyAnyUsernameToUrl(username) {
+			if (!username) return
+			if (this.usernameFromUrl === username) return
+
+			setUsernamePath(username)
+			this.usernameFromUrl = getUsernameFromUrl()
 			Alpine.store('tracks').loadMotd()
 		},
 

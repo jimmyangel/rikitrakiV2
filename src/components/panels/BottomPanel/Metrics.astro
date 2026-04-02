@@ -6,9 +6,19 @@
 
     <div class="metric-line">
         <span class="metric-label">By</span>
-        <span class="metric-value"
-            x-text="$store.tracks.items[$store.tracks.activeTrackId]?.details?.username">
-        </span>
+        <div class="metric-value">
+            <span
+                x-show="$store.user.usernameFromUrl === $store.tracks.items[$store.tracks.activeTrackId]?.details?.username"
+                x-text="$store.tracks.items[$store.tracks.activeTrackId]?.details?.username">
+            </span>
+
+            <a
+                x-show="$store.user.usernameFromUrl !== $store.tracks.items[$store.tracks.activeTrackId]?.details?.username"
+                href="#"
+                @click.prevent="$store.user.applyAnyUsernameToUrl($store.tracks.items[$store.tracks.activeTrackId]?.details?.username)"
+                x-text="$store.tracks.items[$store.tracks.activeTrackId]?.details?.username">
+            </a>
+        </div>
     </div>
 
     <div class="metric-line">

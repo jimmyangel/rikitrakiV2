@@ -110,7 +110,17 @@ import { Icon } from 'astro-icon/components'
                         <div class="grid">
 
                             <div class="cell has-text-weight-medium has-text-right">Username:</div>
-                            <div class="cell" x-text="t.username"></div>
+
+                            <div class="cell">
+                                <template x-if="$store.user.usernameFromUrl !== t.username">
+                                    <a href="#" @click.prevent="$store.user.applyAnyUsernameToUrl(t.username)" x-text="t.username">
+                                    </a>
+                                </template>
+
+                                <template x-if="$store.user.usernameFromUrl === t.username">
+                                    <span x-text="t.username"></span>
+                                </template>
+                            </div>
 
                             <div class="cell has-text-weight-medium has-text-right">Date created:</div>
                             <div class="cell" x-text="t.createdDate.split('T')[0]"></div>
