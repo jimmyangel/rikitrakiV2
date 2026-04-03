@@ -10,5 +10,6 @@ export function isChromeOniPad() {
 
 export function getUsernameFromUrl() {
     const seg = window.location.pathname.split('/').filter(Boolean)
-    return seg.length === 1 ? seg[0] : null
+    return seg.length === 1 ? decodeURIComponent(seg[0]) : null
 }
+
