@@ -1,25 +1,25 @@
 ---
-
+const { galleryId } = Astro.props
 ---
-
-<div>
+<div x-data="{ galleryId: '${galleryId}' }">
     <a
-        class="thumb-card"
-        :class="isActiveTrackMode && 'glightbox'"
-        :href="isActiveTrackMode ? getFullUrl(p, i) : undefined"
-        :data-title="isActiveTrackMode ? getLabel(p, i) : null"
-        data-type="image"
-        @click.capture="event.currentTarget.blur()"
-        @click="!isActiveTrackMode && onClick && onClick(p, i)"
+    class="thumb-card"
+    :class="isActiveTrackMode ? 'glightbox' : ''"
+    :href="isActiveTrackMode ? getFullUrl(p, i) : undefined"
+    :data-title="isActiveTrackMode ? getLabel(p, i) : null"
+    :data-gallery="isActiveTrackMode ? galleryId : null"
+    data-type="image"
+    @click.capture="event.currentTarget.blur()"
+    @click="!isActiveTrackMode && onClick && onClick(p, i)"
     >
-        <img
-            class="thumbImg"
-            :src="getImage(p)"
-            :alt="getLabel(p, i)"
-            loading="lazy"
-        />
-        <div class="is-size-7 p-2" x-text="getLabel(p, i)"></div>
-    </a>
+    <img
+      class="thumbImg"
+      :src="getImage(p)"
+      :alt="getLabel(p, i)"
+      loading="lazy"
+    />
+    <div class="is-size-7 p-2" x-text="getLabel(p, i)"></div>
+  </a>
 </div>
 
 <style>

@@ -3,9 +3,8 @@ import Thumbnail from './Thumbnail.astro';
 ---
 
 <template x-data="trackThumbnails(true)" x-for="(p, i) in photos" :key="$store.tracks.activeTrackId + '-' + i">
-	<Thumbnail />
+	<Thumbnail :galleryId="'bottom-panel'" />
 </template>
-
 
 <script is:inline>
     function trackThumbnails(isActiveTrackMode = true) {
@@ -34,32 +33,33 @@ import Thumbnail from './Thumbnail.astro';
 			},
 
 			init() {
-				const refresh = () => {
-					if (!this.isActiveTrackMode) return
-
-					this.$nextTick(() => {
-						// Destroy old instance
-						if (this.lightbox) this.lightbox.destroy()
-
-						// Create new instance
-						this.lightbox = GLightbox({
-							selector: '.glightbox',
-							touchNavigation: true,
-							loop: false,
-						})
-
-						// Make it globally accessible so renderMapThumbnails() can reload it
-						window.lightbox = this.lightbox
-					})
-				}
+				if (!this.isActiveTrackMode) return
 
 				// Initial load
-				refresh()
+				this.$nextTick(() => {
+					requestAnimationFrame(() => {
+						if (!window.lightbox) {
+							window.lightbox = GLightbox({
+								selector: '.glightbox',
+								touchNavigation: true,
+								loop: false,
+							})
+						} else {
+							window.lightbox.reload()
+						}
+					})
+				})
 
-				// Rebuild lightbox when track changes
-				this.$watch('$store.tracks.activeTrackId', refresh)
+				// When the active track changes, Alpine re-renders the thumbnails.
+				// We reload GLightbox only after the DOM is fully stable.
+				this.$watch('$store.tracks.activeTrackId', () => {
+					this.$nextTick(() => {
+						requestAnimationFrame(() => {
+							if (window.lightbox) window.lightbox.reload()
+						})
+					})
+				})
 			}
-
 
         }
     }

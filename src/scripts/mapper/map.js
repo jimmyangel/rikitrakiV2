@@ -906,17 +906,15 @@ export async function renderMapThumbnails(geoTags) {
         photo._element = el
     })
 
+    if (window.lightbox && window.lightbox.reload) {
+        window.lightbox.reload()
+    }
+
     //
     // Store thumbnails for postRender loop
     //
     viewer._mapThumbnails = photos
 
-    //
-    // Refresh GLightbox
-    //
-    if (window.lightbox && window.lightbox.reload) {
-        window.lightbox.reload()
-    }
 }
 
 export async function sampleTerrain(coords) {
