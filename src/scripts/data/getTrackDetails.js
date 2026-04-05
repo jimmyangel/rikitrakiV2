@@ -16,7 +16,7 @@ export async function getTrackDetails(trackId) {
   })
 
   // 2. Build S3 GPX URL using the original filename
-  const gpxUrl = `${s3}/${trackId}/gpx/${details.trackGPX}`
+  const gpxUrl = `${s3}/${trackId}/gpx/${encodeURIComponent(details.trackGPX)}`
 
   // 3. Fetch GPX directly from S3
   const gpxBlob = await fetch(gpxUrl).then(res => {
