@@ -226,7 +226,6 @@ export default function (Alpine) {
                     }
                     all.push(...nearby)
 
-                    // nearby + existing as pairs
                     this.regionOverrideOptions = [...new Map(
                         all.map(r => [r.join('|'), r])
                     ).values()]
@@ -251,14 +250,20 @@ export default function (Alpine) {
                     (p.picName && g.picName === p.picName)
                 )
 
-                return {
+                const base = {
                     picIndex: p.picIndex ?? index,
                     picName: p.picName ?? index.toString(),
                     picCaption: p.picCaption || '',
-                    picLatLng: p.picLatLng || null,
                     picThumb: p.picThumb ?? null,
                     picThumbDataUrl: match?.picThumbBlob || null,
                 }
+
+                // Only include picLatLng if it's a real array
+                if (Array.isArray(p.picLatLng)) {
+                    base.picLatLng = p.picLatLng
+                }
+
+                return base
             })
 
             this.hasPhotos = this.trackPhotos.length > 0
@@ -266,12 +271,12 @@ export default function (Alpine) {
             this.photoMeta = this.trackPhotos.map((p, index) => ({
                 id: p.picIndex ?? index,
                 caption: p.picCaption || '',
-                latLng: p.picLatLng || null,
+                latLng: Array.isArray(p.picLatLng) ? p.picLatLng : null,
                 timestamp: null,
                 preview: p.picThumbDataUrl
                     ? `data:image/jpeg;base64,${p.picThumbDataUrl}`
                     : null,
-                tagType: p.picLatLng ? 'previous' : 'none',
+                tagType: Array.isArray(p.picLatLng) ? 'previous' : 'none',
                 hasExifGps: false
             }))
 
