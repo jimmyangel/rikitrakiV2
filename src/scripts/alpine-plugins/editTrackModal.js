@@ -403,6 +403,12 @@ export default function (Alpine) {
                 return
             }
 
+            this.$nextTick(() => {
+                if (window.lightbox && window.lightbox.reload) {
+                    window.lightbox.reload()
+                }
+            })
+
             this.$store.ui.showInfo('Track updated.', 3000)
             this.uploaded = true
             this.$store.ui.showEditTrackModal = false
