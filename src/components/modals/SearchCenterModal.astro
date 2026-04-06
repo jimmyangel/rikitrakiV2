@@ -1,7 +1,7 @@
 ---
 import WorldMapPicker from '../widgets/WorldMapPicker.astro'
 ---
-<div x-data="{ ...worldMapModal(), showCard: false }">
+<div x-data="{ showCard: false }">
     <div :class="{ modal: true, 'is-active': $store.ui.showSearchCenterModal }">
 
         <div class="modal-background"

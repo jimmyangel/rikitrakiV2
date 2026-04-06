@@ -13,7 +13,7 @@ import FieldSelectRegion from './fields/FieldSelectRegion.astro'
 import PhotosPanel from './parts/PhotosPanel.astro'
 ---
 
-<div x-data="{ ...uploadTrackModal(), showCard: false }">
+<div x-data="{ showCard: false }">
 
     <div class="modal modal-top" :class="{ 'is-active': $store.ui.showUploadTrackModal }">
 

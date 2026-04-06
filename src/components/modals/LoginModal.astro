@@ -5,7 +5,7 @@ import ModalFooterMessages from './parts/ModalFooterMessages.astro'
 ---
 
 <!-- Modal -->
-<div x-data="{ ...loginModal(), showCard: false }">
+<div x-data="{ showCard: false }">
 
     <div class="login-modal">
         <div :class="{ modal: true, 'is-active': $store.ui.showLoginModal, 'modal-top': true }">
