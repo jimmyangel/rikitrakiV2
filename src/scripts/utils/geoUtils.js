@@ -61,11 +61,36 @@ export async function getApproxLocation() {
 export async function parseGPXtoGeoJSON(gpxBlob) {
     const text = await gpxBlob.text()
     const xml = new DOMParser().parseFromString(text, 'application/xml')
-    return gpx(xml, {
+
+    // 1. Parse GPX normally (we keep metadata + waypoints)
+    const fc = gpx(xml, {
         styles: true,
         trackPoints: true,
         time: true
     })
+
+    // 2. Extract REAL trackpoint timestamps
+    const trkpts = xml.querySelectorAll('trkpt')
+    const trackTimes = []
+
+    trkpts.forEach(pt => {
+        const t = pt.querySelector('time')?.textContent || null
+        trackTimes.push(t)
+    })
+
+    // 3. Assign timestamps to the track feature(s) only
+    for (const f of fc.features) {
+        if (f.geometry?.type === 'LineString' ||
+            f.geometry?.type === 'MultiLineString') {
+
+            f.properties.coordinateProperties =
+                f.properties.coordinateProperties || {}
+
+            f.properties.coordinateProperties.times = trackTimes
+        }
+    }
+
+    return fc
 }
 
 export function computeBounds(geojson) {
