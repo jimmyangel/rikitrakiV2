@@ -98,16 +98,14 @@ export async function updateTrack(payload, { added = [], removed = [] } = {}) {
         sanitizedPhotos = payload.trackPhotos.map((p, i) => {
             const { file, ...rest } = p
 
-            // ⭐ Ensure prefix exists for edit mode
             if (rest.picThumbDataUrl && !rest.picThumbDataUrl.startsWith('data:')) {
                 rest.picThumbDataUrl = `data:image/jpeg;base64,${rest.picThumbDataUrl}`
             }
 
-            console.log(`Sanitizing trackPhotos[${i}]`, {
-                hasFile: !!file,
-                hasThumbDataUrl: !!rest.picThumbDataUrl,
-                startsWithData: rest.picThumbDataUrl?.startsWith('data:')
-            })
+            // Enforce schema for picLatLng
+            if (!Array.isArray(rest.picLatLng)) {
+                delete rest.picLatLng
+            }
 
             return rest
         })
