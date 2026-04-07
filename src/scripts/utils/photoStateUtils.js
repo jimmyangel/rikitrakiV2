@@ -20,14 +20,24 @@ export function dropOn(state, index) {
 }
 
 export function deletePhoto(state, index) {
+    // Identify the photo being removed
+    const removed = state.trackPhotos[index]
+    const removedPicIndex = removed.picIndex
+
+    // Remove from UI arrays (these *are* index-aligned)
     state.trackPhotos.splice(index, 1)
     state.photoMeta.splice(index, 1)
 
-    if (state.photos) {
-        state.photos.splice(index, 1)
+    // Remove from new-photos array by picIndex 
+    if (state.photos && state.photos.length > 0) {
+        const i = state.photos.findIndex(p => p.picIndex === removedPicIndex)
+        if (i !== -1) {
+            state.photos.splice(i, 1)
+        }
     }
 
     state.dragIndex = null
     state.hasPhotos = state.trackPhotos.length > 0
 }
+
 
