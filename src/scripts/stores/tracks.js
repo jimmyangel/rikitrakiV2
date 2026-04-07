@@ -518,7 +518,7 @@ export default function initTracksStore(Alpine) {
 
             try {
                 // -----------------------------------------------------
-                // PHOTO DIFF (added, removed, reordered, caption edits)
+                // PHOTO DIFF (added, removed, caption edits, reorder, picIndex changes)
                 // -----------------------------------------------------
                 const {
                     trackId,
@@ -526,34 +526,47 @@ export default function initTracksStore(Alpine) {
                     trackPhotos: currentPhotos
                 } = payload
 
-                const originalPhotos = originalTrackDetails.trackPhotos || []
-                const current = currentPhotos || []
+                // Normalize arrays
+                const originalPhotos = (originalTrackDetails.trackPhotos || []).filter(Boolean)
+                const current = (currentPhotos || []).filter(Boolean)
+                const newFiles = (payload.photos || []).filter(Boolean)
 
-                // 1. Added / removed (identity = picName)
-                const removed = originalPhotos.filter(o => !current.some(c => c.picName === o.picName))
-                const added   = current.filter(c => !originalPhotos.some(o => o.picName === c.picName))
+                // Identity: picIndex if present, else array index
+                const idOf = (p, idx) => (p && p.picIndex != null ? p.picIndex : idx)
 
-                // 2. Caption edits
-                const captionEdited = current.some(c => {
-                    const o = originalPhotos.find(p => p.picName === c.picName)
+                // 1. Removed = originals whose identity is not in current
+                const removed = originalPhotos.filter((o, oi) =>
+                    !current.some((c, ci) => idOf(c, ci) === idOf(o, oi))
+                )
+
+                // 2. Added = ONLY the new files the user selected
+                //    (never infer added from trackPhotos)
+                const added = newFiles.map((f, fi) => ({
+                    picIndex: f.picIndex != null ? f.picIndex : fi,
+                    file: f.file
+                }))
+
+                // 3. Caption edits (metadata only)
+                const captionEdited = current.some((c, ci) => {
+                    const o = originalPhotos.find((op, oi) => idOf(op, oi) === idOf(c, ci))
                     return o && o.picCaption !== c.picCaption
                 })
 
-                // 3. Reorder (order of picName changed)
-                const originalOrder = originalPhotos.map(p => p.picName)
-                const currentOrder  = current.map(p => p.picName)
+                // 4. Reorder (identity order changed)
+                const originalOrder = originalPhotos.map(idOf)
+                const currentOrder = current.map(idOf)
                 const reordered = JSON.stringify(originalOrder) !== JSON.stringify(currentOrder)
 
-                // 4. picIndex changes (identity remapping)
-                const picIndexChanged = current.some(c => {
-                    const o = originalPhotos.find(p => p.picName === c.picName)
+                // 5. picIndex changes (identity remapping)
+                const picIndexChanged = current.some((c, ci) => {
+                    const o = originalPhotos.find((op, oi) => idOf(op, oi) === idOf(c, ci))
                     return o && o.picIndex !== c.picIndex
                 })
 
-                // 5. Final list (UI order is standardized)
+                // 6. Final list (UI order)
                 const finalPhotos = [...current]
 
-                // 6. Determine if anything changed
+                // 7. Determine if anything changed
                 const photosChanged =
                     removed.length > 0 ||
                     added.length > 0 ||

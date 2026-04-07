@@ -291,6 +291,9 @@ export async function addPhotos(files, state, helpers) {
             tagType: gps ? 'exif' : 'none',
             hasExifGps: !!gps
         })
+
+        if (!state.photos) state.photos = []
+        state.photos.push({ picIndex, file: normalized })
     }
 
     state.hasPhotos = state.trackPhotos.length > 0
