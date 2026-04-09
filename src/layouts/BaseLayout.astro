@@ -27,7 +27,8 @@ import { Icon } from 'astro-icon/components'
         </div>
         <nav class="navbar is-fixed-top is-dark" role="navigation" aria-label="main navigation" x-data="{ open: false }">
             <div class="navbar-brand">
-                <a class="navbar-item" style="padding: 0px;" href="/" @click.prevent="if ($store.user.usernameFromUrl) { $store.user.removeUsernameFromUrl() } else { window.location.href = '/' }">
+                <a class="navbar-item" style="padding: 0px;" href="/" :title="$store.user.usernameFromUrl ? 'Global Map' : 'Reload Home'"
+                    @click.prevent="if ($store.user.usernameFromUrl) { $store.user.removeUsernameFromUrl() } else { window.location.href = '/' }">
                     <Logo />
                 </a>
 
