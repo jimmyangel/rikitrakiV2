@@ -4,7 +4,7 @@ import * as info from '../../content/info.md'
 import Logo from '../widgets/Logo.astro'
 import { Icon } from 'astro-icon/components'
 import pkg from '../../../package.json'
-const { github, twitter, versionText } = info.frontmatter
+const { github, mastodon, versionText } = info.frontmatter
 ---
 
 <div class="modal" x-data="infoModal" :class="{ 'is-active': $store.ui.showInfoModal }">
@@ -46,9 +46,9 @@ const { github, twitter, versionText } = info.frontmatter
 
                 <span class="dot">•</span>
 
-                <a href={twitter} target="_blank" class="footer-link">
-                    <Icon name="fa7-brands:x-twitter" class="is-size-3"/>
-                    Twitter
+                <a href={mastodon} target="_blank" class="footer-link">
+                    <Icon name="fa7-brands:mastodon" class="is-size-3"/>
+                    Mastodon
                 </a>
 
                 <span class="dot">•</span>
