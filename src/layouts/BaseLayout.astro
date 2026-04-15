@@ -1,7 +1,12 @@
 ---
 import '../styles/index.scss'
+import { site } from '../scripts/config.js'
 import Logo from '../components/widgets/Logo.astro'
 import { Icon } from 'astro-icon/components'
+
+const pageTitle = Astro.props.title ?? site.title
+const pageDescription = Astro.props.description ?? site.description
+const pageImage = Astro.props.image ?? site.image
 ---
 
 <html lang="en">
@@ -10,12 +15,25 @@ import { Icon } from 'astro-icon/components'
         <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="generator" content={Astro.generator} />
-        <title>RikiTraki</title>
+
+        <title>{pageTitle}</title>
+
         <script>
             if (location.hostname === "preview.rikitraki.com") {
-                location.replace("https://www.rikitraki.com" + location.pathname + location.search + location.hash)
+            location.replace("https://www.rikitraki.com" + location.pathname + location.search + location.hash)
             }
         </script>
+
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={site.keywords.join(', ')} />
+
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={pageImage} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rikitraki.com" />
+
+        <link rel="me" href={site.mastodon} />
     </head>
 
     <body class="has-navbar-fixed-top">

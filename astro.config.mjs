@@ -7,6 +7,7 @@ import mdx from '@astrojs/mdx'
 
 export default defineConfig({
   output: 'static',
+  site: 'https://rikitraki.com',
   integrations: [icon(), alpinejs(), mdx()],
   devToolbar: { enabled: false },
   vite: {
@@ -15,7 +16,7 @@ export default defineConfig({
         name: 'spa-fallback',
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
-            const url = req.url
+            const url = req.url || ''
 
             // Ignore Vite internals
             if (

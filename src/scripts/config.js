@@ -24,3 +24,10 @@ export const constants = {
     AUTOPLAY_DELAY: 5000
 }
 
+export const site = {
+  title: 'RikiTraki',
+  description: 'Welcome to RikiTraki, a GPS track sharing site. Use a map or a globe to explore our outdoor experiences and learn more about their locations.',
+  keywords: ['maps','hiking','biking','travel','cesiumjs','gps','gpx','geospatial','terrain maps','rikitraki','outdoor navigation'],
+  image: '/images/og/rikitraki-og.jpg',
+  mastodon: 'https://fosstodon.org/@jimmyangel'
+}
